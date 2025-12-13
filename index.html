@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DatArchi - Archäologische Datenbank</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h3>Zones</h3>
+      <ul class="zone-list" id="zoneList">
+        <li data-zone="1">Zone 1</li>
+        <li data-zone="2">Zone 2</li>
+        <li data-zone="3">Zone 3</li>
+        <li data-zone="4">Zone 4</li>
+        <li data-zone="5">Zone 5</li>
+        <li data-zone="6">Zone 6</li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <h2 class="sr-only">Plan du site</h2>
+      <div class="image-map" id="imageMap">
+        <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=3d4a7f6e5e3b8a9df7b3b1a2d6b4e5c6" alt="Vue drone d'un site archéologique"/>
+
+        <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" class="overlay" id="overlay">
+          <g class="zones">
+            <circle id="zone-1" data-zone="1" cx="220" cy="150" r="60" />
+            <circle id="zone-2" data-zone="2" cx="520" cy="120" r="70" />
+            <circle id="zone-3" data-zone="3" cx="820" cy="190" r="60" />
+            <circle id="zone-4" data-zone="4" cx="300" cy="380" r="70" />
+            <circle id="zone-5" data-zone="5" cx="600" cy="380" r="80" />
+            <circle id="zone-6" data-zone="6" cx="860" cy="420" r="50" />
+          </g>
+        </svg>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="js/injectHeaderFooter.js"></script>
+  <script type="module" src="js/header/header.js"></script>
+  <script type="module" src="js/navbar.js"></script>
+  <script type="module" src="js/footer/footer.js"></script>
+
+</body>
+</html>

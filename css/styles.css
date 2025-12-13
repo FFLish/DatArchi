@@ -1,0 +1,26 @@
+/* Main Stylesheet - Imports all component styles */
+
+/* Import a modern variable font for improved typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+/* Basic/Foundation Styles */
+@import url('./basics/variables.css');
+@import url('./basics/typography.css');
+@import url('./basics/buttons.css');
+@import url('./basics/forms.css');
+@import url('./basics/utilities.css');
+
+/* Component Styles */
+@import url('./header.css');
+@import url('./navbar.css');
+@import url('./sidebar.css');
+@import url('./footer.css');
+@import url('./main.css');
+
+/* Utility max width helper used by header/footer */
+.max-w {
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
+}
+

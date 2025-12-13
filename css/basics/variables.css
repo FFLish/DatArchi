@@ -1,0 +1,47 @@
+/* Variables and Root Styles */
+:root {
+  --bg: #eef4fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #276bf0;
+  --accent-2: #2dd4bf;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #10b981;
+  --info: #3b82f6;
+  --dark: #1f2937;
+  --light: #f9fafb;
+  --border: #e5e7eb;
+  --shadow-sm: 0 1px 3px rgba(12, 18, 30, 0.06);
+  --shadow-md: 0 6px 18px rgba(12, 18, 30, 0.08);
+  --shadow-lg: 0 14px 40px rgba(12, 18, 30, 0.10);
+  --shadow-xl: 0 30px 60px rgba(12, 18, 30, 0.12);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --transition: all 0.3s ease;
+  --header-height: 72px;
+  --glass: rgba(255,255,255,0.6);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg);
+  color: #111;
+  line-height: 1.6;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

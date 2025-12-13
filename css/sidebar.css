@@ -1,0 +1,72 @@
+/* Sidebar (Left Navbar) Styles */
+.sidebar {
+  width: 220px;
+  background: var(--card);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+.sidebar h3 {
+  margin: 0 0 16px 0;
+  color: var(--dark);
+  font-size: 18px;
+  font-weight: 700;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 10px;
+}
+
+.zone-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zone-list li {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  color: var(--dark);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: var(--transition);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.zone-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: var(--transition);
+}
+
+.zone-list li:hover {
+  background: var(--light);
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+
+.zone-list li.active {
+  background: linear-gradient(135deg, rgba(43, 108, 176, 0.1), rgba(56, 161, 105, 0.1));
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.zone-list li.active::before {
+  transform: scaleY(1);
+}

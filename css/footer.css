@@ -1,0 +1,96 @@
+/* Footer Styles */
+.site-footer {
+  background: linear-gradient(180deg, #0f1724 0%, #0b1220 100%);
+  color: #e6eef8;
+  padding: 28px 16px 18px;
+  margin-top: auto;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.footer-inner {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 0 20px;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-brand .logo {
+  font-size: 20px;
+}
+
+.footer-brand .project-name {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.footer-brand .muted {
+  color: rgba(230,238,248,0.75);
+  font-size: 14px;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-nav a {
+  color: rgba(230,238,248,0.85);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+
+.footer-nav a:hover {
+  background: rgba(255,255,255,0.03);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.footer-contact .email {
+  color: rgba(230,238,248,0.95);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-contact .social a {
+  color: rgba(230,238,248,0.8);
+  margin-left: 8px;
+  text-decoration: none;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.03);
+  padding-top: 12px;
+  color: rgba(230,238,248,0.7);
+  font-size: 13px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+}
+
+@media (max-width: 900px) {
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .footer-contact {
+    align-items: flex-start;
+  }
+}
