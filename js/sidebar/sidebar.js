@@ -1,17 +1,3 @@
-// Sidebar (left navbar) component script
-export function initSidebar() {
-  const zoneList = document.getElementById('zoneList');
-  if (!zoneList) return;
-  
-  const zones = zoneList.querySelectorAll('li');
-  zones.forEach(zone => {
-    zone.addEventListener('click', (e) => {
-      zones.forEach(z => z.classList.remove('active'));
-      zone.classList.add('active');
-      console.log('Zone selected:', zone.dataset.zone);
-    });
-  });
-}
-
-// Initialize sidebar on page load
-document.addEventListener('DOMContentLoaded', initSidebar);
+// Deprecated sidebar script (kept for history)
+console.warn('Deprecated: js/sidebar/sidebar.js is unused and has been disabled.');
+export default null;

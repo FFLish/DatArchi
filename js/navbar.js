@@ -1,8 +1,8 @@
 // Main navbar script to connect all sections
 import { handleZonen } from './zonen.js';
 import { handleObjekte } from './objekte.js';
-import { handleFotos } from './fotos.js';
-import { handleTeam } from './team.js';
+import { handleFotos } from './funde.js';
+import { handleTeam } from './about-us.js';
 
 document.addEventListener('headerFooterReady', () => {
   const navLinks = Array.from(document.querySelectorAll('.header-nav a'));
