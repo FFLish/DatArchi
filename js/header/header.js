@@ -1,11 +1,25 @@
-// Header component script
-export function createHeader() {
-  const header = document.querySelector('.site-header');
-  if (!header) return;
+import { handleZonen } from './zonen.js';
+import { handleObjekte } from './objekte.js';
+import { handleFotos } from './funde.js';
+import { handleTeam } from './about-us.js';
 
-  // Add header-specific functionality here
-  console.log('Header initialized');
-}
+document.addEventListener('headerFooterReady', () => {
+  const navLinks = Array.from(document.querySelectorAll('.header-nav a'));
+  if (navLinks.length === 0) return;
 
-// Wait for header/footer injection to complete; then initialize header
-document.addEventListener('headerFooterReady', createHeader);
+  navLinks.forEach((link) => {
+    try {
+      const path = new URL(link.getAttribute('href'), document.baseURI).pathname;
+      if (path.includes('/pages/zonen')) {
+        link.addEventListener('click', (e) => { handleZonen(); });
+      } else if (path.includes('/pages/funde') || path.includes('/pages/objekte')) {
+        link.addEventListener('click', (e) => { handleObjekte(); });
+      } else if (path.includes('/pages/fotos')) {
+        link.addEventListener('click', (e) => { handleFotos(); });
+      } else if (path.includes('/pages/about-us') || path.includes('/pages/team')) {
+        link.addEventListener('click', (e) => { handleTeam(); });
+      }
+    } catch (e) {
+    }
+  });
+});
