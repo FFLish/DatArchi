@@ -8,12 +8,12 @@
   border: 1px solid var(--border);
   height: fit-content;
   position: sticky;
-  top: 100px;
+  top: 24px; /* reduced so sidebar stays visible under injected header */
 }
 
 .sidebar h3 {
   margin: 0 0 16px 0;
-  color: var(--dark);
+  color: var(--text);
   font-size: 18px;
   font-weight: 700;
   border-bottom: 2px solid var(--accent);
@@ -32,7 +32,7 @@
 .zone-list li {
   padding: 12px 14px;
   border-radius: var(--radius-md);
-  color: var(--dark);
+  color: var(--text);
   cursor: pointer;
   border: 2px solid transparent;
   transition: var(--transition);
@@ -55,9 +55,11 @@
 }
 
 .zone-list li:hover {
-  background: var(--light);
+  background: rgba(56, 189, 248, 0.1);
   border-color: var(--accent);
-  transform: translateX(4px);
+  /* don't move laterally — keep in place */
+  transform: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .zone-list li.active {
@@ -70,3 +72,52 @@
 .zone-list li.active::before {
   transform: scaleY(1);
 }
+
+/* Centered zones panel (modal-like) */
+.sidebar.centered {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1201;
+  width: min(720px, 92%);
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: var(--shadow-xl);
+}
+
+/* Dim background when panel is open */
+.zones-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 10, 20, 0.45);
+  z-index: 1200;
+}
+
+/* Zone editor modal */
+.zone-editor {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1301;
+  background: var(--card);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-xl);
+  width: min(480px, 94%);
+  max-width: 95%;
+}
+.zone-editor h3 { margin: 0 0 12px 0; font-size: 1.05em; }
+.zone-editor label { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.zone-editor input[type="number"], .zone-editor input[type="text"] { width: 120px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); }
+.zone-editor .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+
+/* Minimal sidebar controls */
+#zoneTools summary { cursor: pointer; font-weight: 700; margin-bottom: 6px; }
+#zoneTools .zone-tools { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+#zoneTools .zone-tools label { font-size:0.95em; display:flex; gap:6px; align-items:center; }
+#zoneTools .zone-tools input[type="number"] { width:72px; padding:6px; border-radius:6px; border:1px solid var(--border); }
+#zoneTools .zone-tools button { padding:6px 8px; }
+
+ 

@@ -16,11 +16,45 @@
 @import url('./sidebar.css');
 @import url('./footer.css');
 @import url('./main.css');
+@import url('./funde.css');
 
 /* Utility max width helper used by header/footer */
 .max-w {
-	max-width: 1200px;
-	margin: 0 auto;
+	/* fluid full-width sections, with padding for readable layout */
+	max-width: none;
+	margin: 0;
+	padding-left: var(--content-padding);
+	padding-right: var(--content-padding);
 	width: 100%;
 }
+
+/* Leaflet / map styling for dark theme */
+.leaflet-container {
+  background: var(--card);
+}
+.leaflet-popup-content-wrapper {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.leaflet-popup-tip {
+  background: var(--card);
+}
+.leaflet-control-zoom a,
+.leaflet-control-attribution,
+.leaflet-bar a {
+  background: rgba(255,255,255,0.02);
+  color: var(--muted);
+}
+.leaflet-popup-content img { max-width: 200px; border-radius: 6px; }
+
+/* Global link styles */
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+ 
 

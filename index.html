@@ -10,33 +10,54 @@
 
   <div class="layout">
     <aside class="sidebar">
-      <h3>Zones</h3>
+      <h3>Zonen</h3>
+
+      <details id="zoneTools">
+        <summary>Grille</summary>
+        <form id="zoneToolsForm" class="zone-tools" style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <label>cols <input id="sbGridCols" type="number" min="1" value="4" style="width:72px;margin-left:6px"></label>
+          <label>rows <input id="sbGridRows" type="number" min="1" value="3" style="width:72px;margin-left:6px"></label>
+          <label style="display:flex;align-items:center;gap:6px"><input id="sbGridClear" type="checkbox">Effacer</label>
+          <button id="sbCreateGridBtn" class="btn btn-sm">Créer</button>
+          <label style="display:flex;align-items:center;gap:6px;margin-left:8px"><input id="sbEditToggle" type="checkbox">Éditer</label>
+        </form>
+      </details>
+
       <ul class="zone-list" id="zoneList">
-        <li data-zone="1">Zone 1</li>
-        <li data-zone="2">Zone 2</li>
-        <li data-zone="3">Zone 3</li>
-        <li data-zone="4">Zone 4</li>
-        <li data-zone="5">Zone 5</li>
-        <li data-zone="6">Zone 6</li>
       </ul>
     </aside>
 
     <main class="main">
+      <header class="page-hero">
+        <h1>Willkommen bei DatArchi</h1>
+        <p class="lead">Archäologische Funde verwalten und dokumentieren</p>
+      </header>
       <h2 class="sr-only">Bild der Ausgrabungsstätte</h2>
       <div class="image-map" id="imageMap">
         <img src="partials/images/ausgrabungsstätte.jpg" alt="Ausgrabungsstätte — Luftaufnahme eines archäologischen Geländes" loading="lazy" decoding="async" />
 
-        <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" class="overlay" id="overlay">
-          <g class="zones">
-            <circle id="zone-1" data-zone="1" cx="220" cy="150" r="60" />
-            <circle id="zone-2" data-zone="2" cx="520" cy="120" r="70" />
-            <circle id="zone-3" data-zone="3" cx="820" cy="190" r="60" />
-            <circle id="zone-4" data-zone="4" cx="300" cy="380" r="70" />
-            <circle id="zone-5" data-zone="5" cx="600" cy="380" r="80" />
-            <circle id="zone-6" data-zone="6" cx="860" cy="420" r="50" />
-          </g>
+        <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" class="overlay" id="overlay">
+          <g class="zones"></g>
         </svg>
       </div>
+
+      <section class="features-overview">
+        <h2>Hauptfunktionen</h2>
+        <div class="features-grid">
+          <div class="feature-item">
+            <h3>Zonen Management</h3>
+            <p>Erstellen und verwalten Sie Zonen direkt auf dem Lageplan Ihrer Ausgrabungsstätte.</p>
+          </div>
+          <div class="feature-item">
+            <h3>Funderfassung</h3>
+            <p>Erfassen Sie detaillierte Informationen zu jedem Fund, inklusive Fotos und genauen Koordinaten.</p>
+          </div>
+          <div class="feature-item">
+            <h3>Datenpersistenz</h3>
+            <p>Ihre Daten werden sicher im Browser gespeichert, sodass Sie Ihre Arbeit jederzeit fortsetzen können.</p>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -44,6 +65,30 @@
   <script type="module" src="js/header/header.js"></script>
   <script type="module" src="js/sidebar/sidebar.js"></script>
   <script type="module" src="js/footer/footer.js"></script>
+  <script type="module" src="js/zone.js"></script>
+  <script type="module" src="js/theme-toggle.js"></script>
+
+  <script>
+  // Sidebar controls: dispatch events that the zones module listens for
+  document.addEventListener('DOMContentLoaded', () => {
+    const createBtn = document.getElementById('sbCreateGridBtn');
+    if (createBtn) createBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const cols = Math.max(1, parseInt(document.getElementById('sbGridCols').value, 10) || 1);
+      const rows = Math.max(1, parseInt(document.getElementById('sbGridRows').value, 10) || 1);
+      const clear = !!document.getElementById('sbGridClear').checked;
+      document.dispatchEvent(new CustomEvent('generateGrid', { detail: { cols, rows, clear } }));
+    });
+
+    const editToggle = document.getElementById('sbEditToggle');
+    if (editToggle) {
+      editToggle.addEventListener('change', () => {
+        document.dispatchEvent(new Event('toggleGridEdit'));
+        if (editToggle.checked) document.dispatchEvent(new Event('openZones'));
+      });
+    }
+  });
+  </script>
 
 </body>
 </html>

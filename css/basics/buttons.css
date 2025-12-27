@@ -13,11 +13,16 @@
 
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(2,6,12,0.45);
 }
 
 .btn:active {
   transform: translateY(0);
+} 
+
+/* Primary hover uses a slightly darker accent */
+.btn-primary:hover {
+  filter: brightness(0.92);
 }
 
 /* Primary Button */

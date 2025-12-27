@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fund erfassen — DatArchi</title>
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+e2RkGkXbKkA7kR6jGB7t8tqG3hZ7hG6tS0J0c8+I=" crossorigin="" />
+  <style>
+    /* Page-specific styles */
+    #fundMap{height:400px;margin-top:16px;border:1px solid #e2e8f0;border-radius:6px}
+    #savedList img{max-width:120px;border-radius:4px}
+    .btn-inline{display:inline-block;margin-top:8px}
+  </style>
+</head>
+<body>
+
+  <main class="main">
+    <h1>Fund erfassen</h1>
+    <p class="lead">Füllen Sie das Formular aus, um einen neuen Fund zu speichern. Koordinaten können über die Karte gesetzt oder manuell eingegeben werden.</p>
+
+    <form id="fundForm">
+      <div id="alert" class="alert" hidden></div>
+
+      <div class="form-group">
+        <label for="titel">Titel</label>
+        <input id="titel" name="titel" type="text" placeholder="Kurzer Titel des Fundes" />
+      </div>
+
+      <div class="form-group">
+        <label for="beschreibung">Beschreibung</label>
+        <textarea id="beschreibung" name="beschreibung" placeholder="Beschreibung des Fundes"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="material">Material</label>
+        <input id="material" name="material" type="text" placeholder="z. B. Keramik, Metall" />
+      </div>
+
+      <div class="form-group">
+        <label for="datierung">Datierung</label>
+        <input id="datierung" name="datierung" type="text" placeholder="z. B. 1. Jh. n. Chr." />
+      </div>
+
+      <div class="form-group">
+        <label for="funddatum">Funddatum</label>
+        <input id="funddatum" name="funddatum" type="date" />
+      </div>
+
+      <div class="form-group">
+        <label>Fundort (Koordinaten)</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:120px;">
+            <label for="latitude">Breitengrad</label>
+            <input id="latitude" name="latitude" type="text" placeholder="z. B. 47.123456" />
+          </div>
+          <div style="flex:1;min-width:120px;">
+            <label for="longitude">Längengrad</label>
+            <input id="longitude" name="longitude" type="text" placeholder="z. B. 8.654321" />
+          </div>
+        </div>
+        <button id="setPosition" class="btn btn-inline">Position setzen / auf Karte anzeigen</button>
+        <p class="muted" style="margin-top:6px">Oder klicke auf die Karte, um die Position zu setzen.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="foto">Foto (optional)</label>
+        <input id="foto" name="foto" type="file" accept="image/*" />
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Fund speichern</button>
+    <div id="fundMap" class="image-map" aria-label="Karte mit Fundposition"></div>
+
+    <div id="savedList" style="margin-top:24px"></div>
+
+  </main>
+
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j8KQ+v1p3/2f3m3k6VQ6o1q9Y5Qm7f5S6t1W8nM=" crossorigin=""></script>
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/header/header.js"></script>
+  <script type="module" src="../../js/footer/footer.js"></script>
+  <script type="module" src="../../js/funde/eingeben.js"></script>
+  <script type="module" src="../../js/theme-toggle.js"></script>
+</body>
+</html>

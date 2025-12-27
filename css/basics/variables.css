@@ -1,27 +1,52 @@
 /* Variables and Root Styles */
 :root {
-  --bg: #eef4fb;
+  /* Light theme variables (default) */
+  --bg: #f9fafb;
   --card: #ffffff;
+  --text: #1f2937;
   --muted: #6b7280;
-  --accent: #276bf0;
-  --accent-2: #2dd4bf;
+  --accent: #3b82f6;
+  --accent-2: #10b981;
   --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #22c55e;
+  --info: #3b82f6;
+  --dark: #111827;
+  --light: #f9fafb;
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --transition: all 0.28s cubic-bezier(.2, .9, .3, 1);
+  --header-height: 72px;
+  --glass: rgba(255, 255, 255, 0.5);
+  --content-padding: 24px;
+}
+
+html[data-theme="dark"] {
+  /* Dark professional palette */
+  --bg: #111827; /* page background */
+  --card: #1f2937; /* cards, panels */
+  --text: #f9fafb; /* main text */
+  --muted: #9ca3af; /* subdued text */
+  --accent: #38bdf8; /* primary accent */
+  --accent-2: #34d399;
+  --danger: #f43f5e;
   --warning: #f59e0b;
   --success: #10b981;
   --info: #3b82f6;
-  --dark: #1f2937;
+  --dark: #071019; /* extra dark tone */
   --light: #f9fafb;
-  --border: #e5e7eb;
-  --shadow-sm: 0 1px 3px rgba(12, 18, 30, 0.06);
-  --shadow-md: 0 6px 18px rgba(12, 18, 30, 0.08);
-  --shadow-lg: 0 14px 40px rgba(12, 18, 30, 0.10);
-  --shadow-xl: 0 30px 60px rgba(12, 18, 30, 0.12);
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 12px;
-  --transition: all 0.3s ease;
-  --header-height: 72px;
-  --glass: rgba(255,255,255,0.6);
+  --border: rgba(255, 255, 255, 0.1);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 40px 90px rgba(0, 0, 0, 0.4);
+  --glass: rgba(255, 255, 255, 0.03);
 }
 
 * {
@@ -36,8 +61,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg);
-  color: #111;
+  color: var(--text);
   line-height: 1.6;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 body {
