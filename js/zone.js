@@ -68,12 +68,6 @@ function createZoneElement(data, zonesGroup, zoneList, attachListeners = true) {
 function attachPerZoneListeners(rect, li) {
   rect.addEventListener('click', (e) => {
     e.stopPropagation();
-    const id = rect.getAttribute('data-zone');
-    toggleActiveById(id);
-  });
-  rect.addEventListener('dblclick', (e) => {
-    e.stopPropagation();
-    // If we are in grid edit mode, open the editor for this zone
     if (gridEditMode) {
       openZoneEditor(rect, li);
       return;
@@ -82,18 +76,30 @@ function attachPerZoneListeners(rect, li) {
     const id = rect.getAttribute('data-zone');
     toggleActiveById(id);
   });
+
+  // Double-click is kept as a convenient shortcut for desktop users
+  rect.addEventListener('dblclick', (e) => {
+    e.stopPropagation();
+    if (gridEditMode) {
+      openZoneEditor(rect, li);
+    }
+  });
+
   li.addEventListener('click', (e) => {
     const id = li.getAttribute('data-zone');
+    if (gridEditMode) {
+      const rect = document.querySelector(`#zone-${id}`);
+      if (rect) openZoneEditor(rect, li);
+      return;
+    }
     toggleActiveById(id);
   });
-  // allow renaming on double click
+
+  // Double-clicking list item also enters edit mode
   li.addEventListener('dblclick', (e) => {
-    const current = li.textContent || '';
-    const name = prompt('Nom pour cette zone', current);
-    if (name !== null) {
-      li.textContent = name;
-      saveZonesDebounced();
-    }
+    const id = li.getAttribute('data-zone');
+    const rect = document.querySelector(`#zone-${id}`);
+    if (rect) openZoneEditor(rect, li);
   });
 }
 
@@ -202,43 +208,50 @@ function createControlUI() {
   // hide panel by default — open via navbar button
   container.style.display = 'none';
   container.innerHTML = `
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div class="zone-controls-group">
       <button id="btnResetView" class="btn btn-sm" title="Réinitialiser la vue">Vue complète</button>
-      <button id="btnDelete" class="btn btn-sm btn-danger" title="Supprimer sélection (touche: Delete)">Supprimer sélection (Del)</button>
-      <button id="btnClear" class="btn btn-sm btn-outline">Tout effacer</button>
-      <button id="btnCloseZones" class="btn btn-sm btn-outline" title="Fermer">Fermer</button>
+      <button id="btnToggleEdit" class="btn btn-sm">Éditer zones</button>
+      <button id="btnDrawZone" class="btn btn-sm">Dessiner zone</button>
     </div>
 
-    <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
-      <label style="display:flex;align-items:center;gap:6px">Cols: <input id="gridCols" type="number" min="1" value="4" style="width:64px"></label>
-      <label style="display:flex;align-items:center;gap:6px">Rows: <input id="gridRows" type="number" min="1" value="3" style="width:64px"></label>
-      <label style="display:flex;align-items:center;gap:6px"><input id="gridClear" type="checkbox"> Clear existing</label>
-      <button id="btnGenerateGrid" class="btn btn-sm">Generate Grid</button>
-      <button id="btnToggleEdit" class="btn btn-sm">Edit Grid</button>
-    </div>
+    <details id="gridToolsDetails" class="zone-controls-details" open>
+      <summary>Outils de grille</summary>
+      <div class="zone-tools">
+        <label>Cols: <input id="gridCols" type="number" min="1" value="4"></label>
+        <label>Rows: <input id="gridRows" type="number" min="1" value="3"></label>
+        <label><input id="gridClear" type="checkbox"> Effacer existant</label>
+        <button id="btnGenerateGrid" class="btn btn-sm">Générer grille</button>
+      </div>
+    </details>
 
-    <div id="zoneEditHint" style="margin-top:8px;display:none;color:#666;font-size:0.9em">
-      <strong>Grid edit:</strong> Double-click a zone to edit its label and geometry (x,y,width,height).
-    </div>
+    <details id="dangerZoneDetails" class="zone-controls-details">
+      <summary class="text-danger">Actions dangereuses</summary>
+      <div class="zone-tools">
+        <button id="btnDelete" class="btn btn-sm btn-danger">Supprimer sélection</button>
+        <button id="btnClear" class="btn btn-sm btn-outline">Tout effacer</button>
+      </div>
+    </details>
 
-    <div id="drawHint" style="margin-top:8px;display:none;color:#666;font-size:0.9em">
-      <strong>Mode dessin:</strong> Cliquez-glissez sur l'image pour dessiner une nouvelle zone. Appuyez sur la touche <kbd>d</kbd> pour activer/désactiver.
+    <div id="zoneEditHint" class="hint-message">
+      <strong>Mode édition:</strong> Cliquez (ou tapez) une zone pour modifier son étiquette et sa géométrie.
+    </div>
+    <div id="drawHint" class="hint-message">
+      <strong>Mode dessin:</strong> Cliquez-glissez sur l'image pour dessiner une nouvelle zone. (Touche <kbd>d</kbd> pour activer/désactiver)
     </div>
   `;
   aside.prepend(container);
 
-  // Reset view to show the whole image
-  const btnReset = container.querySelector('#btnResetView');
-  btnReset.addEventListener('click', () => {
-    resetView();
+  // Attach listeners to new elements
+  container.querySelector('#btnResetView').addEventListener('click', () => resetView());
+  container.querySelector('#btnDelete').addEventListener('click', () => {
+    if (!confirm('Supprimer toutes les zones sélectionnées?')) return;
+    deleteSelectedZones();
   });
-  container.querySelector('#btnDelete').addEventListener('click', () => deleteSelectedZones());
   container.querySelector('#btnClear').addEventListener('click', () => {
-    if (!confirm('Clear all zones?')) return;
+    if (!confirm('Voulez-vous vraiment effacer toutes les zones? Cette action est irréversible.')) return;
     clearAllZones();
   });
 
-  // Grid generation controls
   const btnGenerate = container.querySelector('#btnGenerateGrid');
   if (btnGenerate) {
     btnGenerate.addEventListener('click', () => {
@@ -249,11 +262,11 @@ function createControlUI() {
       const zonesGroupLocal = svgLocal ? svgLocal.querySelector('.zones') : null;
       const existing = zonesGroupLocal ? zonesGroupLocal.querySelectorAll('rect').length : 0;
       if (existing && !clear) {
-        alert('Une grille existe déjà. Cochez "Clear existing" pour la remplacer, ou ouvrez le panneau via la barre de navigation pour modifier la configuration.');
+        alert('Une grille existe déjà. Cochez "Effacer existant" pour la remplacer, ou ouvrez le panneau via la barre de navigation pour modifier la configuration.');
         return;
       }
       if (existing && clear) {
-        if (!confirm(`This will clear all existing zones and generate a ${cols}x${rows} grid. Proceed?`)) return;
+        if (!confirm(`Ceci effacera toutes les zones existantes et générera une grille de ${cols}x${rows}. Continuer?`)) return;
         clearAllZones();
       }
       generateGrid(cols, rows, true);
@@ -261,41 +274,36 @@ function createControlUI() {
     });
   }
 
-  // Toggle grid edit mode — when active, double-click a zone to edit it
   const btnToggle = container.querySelector('#btnToggleEdit');
   const hint = container.querySelector('#zoneEditHint');
   if (btnToggle) {
     btnToggle.addEventListener('click', () => {
       gridEditMode = !gridEditMode;
-      btnToggle.textContent = gridEditMode ? 'Exit Edit' : 'Edit Grid';
+      btnToggle.textContent = gridEditMode ? 'Quitter édition' : 'Éditer zones';
       if (hint) hint.style.display = gridEditMode ? 'block' : 'none';
+      if (gridEditMode) toggleDrawMode(false); // Disable draw mode when editing
     });
   }
 
-  // Draw mode toggle
-  const drawBtn = document.createElement('button');
-  drawBtn.id = 'btnDrawZone';
-  drawBtn.className = 'btn btn-sm';
-  drawBtn.textContent = 'Draw Zone';
-  drawBtn.title = 'Activer le mode dessin (touche d)';
-  container.querySelector('div').appendChild(drawBtn);
+  const btnDrawZone = container.querySelector('#btnDrawZone');
   const drawHint = container.querySelector('#drawHint');
-  function setDrawUI(active) {
-    drawBtn.textContent = active ? 'Exit Draw' : 'Draw Zone';
-    if (drawHint) drawHint.style.display = active ? 'block' : 'none';
+  if (btnDrawZone) {
+    btnDrawZone.addEventListener('click', () => {
+      toggleDrawMode();
+      btnDrawZone.textContent = drawMode ? 'Quitter dessin' : 'Dessiner zone';
+      if (drawHint) drawHint.style.display = drawMode ? 'block' : 'none';
+      if (drawMode) gridEditMode = false; // Disable edit mode when drawing
+    });
   }
-  drawBtn.addEventListener('click', () => {
-    toggleDrawMode();
-    setDrawUI(drawMode);
-  });
-  // sync initial
-  setDrawUI(false);
 
-  // Close the centered panel
-  const btnClose = container.querySelector('#btnCloseZones');
-  if (btnClose) btnClose.addEventListener('click', () => {
-    closeZonesPanel();
-  });
+  // Initial UI sync
+  function setInitialControlUI() {
+    if (btnToggle) btnToggle.textContent = gridEditMode ? 'Quitter édition' : 'Éditer zones';
+    if (hint) hint.style.display = gridEditMode ? 'block' : 'none';
+    if (btnDrawZone) btnDrawZone.textContent = drawMode ? 'Quitter dessin' : 'Dessiner zone';
+    if (drawHint) drawHint.style.display = drawMode ? 'block' : 'none';
+  }
+  setInitialControlUI();
 }
 
 function createBackdrop() {

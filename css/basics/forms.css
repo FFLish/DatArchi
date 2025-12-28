@@ -50,6 +50,13 @@ label {
   margin-bottom: 16px;
 }
 
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+
 .form-group label {
   margin-bottom: 8px;
 }

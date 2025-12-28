@@ -265,7 +265,16 @@
 
 .feature-item {
   text-align: center;
-  padding: 16px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  transition: all 0.2s ease-in-out;
+  background-color: transparent;
+}
+
+.feature-item:hover {
+    background-color: var(--bg);
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
 }
 
 .feature-item h3 {

@@ -10,27 +10,20 @@
 
   <div class="layout">
     <aside class="sidebar">
-      <h3>Zonen</h3>
 
-      <details id="zoneTools">
-        <summary>Grille</summary>
-        <form id="zoneToolsForm" class="zone-tools" style="display:flex;gap:8px;align-items:center;margin-top:8px">
-          <label>cols <input id="sbGridCols" type="number" min="1" value="4" style="width:72px;margin-left:6px"></label>
-          <label>rows <input id="sbGridRows" type="number" min="1" value="3" style="width:72px;margin-left:6px"></label>
-          <label style="display:flex;align-items:center;gap:6px"><input id="sbGridClear" type="checkbox">Effacer</label>
-          <button id="sbCreateGridBtn" class="btn btn-sm">Créer</button>
-          <label style="display:flex;align-items:center;gap:6px;margin-left:8px"><input id="sbEditToggle" type="checkbox">Éditer</label>
-        </form>
+      <details id="zoneListDetails" open>
+        <summary>Liste des zones</summary>
+        <ul class="zone-list" id="zoneList">
+          <!-- Zone items will be injected here -->
+        </ul>
       </details>
-
-      <ul class="zone-list" id="zoneList">
-      </ul>
     </aside>
 
     <main class="main">
       <header class="page-hero">
-        <h1>Willkommen bei DatArchi</h1>
-        <p class="lead">Archäologische Funde verwalten und dokumentieren</p>
+        <h1>Die Vergangenheit digitalisieren, Fund für Fund</h1>
+        <p class="lead">DatArchi ist Ihre moderne, webbasierte Lösung, um archäologische Entdeckungen präzise zu dokumentieren, zu kartieren und zu verwalten. Konzentrieren Sie sich auf die Forschung, nicht auf den Papierkram.</p>
+        <a href="pages/funde/eingeben.html" class="btn btn-primary btn-lg" style="margin-top: 16px;">Jetzt ersten Fund erfassen</a>
       </header>
       <h2 class="sr-only">Bild der Ausgrabungsstätte</h2>
       <div class="image-map" id="imageMap">
@@ -42,19 +35,28 @@
       </div>
 
       <section class="features-overview">
-        <h2>Hauptfunktionen</h2>
+        <h2>Eine Komplettlösung für die moderne Archäologie</h2>
         <div class="features-grid">
           <div class="feature-item">
-            <h3>Zonen Management</h3>
-            <p>Erstellen und verwalten Sie Zonen direkt auf dem Lageplan Ihrer Ausgrabungsstätte.</p>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent" style="margin-bottom: 12px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            <h3>Visuelles Zonen-Management</h3>
+            <p>Definieren Sie Ausgrabungszonen als Gitter oder manuell gezeichnete Polygone direkt auf Ihrem Lageplan. Behalten Sie stets den Überblick über den Grabungsfortschritt.</p>
           </div>
           <div class="feature-item">
-            <h3>Funderfassung</h3>
-            <p>Erfassen Sie detaillierte Informationen zu jedem Fund, inklusive Fotos und genauen Koordinaten.</p>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent" style="margin-bottom: 12px;"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"></path></svg>
+            <h3>Detaillierte Funderfassung</h3>
+            <p>Erfassen Sie jeden Fund mit Titel, Beschreibung, Material, Datierung, Koordinaten und Fotos. Unsere strukturierte Eingabemaske sorgt für konsistente Daten.</p>
           </div>
           <div class="feature-item">
-            <h3>Datenpersistenz</h3>
-            <p>Ihre Daten werden sicher im Browser gespeichert, sodass Sie Ihre Arbeit jederzeit fortsetzen können.</p>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent" style="margin-bottom: 12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9
+ 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <h3>Interaktive Karten</h3>
+            <p>Nutzen Sie die integrierte Kartenfunktion, um Fundorte exakt zu verorten. Jeder Fund erscheint als Marker auf der Karte für eine schnelle visuelle Referenz.</p>
+          </div>
+          <div class="feature-item">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent" style="margin-bottom: 12px;"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+            <h3>Offline-Fähigkeit & Datenhoheit</h3>
+            <p>Alle Daten werden ausschließlich in Ihrem Browser gespeichert. Sie haben die volle Kontrolle und können auch ohne Internetverbindung arbeiten.</p>
           </div>
         </div>
       </section>
@@ -68,27 +70,7 @@
   <script type="module" src="js/zone.js"></script>
   <script type="module" src="js/theme-toggle.js"></script>
 
-  <script>
-  // Sidebar controls: dispatch events that the zones module listens for
-  document.addEventListener('DOMContentLoaded', () => {
-    const createBtn = document.getElementById('sbCreateGridBtn');
-    if (createBtn) createBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const cols = Math.max(1, parseInt(document.getElementById('sbGridCols').value, 10) || 1);
-      const rows = Math.max(1, parseInt(document.getElementById('sbGridRows').value, 10) || 1);
-      const clear = !!document.getElementById('sbGridClear').checked;
-      document.dispatchEvent(new CustomEvent('generateGrid', { detail: { cols, rows, clear } }));
-    });
 
-    const editToggle = document.getElementById('sbEditToggle');
-    if (editToggle) {
-      editToggle.addEventListener('change', () => {
-        document.dispatchEvent(new Event('toggleGridEdit'));
-        if (editToggle.checked) document.dispatchEvent(new Event('openZones'));
-      });
-    }
-  });
-  </script>
 
 </body>
 </html>

@@ -11,14 +11,7 @@
   top: 24px; /* reduced so sidebar stays visible under injected header */
 }
 
-.sidebar h3 {
-  margin: 0 0 16px 0;
-  color: var(--text);
-  font-size: 18px;
-  font-weight: 700;
-  border-bottom: 2px solid var(--accent);
-  padding-bottom: 10px;
-}
+
 
 .zone-list {
   list-style: none;
@@ -56,9 +49,8 @@
 
 .zone-list li:hover {
   background: rgba(56, 189, 248, 0.1);
-  border-color: var(--accent);
-  /* don't move laterally — keep in place */
-  transform: none;
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateX(4px);
   box-shadow: var(--shadow-sm);
 }
 
@@ -113,11 +105,87 @@
 .zone-editor input[type="number"], .zone-editor input[type="text"] { width: 120px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); }
 .zone-editor .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
 
-/* Minimal sidebar controls */
-#zoneTools summary { cursor: pointer; font-weight: 700; margin-bottom: 6px; }
-#zoneTools .zone-tools { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-#zoneTools .zone-tools label { font-size:0.95em; display:flex; gap:6px; align-items:center; }
-#zoneTools .zone-tools input[type="number"] { width:72px; padding:6px; border-radius:6px; border:1px solid var(--border); }
-#zoneTools .zone-tools button { padding:6px 8px; }
 
- 
+
+.sidebar details {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.sidebar details > summary {
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none; /* Hide default marker */
+  position: relative;
+  transition: margin-bottom 0.2s ease;
+}
+
+.sidebar details > summary::-webkit-details-marker {
+  display: none; /* Hide default marker */
+}
+
+.sidebar details > summary::after {
+  content: ''; /* Remove text content */
+  background: url('/static/icons/plus.svg') no-repeat center center / contain;
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease;
+  color: var(--muted); /* This won't work for img, but keep for consistency */
+}
+
+.sidebar details[open] > summary {
+  margin-bottom: 12px;
+}
+
+.sidebar details[open] > summary::after {
+  background: url('/static/icons/minus.svg') no-repeat center center / contain;
+  transform: translateY(-50%) rotate(0deg); /* No rotation for minus icon */
+}
+
+/* Styling for the tool forms within details panels */
+.zone-tools {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+.zone-tools label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.zone-tools input[type="number"] {
+  width: 60px;
+  padding: 6px 8px;
+}
+
+.zones-controls-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.zone-controls-details {
+  margin-bottom: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.hint-message {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.9em;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}

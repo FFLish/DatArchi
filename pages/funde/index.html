@@ -10,9 +10,13 @@
 <body>
 
   <main class="main">
-    <h1>Funde</h1>
-    <p>Hier finden Sie eine Übersicht der erfassten Funde. Sie können neue Funde erfassen oder vorhandene Einträge durchsuchen.</p>
-    <p><a class="btn btn-primary" href="./eingeben.html">Fund erfassen</a></p>
+    <div class="d-flex justify-between align-center" style="flex-wrap: wrap; gap: 16px;">
+      <div>
+        <h1>Meine Funde</h1>
+        <p class="lead" style="margin-bottom: 0;">Eine Übersicht Ihrer dokumentierten archäologischen Entdeckungen.</p>
+      </div>
+      <a class="btn btn-primary" href="./eingeben.html">Neuen Fund erfassen</a>
+    </div>
 
     <div id="finds-list" class="finds-grid">
       <!-- Finds will be injected here by JavaScript -->

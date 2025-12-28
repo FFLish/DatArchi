@@ -11,6 +11,7 @@
 @import url('./basics/utilities.css');
 
 /* Component Styles */
+@import url('./components/alerts.css');
 @import url('./header.css');
 @import url('./navbar.css');
 @import url('./sidebar.css');

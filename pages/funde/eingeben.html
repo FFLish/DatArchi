@@ -20,59 +20,65 @@
     <p class="lead">Füllen Sie das Formular aus, um einen neuen Fund zu speichern. Koordinaten können über die Karte gesetzt oder manuell eingegeben werden.</p>
 
     <form id="fundForm">
-      <div id="alert" class="alert" hidden></div>
+      <div id="alert" class="alert alert-success" role="alert" hidden></div>
 
       <div class="form-group">
         <label for="titel">Titel</label>
-        <input id="titel" name="titel" type="text" placeholder="Kurzer Titel des Fundes" />
+        <input id="titel" name="titel" type="text" placeholder="Kurzer Titel des Fundes" required />
       </div>
 
       <div class="form-group">
         <label for="beschreibung">Beschreibung</label>
-        <textarea id="beschreibung" name="beschreibung" placeholder="Beschreibung des Fundes"></textarea>
+        <textarea id="beschreibung" name="beschreibung" placeholder="Detaillierte Beschreibung des Fundes, des Kontexts und des Zustands."></textarea>
       </div>
 
-      <div class="form-group">
-        <label for="material">Material</label>
-        <input id="material" name="material" type="text" placeholder="z. B. Keramik, Metall" />
+      <div class="form-row">
+        <div class="form-group">
+          <label for="material">Material</label>
+          <input id="material" name="material" type="text" placeholder="z. B. Keramik, Bronze, Eisen" />
+        </div>
+        <div class="form-group">
+          <label for="datierung">Datierung</label>
+          <input id="datierung" name="datierung" type="text" placeholder="z. B. 2. Jh. v. Chr., Eisenzeit" />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="datierung">Datierung</label>
-        <input id="datierung" name="datierung" type="text" placeholder="z. B. 1. Jh. n. Chr." />
+      <div class="form-row">
+        <div class="form-group">
+          <label for="funddatum">Funddatum</label>
+          <input id="funddatum" name="funddatum" type="date" />
+        </div>
+        <div class="form-group">
+          <label for="foto">Foto (optional)</label>
+          <input id="foto" name="foto" type="file" accept="image/*" />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="funddatum">Funddatum</label>
-        <input id="funddatum" name="funddatum" type="date" />
-      </div>
 
       <div class="form-group">
         <label>Fundort (Koordinaten)</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:120px;">
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom: 0;">
             <label for="latitude">Breitengrad</label>
             <input id="latitude" name="latitude" type="text" placeholder="z. B. 47.123456" />
           </div>
-          <div style="flex:1;min-width:120px;">
+          <div class="form-group" style="margin-bottom: 0;">
             <label for="longitude">Längengrad</label>
             <input id="longitude" name="longitude" type="text" placeholder="z. B. 8.654321" />
           </div>
         </div>
-        <button id="setPosition" class="btn btn-inline">Position setzen / auf Karte anzeigen</button>
-        <p class="muted" style="margin-top:6px">Oder klicke auf die Karte, um die Position zu setzen.</p>
+        <button id="setPosition" class="btn btn-secondary btn-sm" style="margin-top: 12px;">Position auf Karte setzen/anzeigen</button>
+        <p class="text-muted" style="margin-top: 8px; font-size: 13px;">Oder klicken Sie direkt in die Karte, um eine Position auszuwählen.</p>
       </div>
 
-      <div class="form-group">
-        <label for="foto">Foto (optional)</label>
-        <input id="foto" name="foto" type="file" accept="image/*" />
+      <div id="fundMap" class="image-map" aria-label="Karte mit Fundposition" style="min-height: 400px; background: var(--card)"></div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <button type="submit" class="btn btn-primary btn-lg">Fund speichern</button>
       </div>
+    </form>
 
-      <div class="form-group">
-        <button type="submit" class="btn btn-primary">Fund speichern</button>
-    <div id="fundMap" class="image-map" aria-label="Karte mit Fundposition"></div>
-
-    <div id="savedList" style="margin-top:24px"></div>
+    <div id="savedList" style="margin-top:48px"></div>
 
   </main>
 

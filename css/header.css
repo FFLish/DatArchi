@@ -42,7 +42,7 @@ html[data-theme="dark"] .site-header {
 .logo-container {
   width: 48px;
   height: 48px;
-  display: flex;
+  display: none !important; /* Hide on desktop */
   align-items: center;
   justify-content: center;
   border-radius: 12px;
@@ -53,8 +53,11 @@ html[data-theme="dark"] .site-header {
 .logo-icon {
   width: 28px;
   height: 28px;
-  color: var(--accent);
-  stroke-width: 2;
+}
+
+.header-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .brand-text {
@@ -81,7 +84,21 @@ html[data-theme="dark"] .site-header {
   margin: 0;
 }
 
-/* Nav link styling for dark theme */
+.header-menu {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-left: 1px solid var(--border);
+  padding-left: 16px;
+}
+
+/* Nav link styling */
 .header-nav .nav-link {
   color: var(--muted);
   text-decoration: none;
@@ -98,6 +115,10 @@ html[data-theme="dark"] .site-header {
   background: rgba(56, 189, 248, 0.1);
   color: var(--text);
   transform: translateY(-2px);
+}
+
+html[data-theme="light"] .header-nav .nav-link:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .header-nav .nav-link:hover span {
@@ -121,10 +142,16 @@ html[data-theme="dark"] .site-header {
   transition: all 0.3s ease;
   border-radius: 8px;
   padding: 4px;
+  /* Ensure it's on top of other elements in the mobile header */
+  z-index: 101; 
 }
 
 .nav-toggle-label:hover {
   background: rgba(56, 189, 248, 0.1);
+}
+
+html[data-theme="light"] .nav-toggle-label:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .hamburger-line {
@@ -153,24 +180,39 @@ html[data-theme="dark"] .site-header {
     display: flex;
   }
 
-  .header-nav {
+  .header-menu {
     position: absolute;
     top: calc(var(--header-height) + 10px);
     right: 16px;
     background: var(--card);
     min-width: 220px;
     flex-direction: column;
+    align-items: stretch;
     padding: 12px 8px;
-    gap: 4px;
+    gap: 8px;
     border-radius: 12px;
     box-shadow: var(--shadow-md);
     display: none;
     border: 1px solid var(--border);
     animation: slideDown 0.3s ease;
   }
+  
+  .header-nav {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .header-controls {
+    padding: 12px 8px 4px 8px;
+    margin-top: 8px;
+    border-top: 1px solid var(--border);
+    border-left: none;
+    justify-content: space-around;
+  }
 
   /* Show nav when toggle is checked */
-  .nav-toggle:checked ~ .header-nav {
+  .nav-toggle:checked ~ .header-menu {
     display: flex;
   }
 
@@ -183,6 +225,7 @@ html[data-theme="dark"] .site-header {
   }
 
   .logo-container {
+    display: flex !important; /* Show on mobile */
     width: 40px;
     height: 40px;
   }
@@ -219,8 +262,11 @@ html[data-theme="dark"] .site-header {
 }
 
 .btn-icon:hover {
-  background: rgba(255, 255, 255, 0.1);
   color: var(--text);
+}
+
+html[data-theme="dark"] .btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 html[data-theme="light"] .btn-icon:hover {
