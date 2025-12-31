@@ -174,64 +174,29 @@ html[data-theme="light"] .nav-toggle-label:hover {
   transform: rotate(-45deg) translate(7px, -7px);
 }
 
-@media (max-width: 880px) {
-  .nav-toggle-label {
+/* Desktop styles (min-width: 769px) */
+@media (min-width: 769px) {
+  .header-right-container {
     display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 24px;
   }
 
   .header-menu {
-    position: absolute;
-    top: calc(var(--header-height) + 10px);
-    right: 16px;
-    background: var(--card);
-    min-width: 220px;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 12px 8px;
-    gap: 8px;
-    border-radius: 12px;
-    box-shadow: var(--shadow-md);
+    display: flex !important;
+    position: static;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    animation: none;
+    flex-direction: row;
+    padding: 0;
+    gap: 24px;
+  }
+
+  .nav-toggle-label {
     display: none;
-    border: 1px solid var(--border);
-    animation: slideDown 0.3s ease;
-  }
-  
-  .header-nav {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-  }
-
-  .header-controls {
-    padding: 12px 8px 4px 8px;
-    margin-top: 8px;
-    border-top: 1px solid var(--border);
-    border-left: none;
-    justify-content: space-around;
-  }
-
-  /* Show nav when toggle is checked */
-  .nav-toggle:checked ~ .header-menu {
-    display: flex;
-  }
-
-  .site-header {
-    height: 68px;
-  }
-
-  .brand-text {
-    display: none;
-  }
-
-  .logo-container {
-    display: flex !important; /* Show on mobile */
-    width: 40px;
-    height: 40px;
-  }
-
-  .logo-icon {
-    width: 24px;
-    height: 24px;
   }
 }
 
