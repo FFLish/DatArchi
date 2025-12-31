@@ -2,7 +2,7 @@
 .finds-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  gap: 32px; /* Increased gap */
   margin-top: 24px;
 }
 
@@ -10,16 +10,17 @@
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm); /* More subtle shadow */
   overflow: hidden;
-  transition: var(--transition);
+  transition: all 0.2s ease-in-out; /* Use 'all' for multiple properties */
   display: flex;
   flex-direction: column;
 }
 
 .find-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px) scale(1.02); /* Lift and slightly enlarge */
+  box-shadow: var(--shadow-lg); /* More pronounced shadow on hover */
+  border-color: var(--accent); /* Highlight border on hover */
 }
 
 .find-card-image {
@@ -27,6 +28,12 @@
   height: 200px;
   object-fit: cover;
   background-color: var(--bg);
+  filter: grayscale(80%);
+  transition: filter 0.3s ease-in-out;
+}
+
+.find-card:hover .find-card-image {
+  filter: grayscale(0%);
 }
 
 .find-card-content {
