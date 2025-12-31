@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Karte - DatArchi</title>
+  <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+
+  <div class="layout">
+    <aside class="sidebar">
+
+      <div id="zone-tools-container" class="p-2">
+            <details id="gridToolsDetails" class="zone-controls-details" open>
+                <summary>Raster-Werkzeuge</summary>
+                <div class="zone-tools">
+                    <label>Cols: <input id="gridCols" type="number" min="1" value="4"></label>
+                    <label>Rows: <input id="gridRows" type="number" min="1" value="3"></label>
+                    <label><input id="gridClear" type="checkbox"> Löschen</label>
+                    <button id="btnGenerateGrid" class="btn btn-primary btn-sm">Generieren</button>
+                </div>
+                <div id="gridInfoMessage" class="hint-message" style="margin-top: 8px;"></div>
+            </details>
+        </div>
+
+      <details id="zoneListDetails" open>
+        <summary>Zonenliste</summary>
+        <ul class="zone-list" id="zoneList">
+          <!-- Zone items will be injected here -->
+        </ul>
+      </details>
+    </aside>
+
+    <main class="main">
+      <h2 class="sr-only">Bild der Ausgrabungsstätte</h2>
+      <div class="image-map" id="imageMap">
+        <img src="../../partials/images/ausgrabungsstätte.jpg" alt="Ausgrabungsstätte — Luftaufnahme eines archäologischen Geländes" loading="lazy" decoding="async" />
+
+        <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" class="overlay" id="overlay">
+          <g class="zones"></g>
+        </svg>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/header/header.js"></script>
+  <script type="module" src="../../js/header/nav-mobile.js"></script>
+  <script type="module" src="../../js/sidebar/sidebar.js"></script>
+  <script type="module" src="../../js/footer/footer.js"></script>
+  <script type="module" src="../../js/zone.js"></script>
+  <script type="module" src="../../js/theme-toggle.js"></script>
+</body>
+</html>

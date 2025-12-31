@@ -9,31 +9,14 @@
 <body>
 
   <div class="layout">
-    <aside class="sidebar">
-
-      <details id="zoneListDetails" open>
-        <summary>Liste des zones</summary>
-        <ul class="zone-list" id="zoneList">
-          <!-- Zone items will be injected here -->
-        </ul>
-      </details>
-    </aside>
-
     <main class="main">
       <header class="page-hero">
         <h1>Die Vergangenheit digitalisieren, Fund für Fund</h1>
         <p class="lead">DatArchi ist Ihre moderne, webbasierte Lösung, um archäologische Entdeckungen präzise zu dokumentieren, zu kartieren und zu verwalten. Konzentrieren Sie sich auf die Forschung, nicht auf den Papierkram.</p>
         <a href="pages/funde/eingeben.html" class="btn btn-primary btn-lg" style="margin-top: 16px;">Jetzt ersten Fund erfassen</a>
+        <a href="pages/map/index.html" class="btn btn-secondary btn-lg" style="margin-top: 16px;">Zur Karte</a>
       </header>
-      <h2 class="sr-only">Bild der Ausgrabungsstätte</h2>
-      <div class="image-map" id="imageMap">
-        <img src="partials/images/ausgrabungsstätte.jpg" alt="Ausgrabungsstätte — Luftaufnahme eines archäologischen Geländes" loading="lazy" decoding="async" />
-
-        <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" class="overlay" id="overlay">
-          <g class="zones"></g>
-        </svg>
-      </div>
-
+      
       <section class="features-overview">
         <h2>Eine Komplettlösung für die moderne Archäologie</h2>
         <div class="features-grid">
@@ -65,9 +48,8 @@
 
   <script type="module" src="js/injectHeaderFooter.js"></script>
   <script type="module" src="js/header/header.js"></script>
-  <script type="module" src="js/sidebar/sidebar.js"></script>
+  <script type="module" src="js/header/nav-mobile.js"></script>
   <script type="module" src="js/footer/footer.js"></script>
-  <script type="module" src="js/zone.js"></script>
   <script type="module" src="js/theme-toggle.js"></script>
 
 

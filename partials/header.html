@@ -3,7 +3,7 @@
 
     <a class="brand" href="/index.html" title="DatArchi Startseite">
       <div class="logo-container">
-        <img src="/static/icons/trowel.svg" alt="DatArchi Logo" class="logo-icon" />
+        <img src="/partials/icons/trowel.svg" alt="DatArchi Logo" class="logo-icon" />
       </div>
       <div class="brand-text">
         <p class="project-name">DatArchi</p>
@@ -11,32 +11,37 @@
       </div>
     </a>
 
-    <input id="navToggle" class="nav-toggle" type="checkbox" aria-hidden="true">
-    <label for="navToggle" class="nav-toggle-label" aria-hidden="true">
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    </label>
+    <div class="header-main-nav-wrapper">
+        <div class="header-static-controls">
+            <button id="theme-toggle" class="btn btn-icon" title="Toggle theme" aria-label="Toggle theme">
+              <img src="/partials/icons/sun.svg" alt="Light mode" class="sun header-icon" />
+              <img src="/partials/icons/moon.svg" alt="Dark mode" class="moon header-icon" />
+            </button>
+        </div>
 
-    <div class="header-menu">
-      <nav class="header-nav" id="mainNav" aria-label="Hauptnavigation">
-        <a href="/index.html" class="nav-link"><span>Start</span></a>
-        <a href="/pages/funde/index.html" class="nav-link"><span>Funde</span></a>
-        <a href="/pages/about-us/index.html" class="nav-link"><span>Über</span></a>
-      </nav>
+        <input id="navToggle" class="nav-toggle" type="checkbox" aria-hidden="true">
+        <label for="navToggle" class="nav-toggle-label" aria-hidden="true">
+          <img src="/partials/icons/menu.svg" alt="Menu" class="header-icon nav-icon-menu" />
+          <img src="/partials/icons/arrow-down.svg" alt="Close" class="header-icon nav-icon-clear" />
+        </label>
 
-      <div class="header-controls">
-        <a href="/pages/funde/eingeben.html" class="btn btn-primary btn-sm">Fund erfassen</a>
-        
-        <button id="navZones" class="btn btn-icon" title="Zonen" aria-label="Zonen">
-          <img src="/static/icons/zones.svg" alt="Zonen" class="header-icon" />
-        </button>
+        <div class="header-menu">
+          <nav class="header-nav" id="mainNav" aria-label="Hauptnavigation">
+            <a href="/index.html" class="nav-link">
+              <span>Start</span>
+            </a>
+            <a href="/pages/map/index.html" class="nav-link">
+              <span>Karte</span>
+            </a>
+            <a href="/pages/funde/index.html" class="nav-link">
+              <span>Funde</span>
+            </a>
+          </nav>
 
-        <button id="theme-toggle" class="btn btn-icon" title="Toggle theme" aria-label="Toggle theme">
-          <img src="/static/icons/sun.svg" alt="Light mode" class="sun header-icon" />
-          <img src="/static/icons/moon.svg" alt="Dark mode" class="moon header-icon" />
-        </button>
-      </div>
+          <div class="header-controls">
+            <a href="/pages/funde/eingeben.html" class="btn btn-primary btn-sm">Fund erfassen</a>
+          </div>
+        </div>
     </div>
 
   </div>
