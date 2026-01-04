@@ -2,12 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const FINDS_STORAGE_KEY = 'datarchi.funde.v1';
 
   // Map initialisation
-  const map = L.map('fundMap').setView([47.0, 8.0], 6);
-  // Dark basemap for a consistent dark theme
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors &amp; CARTO'
-  }).addTo(map);
+  const map = L.map('fundMap', {
+    crs: L.CRS.Simple
+  });
+  
+  const imageUrl = '../../partials/images/ausgrabungsstätte.jpg';
+  const imageBounds = [[0, 0], [600, 1000]]; // Assuming image dimensions are 1000x600
+
+  L.imageOverlay(imageUrl, imageBounds).addTo(map);
+  map.fitBounds(imageBounds);
 
   let marker = null;
   const latInput = document.getElementById('latitude');
