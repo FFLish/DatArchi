@@ -1,4 +1,4 @@
-import { mapImageUrl } from '../config.js';
+import { getMapImageUrl } from '../config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const FINDS_STORAGE_KEY = 'datarchi.funde.v1';
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     crs: L.CRS.Simple
   });
   
-  const imageUrl = mapImageUrl;
+  const imageUrl = getMapImageUrl();
   
   const img = new Image();
   img.onload = () => {

@@ -1,5 +1,5 @@
 // js/main-map.js
-import { mapImageUrl } from './config.js';
+import { getMapImageUrl } from './config.js';
 import * as zones from './leaflet-zones.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Invalidate map size AFTER setting the new height
           map.invalidateSize();
     
-          L.imageOverlay(mapImageUrl, imageBounds).addTo(map);
+          L.imageOverlay(getMapImageUrl(), imageBounds).addTo(map);
           map.fitBounds(imageBounds);
     
           // Initialize Zone Management
@@ -40,11 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
           loadAndDisplayFinds();
         }, 0);
       };
-      img.onerror = () => {    console.error('Failed to load map image:', mapImageUrl);
+      img.onerror = () => {    console.error('Failed to load map image:', getMapImageUrl());
     // You could display a fallback message in the map container
     document.getElementById('imageMap').innerHTML = '<p style="text-align:center; padding: 20px;">Kartenbild konnte nicht geladen werden.</p>';
   };
-  img.src = mapImageUrl;
+  img.src = getMapImageUrl();
 
   // Helper function to escape HTML for popups
   function escapeHtml(s) {
