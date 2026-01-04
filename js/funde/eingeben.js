@@ -15,17 +15,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setMarker(lat, lng) {
     if (!isFinite(lat) || !isFinite(lng)) return;
-    if (marker) marker.setLatLng([lat, lng]);
-    else {
+    const popupMessage = `Position ausgewählt: <br>Lat: ${lat.toFixed(6)} <br>Lon: ${lng.toFixed(6)}`;
+    if (marker) {
+      marker.setLatLng([lat, lng]);
+      marker.getPopup().setContent(popupMessage);
+    } else {
       marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+      marker.bindPopup(popupMessage).openPopup();
       marker.on('moveend', e => {
         const p = e.target.getLatLng();
         latInput.value = p.lat.toFixed(6);
         lonInput.value = p.lng.toFixed(6);
+        marker.getPopup().setContent(`Position ausgewählt: <br>Lat: ${p.lat.toFixed(6)} <br>Lon: ${p.lng.toFixed(6)}`);
       });
     }
     latInput.value = Number(lat).toFixed(6);
     lonInput.value = Number(lng).toFixed(6);
+    marker.openPopup(); // Ensure popup is open when marker is first set or moved.
   }
 
   map.on('click', (e) => {
