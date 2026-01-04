@@ -56,24 +56,13 @@
         </div>
 
 
-        <div class="form-group">
-          <label>Fundort (Koordinaten)</label>
-          <div class="form-row">
-            <div class="form-group" style="margin-bottom: 0;">
-              <label for="latitude">Breitengrad</label>
-              <input id="latitude" name="latitude" type="text" placeholder="z. B. 47.123456" />
-            </div>
-            <div class="form-group" style="margin-bottom: 0;">
-              <label for="longitude">Längengrad</label>
-              <input id="longitude" name="longitude" type="text" placeholder="z. B. 8.654321" />
-            </div>
-          </div>
-          <button id="setPosition" class="btn btn-secondary btn-sm" style="margin-top: 12px;">Position auf Karte setzen/anzeigen</button>
-          <p class="text-muted" style="margin-top: 8px; font-size: 13px;">Oder klicken Sie direkt in die Karte, um eine Position auszuwählen.</p>
-        </div>
-
-        <div id="fundMap" class="image-map" aria-label="Karte mit Fundposition" style="min-height: 400px; background: var(--card)"></div>
-
+              <div class="form-group">
+                <label>Fundort (Kartenklick)</label>
+                <div id="fundMap" class="image-map" aria-label="Karte mit Fundposition" style="min-height: 400px; background: var(--card)"></div>
+                <p class="text-muted" style="margin-top: 8px; font-size: 13px;">Klicken Sie direkt in die Karte, um eine Position auszuwählen.</p>
+                <input type="hidden" id="latitude" name="latitude" />
+                <input type="hidden" id="longitude" name="longitude" />
+              </div>
         <div class="form-group" style="margin-top: 24px;">
           <button type="submit" class="btn btn-primary btn-lg">Fund speichern</button>
         </div>

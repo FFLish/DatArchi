@@ -32,15 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setMarker(e.latlng.lat, e.latlng.lng);
   });
 
-  document.getElementById('setPosition').addEventListener('click', (ev) => {
-    ev.preventDefault();
-    const lat = parseFloat(latInput.value);
-    const lon = parseFloat(lonInput.value);
-    if (isFinite(lat) && isFinite(lon)) {
-      setMarker(lat, lon);
-      map.setView([lat, lon], 13);
-    }
-  });
+
 
   // Form & storage
   const form = document.getElementById('fundForm');
