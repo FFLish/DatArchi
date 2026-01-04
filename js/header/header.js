@@ -1,4 +1,3 @@
-import { handleObjekte } from '../objekte.js';
 import { handleTeam } from '../about-us.js';
 
 document.addEventListener('headerFooterReady', () => {
@@ -8,9 +7,7 @@ document.addEventListener('headerFooterReady', () => {
   navLinks.forEach((link) => {
     try {
       const path = new URL(link.getAttribute('href'), document.baseURI).pathname;
-      if (path.includes('/pages/funde')) {
-        link.addEventListener('click', (e) => { handleObjekte(); });
-      } else if (path.includes('/pages/about-us')) {
+      if (path.includes('/pages/about-us')) {
         link.addEventListener('click', (e) => { handleTeam(); });
       }
     } catch (e) {
