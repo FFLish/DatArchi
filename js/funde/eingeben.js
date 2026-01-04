@@ -109,6 +109,134 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // --- Add Example Finds Logic ---
+  const addExampleFindsBtn = document.getElementById('addExampleFindsBtn');
+  if (addExampleFindsBtn) {
+    addExampleFindsBtn.addEventListener('click', () => {
+      addExampleFindsToPage();
+    });
+  }
+
+  // Preset values for example finds
+  const presetFindTemplates = [
+    {
+      titel: "Keramikscherbe",
+      beschreibung: "Fragment einer römischen Terra Sigillata Schale.",
+      material: "Keramik",
+      datierung: "1. - 2. Jh. n. Chr.",
+      funddatum: "2024-05-10"
+    },
+    {
+      titel: "Bronzefibel",
+      beschreibung: "Gut erhaltene Bronzefibel, möglicherweise vom Typ Aucissa.",
+      material: "Bronze",
+      datierung: "1. Jh. v. Chr.",
+      funddatum: "2024-05-12"
+    },
+    {
+      titel: "Feuersteinabschlag",
+      beschreibung: "Unretouchierter Feuersteinabschlag, graues Material.",
+      material: "Feuerstein",
+      datierung: "4000 - 3000 v. Chr.",
+      funddatum: "2024-05-11"
+    },
+    {
+      titel: "Knochennadel",
+      beschreibung: "Spitze Nadel aus Tierknochen, fein poliert.",
+      material: "Knochen",
+      datierung: "12. - 14. Jh. n. Chr.",
+      funddatum: "2024-05-15"
+    },
+    {
+      titel: "Glasscherbe",
+      beschreibung: "Fragment eines modernen Glasgefäßes.",
+      material: "Glas",
+      datierung: "18. Jh. n. Chr.",
+      funddatum: "2024-05-16"
+    },
+    {
+      titel: "Eisensporn",
+      beschreibung: "Korrodierter Eisensporn, mittelalterlich.",
+      material: "Eisen",
+      datierung: "9. - 11. Jh. n. Chr.",
+      funddatum: "2024-05-18"
+    },
+    {
+      titel: "Holzkammfragment",
+      beschreibung: "Kleines Fragment eines Holzkamms, vermutlich frühmittelalterlich.",
+      material: "Holz",
+      datierung: "7. - 8. Jh. n. Chr.",
+      funddatum: "2024-05-19"
+    }
+  ];
+
+  function generateRandomFinds(count) { // Renamed from generateRandomFinds for clarity in this context
+    const imageBounds = map.getBounds();
+    const minLat = imageBounds.getNorth(); 
+    const maxLat = imageBounds.getSouth(); 
+    const minLon = imageBounds.getWest();  
+    const maxLon = imageBounds.getEast();  
+    
+    const newFinds = [];
+    for (let i = 0; i < count; i++) {
+      const template = presetFindTemplates[Math.floor(Math.random() * presetFindTemplates.length)];
+      const lat = Math.random() * (minLat - maxLat) + maxLat; 
+      const lon = Math.random() * (maxLon - minLon) + minLon; 
+
+      newFinds.push({
+        id: `fund-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 5)}`, // More robust unique ID
+        titel: template.titel,
+        beschreibung: template.beschreibung,
+        material: template.material,
+        datierung: template.datierung,
+        funddatum: template.funddatum,
+        latitude: lat,
+        longitude: lon,
+        photoDataUrl: "", 
+        zoneLabel: findZoneForCoordinates(lat, lon) || "Unbekannte Zone"
+      });
+    }
+    return newFinds;
+  }
+
+  function addExampleFindsToPage() {
+    const numInput = document.getElementById('numExampleFinds');
+    let count = parseInt(numInput.value, 10);
+    if (isNaN(count) || count < 1) {
+      count = 10; 
+      numInput.value = count; 
+    }
+
+    const generatedFinds = generateRandomFinds(count);
+    let currentSavedFinds = JSON.parse(localStorage.getItem(FINDS_STORAGE_KEY)) || [];
+
+    // Filter out existing finds by id to prevent exact duplicates on re-run
+    const uniqueGeneratedFinds = generatedFinds.filter(genFind => 
+        !currentSavedFinds.some(sFind => sFind.id === genFind.id));
+    
+    currentSavedFinds = [...currentSavedFinds, ...uniqueGeneratedFinds];
+    localStorage.setItem(FINDS_STORAGE_KEY, JSON.stringify(currentSavedFinds));
+
+    // Clear existing markers and re-render everything
+    map.eachLayer(function(layer) {
+      if (layer instanceof L.Marker) {
+        map.removeLayer(layer);
+      }
+    });
+    // Update the local savedFinds array for immediate page refresh
+    savedFinds = currentSavedFinds; 
+    initializePage();
+
+    const alertEl = document.getElementById('alert');
+    if (alertEl) {
+      alertEl.innerHTML = `
+        <svg class="alert-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <span>${uniqueGeneratedFinds.length} Beispielfunde erfolgreich hinzugefügt!</span>`;
+      alertEl.hidden = false;
+      setTimeout(() => { alertEl.hidden = true; }, 4000);
+    }
+  }
+
   function saveAndRender(data) {
     savedFinds.push(data);
     localStorage.setItem(FINDS_STORAGE_KEY, JSON.stringify(savedFinds));
