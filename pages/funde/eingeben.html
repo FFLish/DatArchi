@@ -4,14 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fund erfassen — DatArchi</title>
-  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <style>
-    /* Page-specific styles */
-    #fundMap{height:400px;margin-top:16px;border:1px solid #e2e8f0;border-radius:6px}
-    #savedList img{max-width:120px;border-radius:4px}
-    .btn-inline{display:inline-block;margin-top:8px}
-  </style>
+
 </head>
 <body>
 
@@ -58,28 +53,28 @@
 
               <div class="form-group">
                 <label>Fundort (Kartenklick)</label>
-                <div id="fundMap" class="image-map" aria-label="Karte mit Fundposition" style="min-height: 400px; background: var(--card)"></div>
-                <p class="text-muted" style="margin-top: 8px; font-size: 13px;">Klicken Sie direkt in die Karte, um eine Position auszuwählen.</p>
+                <div id="fundMap" class="image-map fund-map-container" aria-label="Karte mit Fundposition"></div>
+                <p class="text-muted fund-map-hint">Klicken Sie direkt in die Karte, um eine Position auszuwählen.</p>
                 <input type="hidden" id="latitude" name="latitude" />
                 <input type="hidden" id="longitude" name="longitude" />
               </div>
-        <div class="form-group" style="margin-top: 24px;">
+        <div class="form-group form-actions-group">
           <button type="submit" class="btn btn-primary btn-lg">Fund speichern</button>
-          <input type="number" id="numExampleFinds" value="10" min="1" style="width: 80px; margin-left: 10px; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;"/>
-          <button type="button" id="addExampleFindsBtn" class="btn btn-secondary btn-lg" style="margin-left: 10px;">Beispielfunde hinzufügen</button>
+          <input type="number" id="numExampleFinds" value="10" min="1" class="input-example-finds"/>
+          <button type="button" id="addExampleFindsBtn" class="btn btn-secondary btn-lg">Beispielfunde hinzufügen</button>
         </div>
       </form>
     </div>
 
-    <div id="savedList" style="margin-top:48px"></div>
+    <div id="savedList" class="saved-finds-list"></div>
   </main>
 
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="../../js/injectHeaderFooter.js"></script>
-  <script type="module" src="../../js/header/header.js"></script>
-  <script type="module" src="../../js/footer/footer.js"></script>
-  <script type="module" src="../../js/funde/eingeben.js"></script>
-  <script type="module" src="../../js/theme-toggle.js"></script>
+  <script type="module" src="/js/injectHeaderFooter.js"></script>
+  <script type="module" src="/js/header/header.js"></script>
+  <script type="module" src="/js/footer/footer.js"></script>
+  <script type="module" src="/js/funde/eingeben.js"></script>
+  <script type="module" src="/js/theme-toggle.js"></script>
 </body>
 </html>

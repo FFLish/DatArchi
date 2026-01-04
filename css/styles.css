@@ -18,6 +18,8 @@
 @import url('./footer.css');
 @import url('./main.css');
 @import url('./funde.css');
+@import url('./components/_funde-eingeben.css');
+@import url('./components/_funde-statistics.css');
 
 /* Utility max width helper used by header/footer */
 .max-w {

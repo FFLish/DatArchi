@@ -282,24 +282,41 @@ document.addEventListener('DOMContentLoaded', () => {
       container.innerHTML += '<p>Keine Funde gespeichert.</p>';
       return;
     }
-    const ul = document.createElement('ul');
-    for (const f of savedFinds) {
-      const li = document.createElement('li');
-      li.style.marginBottom = '8px';
-      const title = escapeHtml(f.titel || '—');
-      const mat = escapeHtml(f.material || '');
+
+    const findsGrid = document.createElement('div');
+    findsGrid.classList.add('saved-finds-grid'); // New class for grid layout
+
+    // Iterate in reverse to show newest first
+    for (let i = savedFinds.length - 1; i >= 0; i--) {
+      const f = savedFinds[i];
+      const title = escapeHtml(f.titel || 'Unbenannter Fund');
+      const description = escapeHtml(f.beschreibung || 'Keine Beschreibung vorhanden.');
+      const material = escapeHtml(f.material || 'N/A');
+      const datierung = escapeHtml(f.datierung || 'N/A');
       const coords = (isFinite(f.latitude) && isFinite(f.longitude)) ? `(${Number(f.latitude).toFixed(6)}, ${Number(f.longitude).toFixed(6)})` : '(keine Koordinaten)';
-      li.innerHTML = `<strong>${title}</strong> ${mat ? '— ' + mat : ''} <span class="muted">${coords}</span>`;
-      if (f.photoDataUrl) {
-        const img = document.createElement('img');
-        img.src = f.photoDataUrl;
-        img.style.maxWidth = '80px';
-        img.style.marginLeft = '8px';
-        li.appendChild(img);
-      }
-      ul.appendChild(li);
+      const zoneLabel = escapeHtml(f.zoneLabel || 'Unbekannte Zone');
+
+      const imageHtml = f.photoDataUrl
+        ? `<img src="${f.photoDataUrl}" alt="${title}" class="saved-find-card-image">`
+        : `<div class="saved-find-card-image-placeholder">Kein Bild</div>`;
+
+      const cardHtml = `
+        <div class="saved-find-card">
+          ${imageHtml}
+          <div class="saved-find-card-content">
+            <h4 class="saved-find-card-title">${title}</h4>
+            <p class="saved-find-card-description">${description.substring(0, 70)}${description.length > 70 ? '...' : ''}</p>
+            <div class="saved-find-card-details">
+              <span><strong>Material:</strong> ${material}</span>
+              <span><strong>Datierung:</strong> ${datierung}</span>
+              <span><strong>Zone:</strong> ${zoneLabel}</span>
+            </div>
+          </div>
+        </div>
+      `;
+      findsGrid.innerHTML += cardHtml;
     }
-    container.appendChild(ul);
+    container.appendChild(findsGrid);
   }
 
   function escapeHtml(s) {

@@ -77,6 +77,12 @@
 .flex-column {
   flex-direction: column;
 }
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
 .justify-center {
   justify-content: center;
 }

@@ -1,0 +1,136 @@
+/* css/components/_funde-eingeben.css */
+
+/* Specific styles for the fundMap */
+.fund-map-container {
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg); /* Use global radius variable for consistency */
+  min-height: 400px;
+  background: var(--card);
+}
+
+/* Adjustments for the text below the map */
+.fund-map-hint {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+/* Styling for the form's action group (buttons and example input) */
+.form-actions-group {
+  margin-top: 24px;
+  display: flex;
+  align-items: center; /* Align items vertically */
+  gap: 10px; /* Consistent gap between elements */
+}
+
+.form-actions-group .input-example-finds {
+  width: 80px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
+
+/* Margin for the saved finds list */
+.saved-finds-list {
+  margin-top: 48px;
+}
+
+/* Specific styling for images within the saved finds list */
+/* #savedList img {
+  max-width: 120px;
+  border-radius: 4px;
+} */ /* This rule is now handled by .saved-find-card-image */
+
+/* Styles for the dynamically added H2 in savedList, if needed */
+#savedList h2 {
+  margin-bottom: 16px; /* Add some space below the heading */
+}
+
+/* Override existing button styles for example finds button for consistent spacing */
+.form-actions-group .btn {
+  margin-left: 0; /* Remove potential default margin from .btn */
+}
+
+/* Styling for the saved finds list (cards) */
+.saved-finds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.saved-find-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease-in-out;
+}
+
+.saved-find-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
+}
+
+.saved-find-card-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  background-color: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.saved-find-card-image-placeholder {
+  width: 100%;
+  height: 150px;
+  background-color: var(--card-darker);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0; /* Match card border radius */
+}
+
+.saved-find-card-content {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.saved-find-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 6px 0;
+}
+
+.saved-find-card-description {
+  font-size: 13px;
+  color: var(--muted);
+  flex-grow: 1;
+  margin-bottom: 10px;
+}
+
+.saved-find-card-details {
+  font-size: 11px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  display: flex;
+  flex-wrap: wrap; /* Allow details to wrap on small screens */
+  gap: 8px; /* Space between detail items */
+}
+
+.saved-find-card-details span {
+  display: block; /* Make each detail span take full width */
+  width: 100%;
+}

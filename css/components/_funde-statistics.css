@@ -1,0 +1,101 @@
+/* css/components/_funde-statistics.css */
+
+/* Page-specific styles for basic presentation */
+.statistics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+.statistic-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease-in-out; /* Add transition for hover effect */
+}
+
+.statistic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.statistic-card h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+.statistic-card p { /* This targets the total count number */
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+.statistic-card ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+}
+.statistic-card li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0; /* Increased padding */
+  border-bottom: 1px solid var(--border); /* Solid border */
+  font-size: 15px;
+  color: var(--muted);
+}
+.statistic-card li:last-child {
+  border-bottom: none;
+}
+.statistic-card li strong {
+  color: var(--text);
+}
+
+/* Styles for the form container */
+.statistics-form-container {
+  max-width: 900px;
+}
+
+/* Styles for the statistics options section */
+.statistics-options {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.statistics-options .checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Enhanced checkbox labels within statistics options */
+.statistics-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between checkbox and text */
+  padding: 8px 12px; /* Add padding to make label clickable area larger */
+  background-color: var(--bg); /* Subtle background for distinction */
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.statistics-options label:hover {
+  background-color: var(--card-darker);
+  border-color: var(--accent);
+}
+
+.statistics-options label input[type="checkbox"] {
+  /* No special styling here, rely on default or global form styles */
+}
+
+/* Style for checked state */
+.statistics-options label input[type="checkbox"]:checked + span { /* Assuming text is wrapped in span */
+  color: var(--accent);
+  font-weight: 600;
+}

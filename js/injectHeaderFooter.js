@@ -83,9 +83,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Strategy B: resolve relative to the current document location
   try {
     attemptUrls.push({
-      header: new URL('partials/header.html', document.baseURI).href,
-      footer: new URL('partials/footer.html', document.baseURI).href,
-      note: 'document-relative'
+      header: '/partials/header.html', 
+      footer: '/partials/footer.html',
+      note: 'document-relative-fixed'
     });
   } catch (e) {
     // ignore
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         injectSection('#footer-container', urls.footer)
       ]);
       // compute siteRoot based on the header URL that loaded successfully
-      const siteRoot = new URL('../', urls.header).href;
+      const siteRoot = document.location.origin + '/';
       const headerEl = document.querySelector('#header-container');
       const footerEl = document.querySelector('#footer-container');
       adjustLinks(headerEl, siteRoot);

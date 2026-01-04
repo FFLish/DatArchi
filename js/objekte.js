@@ -21,11 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const description = escapeHtml(find.beschreibung || 'Keine Beschreibung vorhanden.');
       const material = escapeHtml(find.material || 'N/A');
       const datierung = escapeHtml(find.datierung || 'N/A');
-      const imageSrc = find.photoDataUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIyMDAiIHZpZXdCb3g9IjAgMCAzMDAgMjAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMWYyOTM3Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM5Y2EzYWYiIGZvbnQtc2l6ZT0iMTZweCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkKein Bild vorhandenPC90ZXh0Pjwvc3ZnPg=='; // Placeholder SVG
+      const imageHtml = find.photoDataUrl
+        ? `<img src="${find.photoDataUrl}" alt="${title}" class="find-card-image">`
+        : `<div class="find-card-image-placeholder">Kein Bild vorhanden</div>`;
 
       return `
         <div class="find-card">
-          <img src="${imageSrc}" alt="${title}" class="find-card-image">
+          ${imageHtml}
           <div class="find-card-content">
             <h3 class="find-card-title">${title}</h3>
             <p class="find-card-description">${description.substring(0, 100)}${description.length > 100 ? '...' : ''}</p>

@@ -3,6 +3,7 @@
   /* Light theme variables (default) */
   --bg: #f9fafb;
   --card: #ffffff;
+  --card-darker: #f0f2f5; /* Light mode */
   --text: #1f2937;
   --muted: #6b7280;
   --accent: #3b82f6;
@@ -31,6 +32,7 @@ html[data-theme="dark"] {
   /* Dark professional palette */
   --bg: #111827; /* page background */
   --card: #1f2937; /* cards, panels */
+  --card-darker: #1a222e; /* Dark mode */
   --text: #f9fafb; /* main text */
   --muted: #9ca3af; /* subdued text */
   --accent: #38bdf8; /* primary accent */

@@ -5,112 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Funde Statistik — DatArchi</title>
   <link rel="stylesheet" href="../../css/styles.css">
-  <style>
-    /* Page-specific styles for basic presentation */
-    .statistics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-      margin-top: 32px;
-    }
-    .statistic-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-    }
-    .statistic-card h3 {
-      font-size: 18px;
-      margin-bottom: 16px;
-      color: var(--accent);
-    }
-    .statistic-card p {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--text);
-      margin: 0;
-    }
-    .statistic-card ul {
-      list-style: none;
-      padding: 0;
-      margin-top: 16px;
-    }
-    .statistic-card li {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px dashed var(--border);
-      font-size: 15px;
-      color: var(--muted);
-    }
-    .statistic-card li:last-child {
-      border-bottom: none;
-    }
-    .statistic-card li strong {
-      color: var(--text);
-    }
-  </style>
 </head>
 <body>
 
-  <header class="site-header">
-  <div class="header-inner max-w">
-
-    <a class="brand" href="/index.html" title="DatArchi Startseite">
-      <div class="logo-container">
-        <img src="/partials/icons/trowel.svg" alt="DatArchi Logo" class="logo-icon" />
-      </div>
-      <div class="brand-text">
-        <p class="project-name">DatArchi</p>
-        <p class="project-tagline">Digitale Archäologie</p>
-      </div>
-    </a>
-
-    <div class="header-right-container">
-        <div class="header-static-controls">
-            <button id="theme-toggle" class="btn btn-icon" title="Toggle theme" aria-label="Toggle theme">
-              <img src="/partials/icons/sun.svg" alt="Light mode" class="sun header-icon" />
-              <img src="/partials/icons/moon.svg" alt="Dark mode" class="moon header-icon" />
-            </button>
-        </div>
-
-        <input id="navToggle" class="nav-toggle" type="checkbox" aria-hidden="true">
-        <label for="navToggle" class="nav-toggle-label" aria-hidden="true">
-          <img src="/partials/icons/menu.svg" alt="Menu" class="header-icon nav-icon-menu" />
-          <img src="/partials/icons/arrow-down.svg" alt="Close" class="header-icon nav-icon-clear" />
-        </label>
-
-        <div class="header-menu">
-          <nav class="header-nav" id="mainNav" aria-label="Hauptnavigation">
-            <a href="/index.html" class="nav-link">Start</a>
-            <a href="/pages/map/index.html" class="nav-link">Karte</a>
-            <a href="/pages/funde/index.html" class="nav-link">Funde</a>
-            <a href="/pages/funde/statistics.html" class="nav-link">Statistik</a>
-          </nav>
-
-          <div class="header-controls">
-            <a href="/pages/funde/eingeben.html" class="btn btn-primary btn-sm">Fund erfassen</a>
-          </div>
-        </div>
-    </div>
-
-  </div>
-</header>
+  <div id="header-container"></div>
 
   <main class="main">
-    <div class="form-container" style="max-width: 900px;">
+    <div class="form-container statistics-form-container">
       <h1>Funde Statistik</h1>
       <p class="lead">Eine umfassende Übersicht über Ihre erfassten archäologischen Funde.</p>
 
-      <div id="statistics-options" style="margin-bottom: 24px; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg);">
+      <div id="statistics-options" class="statistics-options">
         <h3>Anzeigeoptionen</h3>
-        <div style="display: flex; flex-wrap: wrap; gap: 16px;">
-          <label><input type="checkbox" data-category="total" checked> Gesamtzahl der Funde</label>
-          <label><input type="checkbox" data-category="material" checked> Funde nach Material</label>
-          <label><input type="checkbox" data-category="dating" checked> Funde nach Datierung</label>
-          <label><input type="checkbox" data-category="photos" checked> Funde mit/ohne Foto</label>
-          <label><input type="checkbox" data-category="zones" checked> Funde nach Zone</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" data-category="total" checked><span> Gesamtzahl der Funde</span></label>
+          <label><input type="checkbox" data-category="material" checked><span> Funde nach Material</span></label>
+          <label><input type="checkbox" data-category="dating" checked><span> Funde nach Datierung</span></label>
+          <label><input type="checkbox" data-category="photos" checked><span> Funde mit/ohne Foto</span></label>
+          <label><input type="checkbox" data-category="zones" checked><span> Funde nach Zone</span></label>
         </div>
       </div>
 
@@ -120,39 +32,12 @@
     </div>
   </main>
 
-  <footer class="site-footer">
-  <div class="footer-inner max-w">
-    <div class="footer-brand">
-      <div class="project-name">DatArchi</div>
-      <p class="muted">Archäologische Datenbank</p>
-    </div>
+  <div id="footer-container"></div>
 
-    <nav class="footer-nav" aria-label="Footer navigation">
-      <a href="/index.html">Startseite</a>
-      <a href="/pages/map/index.html">Karte</a>
-      <a href="/pages/funde/index.html">Funde</a>
-      <a href="/pages/funde/statistics.html">Statistik</a>
-      <a href="/pages/funde/eingeben.html">Fund erfassen</a>
-    </nav>
-
-    <div class="footer-contact">
-      <a class="email" href="mailto:fflishrobotics@gmail.com">fflishrobotics@gmail.com</a>
-      <div class="social">
-        <a href="https://github.com/FFLish/" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://www.instagram.com/fflish_robotics/" target="_blank" rel="noopener">Instagram</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer-bottom">
-    <div class="max-w">&copy; 2025 DatArchi. Alle Rechte vorbehalten.</div>
-  </div>
-</footer>
-
-  <!-- Removed injectHeaderFooter.js for diagnostic -->
-  <script type="module" src="../../js/header/header.js"></script>
-  <script type="module" src="../../js/footer/footer.js"></script>
-  <script type="module" src="../../js/funde/statistics.js"></script>
-  <script type="module" src="../../js/theme-toggle.js"></script>
+  <script type="module" src="/js/injectHeaderFooter.js"></script>
+  <script type="module" src="/js/header/header.js"></script>
+  <script type="module" src="/js/footer/footer.js"></script>
+  <script type="module" src="/js/funde/statistics.js"></script>
+  <script type="module" src="/js/theme-toggle.js"></script>
 </body>
 </html>
