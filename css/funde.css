@@ -113,3 +113,14 @@
 .finds-grid .find-card:nth-child(4) { animation-delay: 0.25s; }
 .finds-grid .find-card:nth-child(5) { animation-delay: 0.3s; }
 .finds-grid .find-card:nth-child(6) { animation-delay: 0.35s; }
+
+/* Styles for the 'eingeben' form container */
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}

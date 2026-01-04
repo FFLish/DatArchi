@@ -16,8 +16,8 @@ select {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background-color: var(--card);
+  border-radius: 8px; /* Softer radius */
+  background-color: var(--bg); /* Blend with page background */
   color: var(--text);
   transition: all 0.2s ease;
 }
@@ -31,7 +31,7 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 6px 18px rgba(79,157,255,0.08);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* More subtle focus shadow */
 } 
 
 textarea {
@@ -41,8 +41,8 @@ textarea {
 
 label {
   display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
+  margin-bottom: 8px; /* Increased spacing */
+  font-weight: 500; /* Lighter font weight */
   color: var(--text);
 }
 
