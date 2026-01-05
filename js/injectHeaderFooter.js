@@ -85,8 +85,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     siteRoot += '/';
   }
 
+  console.log('[Debug] Origin:', document.location.origin);
+  console.log('[Debug] Pathname:', document.location.pathname);
+  console.log('[Debug] Calculated siteRoot:', siteRoot);
+
   const headerUrl = new URL('partials/header.html', siteRoot).href;
   const footerUrl = new URL('partials/footer.html', siteRoot).href;
+
+  console.log('[Debug] Fetching Header from:', headerUrl);
+  console.log('[Debug] Fetching Footer from:', footerUrl);
 
   try {
     await Promise.all([
