@@ -129,7 +129,7 @@
 
 .sidebar details > summary::after {
   content: ''; /* Remove text content */
-  background: url('/partials/icons/plus.svg') no-repeat center center / contain;
+  background: url('../partials/icons/plus.svg') no-repeat center center / contain;
   position: absolute;
   right: 5px;
   top: 50%;
@@ -145,7 +145,7 @@
 }
 
 .sidebar details[open] > summary::after {
-  background: url('/partials/icons/minus.svg') no-repeat center center / contain;
+  background: url('../partials/icons/minus.svg') no-repeat center center / contain;
   transform: translateY(-50%) rotate(0deg); /* No rotation for minus icon */
 }
 

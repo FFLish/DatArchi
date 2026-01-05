@@ -15,7 +15,7 @@ async function injectSection(selector, url) {
   }
 }
 
-function adjustLinks(container, siteRoot) {
+function adjustLinks(container, siteRoot, basePath = '') { 
   if (!container || !siteRoot) return;
   // Ensure siteRoot ends with slash
   if (!siteRoot.endsWith('/')) siteRoot = siteRoot + '/';
@@ -26,7 +26,8 @@ function adjustLinks(container, siteRoot) {
     const href = a.getAttribute('href');
     if (!href) return;
     if (href.startsWith('/') && !href.startsWith('//') && !href.startsWith('mailto:') && !href.startsWith('http')) {
-      a.href = new URL(href.replace(/^\/+/, ''), siteRoot).href;
+      // Prepend basePath to root-relative paths
+      a.href = new URL(basePath + href, siteRoot).href;
     }
   });
 
@@ -35,7 +36,8 @@ function adjustLinks(container, siteRoot) {
     const src = el.getAttribute('src');
     if (!src) return;
     if (src.startsWith('/') && !src.startsWith('//') && !src.startsWith('http')) {
-      el.src = new URL(src.replace(/^\/+/, ''), siteRoot).href;
+      // Prepend basePath to root-relative paths
+      el.src = new URL(basePath + src, siteRoot).href;
     }
   });
 
@@ -44,7 +46,8 @@ function adjustLinks(container, siteRoot) {
     const href = l.getAttribute('href');
     if (!href) return;
     if (href.startsWith('/') && !href.startsWith('//') && !href.startsWith('http')) {
-      l.href = new URL(href.replace(/^\/+/, ''), siteRoot).href;
+      // Prepend basePath to root-relative paths
+      l.href = new URL(basePath + href, siteRoot).href;
     }
   });
 }
@@ -68,31 +71,51 @@ function ensureContainers() {
 document.addEventListener('DOMContentLoaded', async () => {
   ensureContainers();
 
-  // Strategy A: resolve relative to this module (works when served over HTTP)
-  const attemptUrls = [];
-  try {
-    attemptUrls.push({
-      header: new URL('../partials/header.html', import.meta.url).href,
-      footer: new URL('../partials/footer.html', import.meta.url).href,
-      note: 'module-relative'
-    });
-  } catch (e) {
-    // import.meta may not be available in some environments; ignore
-  }
-
-  // Strategy B: resolve relative to the current document location
-  try {
-    attemptUrls.push({
-      header: '/partials/header.html', 
-      footer: '/partials/footer.html',
-      note: 'document-relative-fixed'
-    });
-  } catch (e) {
-    // ignore
-  }
-
   let loaded = false;
   let lastError = null;
+
+  // Determine the correct project root based on protocol
+  let projectRoot = null;
+  if (document.location.protocol === 'file:') {
+    // For file:// protocol, derive projectRoot from script's own URL
+    try {
+      // Assuming injectHeaderFooter.js is at projectRoot/js/injectHeaderFooter.js
+      projectRoot = new URL('../../', import.meta.url).href;
+    } catch (e) {
+      console.error('Failed to determine projectRoot for file:// protocol:', e);
+      projectRoot = document.baseURI; // Fallback, might still be problematic if baseURI is nested
+    }
+  } else {
+    // For http(s):// protocols, projectRoot is simply the origin
+    projectRoot = document.location.origin + '/';
+  }
+
+  // Determine basePath for GitHub Pages or other subdirectories
+  let basePath = '';
+  // Check if it's a GitHub Pages domain (or a local simulation of it)
+  if (document.location.hostname.endsWith('github.io')) {
+    // Assuming repository name is the first segment of the pathname
+    // e.g., /your-repo-name/path/to/page.html -> /your-repo-name
+    const pathSegments = document.location.pathname.split('/');
+    // Use the first non-empty segment after the root '/'
+    if (pathSegments.length > 1 && pathSegments[1] !== '') {
+        // This is a heuristic: assume the first segment after '/' is the repo name if on github.io
+        // or if it's 'DatArchi' when running locally (if testing a subfolder setup)
+        if (pathSegments[1] === 'DatArchi') { // Explicitly check for "DatArchi" or infer better
+            basePath = '/' + pathSegments[1];
+        }
+    }
+  }
+
+
+  const attemptUrls = [];
+
+  // Always use projectRoot for fetching partials
+  attemptUrls.push({
+    header: new URL('partials/header.html', projectRoot).href,
+    footer: new URL('partials/footer.html', projectRoot).href,
+    note: 'calculated-absolute'
+  });
 
   for (const urls of attemptUrls) {
     try {
@@ -100,12 +123,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         injectSection('#header-container', urls.header),
         injectSection('#footer-container', urls.footer)
       ]);
-      // compute siteRoot based on the header URL that loaded successfully
-      const siteRoot = document.location.origin + '/';
+      // The siteRoot for adjusting injected links is the determined projectRoot
+      const siteRootForAdjust = projectRoot; // Using a distinct name for clarity
       const headerEl = document.querySelector('#header-container');
       const footerEl = document.querySelector('#footer-container');
-      adjustLinks(headerEl, siteRoot);
-      adjustLinks(footerEl, siteRoot);
+      adjustLinks(headerEl, siteRootForAdjust, basePath);
+      adjustLinks(footerEl, siteRootForAdjust, basePath);
       loaded = true;
       document.dispatchEvent(new Event('headerFooterReady'));
       break;
