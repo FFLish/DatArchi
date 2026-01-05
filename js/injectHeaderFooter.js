@@ -15,40 +15,27 @@ async function injectSection(selector, url) {
   }
 }
 
-function adjustLinks(container, siteRoot, basePath = '') { 
+function adjustLinks(container, siteRoot) {
   if (!container || !siteRoot) return;
-  // Ensure siteRoot ends with slash
-  if (!siteRoot.endsWith('/')) siteRoot = siteRoot + '/';
 
-  // Adjust anchors and asset links that start with '/'
-  const anchors = container.querySelectorAll('a[href]');
-  anchors.forEach((a) => {
-    const href = a.getAttribute('href');
-    if (!href) return;
-    if (href.startsWith('/') && !href.startsWith('//') && !href.startsWith('mailto:') && !href.startsWith('http')) {
-      // Prepend basePath to root-relative paths
-      a.href = new URL(basePath + href, siteRoot).href;
-    }
-  });
+  const selectors = ['a[href]', '[src]', 'link[href]'];
+  const attributes = ['href', 'src', 'href'];
 
-  const assets = container.querySelectorAll('[src]');
-  assets.forEach((el) => {
-    const src = el.getAttribute('src');
-    if (!src) return;
-    if (src.startsWith('/') && !src.startsWith('//') && !src.startsWith('http')) {
-      // Prepend basePath to root-relative paths
-      el.src = new URL(basePath + src, siteRoot).href;
-    }
-  });
+  selectors.forEach((selector, index) => {
+    const attribute = attributes[index];
+    const elements = container.querySelectorAll(selector);
 
-  const links = container.querySelectorAll('link[href]');
-  links.forEach((l) => {
-    const href = l.getAttribute('href');
-    if (!href) return;
-    if (href.startsWith('/') && !href.startsWith('//') && !href.startsWith('http')) {
-      // Prepend basePath to root-relative paths
-      l.href = new URL(basePath + href, siteRoot).href;
-    }
+    elements.forEach((el) => {
+      const path = el.getAttribute(attribute);
+      if (!path) return;
+
+      // Adjust only root-relative paths, ignore external, mailto, etc.
+      if (path.startsWith('/') && !path.startsWith('//')) {
+        // Remove the leading slash and resolve relative to the siteRoot
+        const relativePath = path.substring(1);
+        el[attribute] = new URL(relativePath, siteRoot).href;
+      }
+    });
   });
 }
 
@@ -65,82 +52,65 @@ function ensureContainers() {
   }
 }
 
-// Try to load header/footer. Many browsers block fetch() when opening files
-// directly (file://). Prefer serving the site over HTTP. This function
-// attempts two fetch strategies and inserts a helpful message on failure.
 document.addEventListener('DOMContentLoaded', async () => {
   ensureContainers();
 
   let loaded = false;
   let lastError = null;
 
-  // Determine the correct project root based on protocol
-  let projectRoot = null;
+  // Determine the correct site root URL
+  let siteRoot;
   if (document.location.protocol === 'file:') {
-    // For file:// protocol, derive projectRoot from script's own URL
-    try {
-      // Assuming injectHeaderFooter.js is at projectRoot/js/injectHeaderFooter.js
-      projectRoot = new URL('../../', import.meta.url).href;
-    } catch (e) {
-      console.error('Failed to determine projectRoot for file:// protocol:', e);
-      projectRoot = document.baseURI; // Fallback, might still be problematic if baseURI is nested
-    }
+    // For local file viewing, root is two levels up from this script
+    siteRoot = new URL('../../', import.meta.url).href;
   } else {
-    // For http(s):// protocols, projectRoot is simply the origin
-    projectRoot = document.location.origin + '/';
-  }
-
-  // Determine basePath for GitHub Pages or other subdirectories
-  let basePath = '';
-  // Check if it's a GitHub Pages domain (or a local simulation of it)
-  if (document.location.hostname.endsWith('github.io')) {
-    // Assuming repository name is the first segment of the pathname
-    // e.g., /your-repo-name/path/to/page.html -> /your-repo-name
-    const pathSegments = document.location.pathname.split('/');
-    // Use the first non-empty segment after the root '/'
-    if (pathSegments.length > 1 && pathSegments[1] !== '') {
-        // This is a heuristic: assume the first segment after '/' is the repo name if on github.io
-        // or if it's 'DatArchi' when running locally (if testing a subfolder setup)
-        if (pathSegments[1] === 'DatArchi') { // Explicitly check for "DatArchi" or infer better
-            basePath = '/' + pathSegments[1];
-        }
+    // For http(s) protocols, handle potential subdirectories (like GitHub Pages)
+    const origin = document.location.origin;
+    const pathname = document.location.pathname;
+    
+    // Heuristic for GitHub Pages: if path contains repo name, use it as base
+    const repoName = 'DatArchi'; // Your repository name
+    const ghPagesBasePath = `/${repoName}/`;
+    
+    if (pathname.startsWith(ghPagesBasePath)) {
+      siteRoot = `${origin}${ghPagesBasePath}`;
+    } else {
+      // Otherwise, assume it's served from the root
+      siteRoot = origin + '/';
     }
   }
 
+  // Ensure siteRoot always ends with a slash
+  if (!siteRoot.endsWith('/')) {
+    siteRoot += '/';
+  }
 
-  const attemptUrls = [];
+  const headerUrl = new URL('partials/header.html', siteRoot).href;
+  const footerUrl = new URL('partials/footer.html', siteRoot).href;
 
-  // Always use projectRoot for fetching partials
-  attemptUrls.push({
-    header: new URL('partials/header.html', projectRoot).href,
-    footer: new URL('partials/footer.html', projectRoot).href,
-    note: 'calculated-absolute'
-  });
+  try {
+    await Promise.all([
+      injectSection('#header-container', headerUrl),
+      injectSection('#footer-container', footerUrl)
+    ]);
 
-  for (const urls of attemptUrls) {
-    try {
-      await Promise.all([
-        injectSection('#header-container', urls.header),
-        injectSection('#footer-container', urls.footer)
-      ]);
-      // The siteRoot for adjusting injected links is the determined projectRoot
-      const siteRootForAdjust = projectRoot; // Using a distinct name for clarity
-      const headerEl = document.querySelector('#header-container');
-      const footerEl = document.querySelector('#footer-container');
-      adjustLinks(headerEl, siteRootForAdjust, basePath);
-      adjustLinks(footerEl, siteRootForAdjust, basePath);
-      loaded = true;
-      document.dispatchEvent(new Event('headerFooterReady'));
-      break;
-    } catch (err) {
-      lastError = err;
-      console.warn('injectHeaderFooter: attempt failed (', urls.note, '):', err);
-    }
+    const headerEl = document.querySelector('#header-container');
+    const footerEl = document.querySelector('#footer-container');
+
+    // Adjust links inside the newly injected header and footer
+    adjustLinks(headerEl, siteRoot);
+    adjustLinks(footerEl, siteRoot);
+
+    loaded = true;
+    document.dispatchEvent(new Event('headerFooterReady'));
+
+  } catch (err) {
+    lastError = err;
+    console.warn('injectHeaderFooter: failed to load partials:', err);
   }
 
   if (!loaded) {
     console.error('injectHeaderFooter: failed to load header/footer. See earlier warnings.', lastError);
-    // Insert a small visible hint so the user sees something on the page
     const header = document.querySelector('#header-container');
     const footer = document.querySelector('#footer-container');
     const message = `
