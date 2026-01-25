@@ -12,7 +12,7 @@ let fundorteMap = null;
 let mapMarkers = {};
 
 /**
- * Initialisiere Leaflet Map mit Ausgrabungsstätte-Bild (90 Grad gedreht)
+ * Initialisiere Leaflet Map mit Ausgrabungsstätte-Bild (horizontal, vollständig)
  */
 function initializeMap() {
     if (fundorteMap) {
@@ -22,27 +22,28 @@ function initializeMap() {
     const mapContainer = document.getElementById('fundorte-map');
     if (!mapContainer) return;
     
-    // Drehe den Map Container 90 Grad
-    mapContainer.style.transform = 'rotate(90deg)';
+    // Entferne Rotation - Bild ist horizontal
+    mapContainer.style.transform = 'none';
     mapContainer.style.transformOrigin = 'center';
     
     // Erstelle Karte mit Bild als Layer
     fundorteMap = L.map('fundorte-map', {
         crs: L.CRS.Simple,
-        minZoom: -2,
-        maxZoom: 4
+        minZoom: -5,
+        maxZoom: 4,
+        zoom: 0
     });
     
-    // Definiere Bildgrenzen (0-100, 0-100) für Koordinaten-System
-    // Nach Rotation: Vertausche Breite und Höhe
-    const bounds = L.latLngBounds([[0, 0], [100, 100]]);
+    // Definiere Bildgrenzen - fülle gesamten Raum aus
+    // Verwende asymmetrische Bounds um horizontales Format zu erzeugen
+    const bounds = L.latLngBounds([[0, 0], [60, 100]]);
     
     // Füge Ausgrabungsstätte-Bild als Layer hinzu
-    const imageUrl = '/partials/images/ausgrabungsstätte.jpg';
+    const imageUrl = '../../partials/images/ausgrabungsstätte.jpg';
     L.imageOverlay(imageUrl, bounds).addTo(fundorteMap);
     
-    // Setze Kartenausschnitt auf Bild
-    fundorteMap.fitBounds(bounds);
+    // Setze Kartenausschnitt auf Bild mit Padding
+    fundorteMap.fitBounds(bounds, { padding: [0, 0] });
     
     mapMarkers = {};
 }
