@@ -1,16 +1,16 @@
 // js/funde/statistics.js
+import * as db from '../database.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const FINDS_STORAGE_KEY = 'datarchi.funde.v1';
+document.addEventListener('DOMContentLoaded', async () => { // Make DOMContentLoaded async
   const statisticsOverview = document.getElementById('statistics-overview');
   const categoryCheckboxes = document.querySelectorAll('#statistics-options input[type="checkbox"]');
+  const statsAllSitesCheckbox = document.getElementById('statsAllSites');
 
   function escapeHtml(s) {
-    return String(s || '').replace(/[&<"'வுகளை]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&#39;'}[c]));
   }
 
   // --- Render Functions for each Statistic Card ---
-
   function renderTotalFindsCard(finds) {
     return `
       <div class="statistic-card" data-category="total">
@@ -45,16 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
       return acc;
     }, {});
 
-    // Optimized dating sort: try to extract year ranges for better sorting
     const sortedDatings = Object.entries(datingCounts).sort(([datingA], [datingB]) => {
       const parseYear = (s) => {
         const match = s.match(/(\d{1,4})\s*(v\.\s*Chr\.|n\.\s*Chr\.)?/);
         if (match) {
           let year = parseInt(match[1], 10);
-          if (match[2] && match[2].includes('v. Chr.')) year = -year; // BC dates as negative
+          if (match[2] && match[2].includes('v. Chr.')) year = -year;
           return year;
         }
-        return 999999; // Unknown dates at the end
+        return 999999;
       };
       const yearA = parseYear(datingA);
       const yearB = parseYear(datingB);
@@ -86,10 +85,21 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  function renderZoneCard(finds) {
+  async function renderZoneCard(finds) { // Made async
+    let sites = [];
+    if (statsAllSitesCheckbox?.checked ?? false) {
+        sites = await db.getSites(); // Await getSites if needed
+    }
+
     const zoneCounts = finds.reduce((acc, find) => {
-      const zone = escapeHtml(find.zoneLabel || 'Unbekannte Zone');
-      acc[zone] = (acc[zone] || 0) + 1;
+      let zoneLabel = escapeHtml(find.zoneLabel || 'Unbekannte Zone');
+      if ((statsAllSitesCheckbox?.checked ?? false) && find.siteId) {
+          const findSite = sites.find(s => s.id === find.siteId); // Use fetched sites
+          if (findSite) {
+              zoneLabel += ` (${escapeHtml(findSite.name)})`;
+          }
+      }
+      acc[zoneLabel] = (acc[zoneLabel] || 0) + 1;
       return acc;
     }, {});
     const sortedZones = Object.entries(zoneCounts).sort(([,a], [,b]) => b - a);
@@ -105,8 +115,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Main Render Function ---
-  function renderStatistics() {
-    const finds = JSON.parse(localStorage.getItem(FINDS_STORAGE_KEY)) || [];
+  async function renderStatistics() { // Make async
+    const activeSite = await db.getActiveSite();
+    if (!activeSite && !(statsAllSitesCheckbox?.checked ?? false)) {
+        statisticsOverview.innerHTML = `<p style="text-align: center; grid-column: 1 / -1;">Keine aktive Ausgrabungsstätte ausgewählt. Bitte gehen Sie zur <a href="../sites/index.html">Stättenverwaltung</a>.</p>`;
+        return;
+    }
+
+    const finds = (statsAllSitesCheckbox?.checked ?? false) ? await db.getFinds('all') : await db.getFinds('active');
     statisticsOverview.innerHTML = ''; // Clear previous cards
 
     if (finds.length === 0) {
@@ -114,26 +130,30 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Determine which cards to render based on checkbox state
     const enabledCategories = Array.from(categoryCheckboxes)
       .filter(checkbox => checkbox.checked)
       .map(checkbox => checkbox.dataset.category);
 
-    const cards = {
-      total: renderTotalFindsCard(finds),
-      material: renderMaterialCard(finds),
-      dating: renderDatingCard(finds),
-      photos: renderPhotoCard(finds),
-      zones: renderZoneCard(finds)
-    };
-
-    enabledCategories.forEach(category => {
-      if (cards[category]) {
-        statisticsOverview.innerHTML += cards[category];
-      }
+    // Collect all card promises
+    const cardPromises = enabledCategories.map(async category => {
+        switch (category) {
+            case 'total': return renderTotalFindsCard(finds);
+            case 'material': return renderMaterialCard(finds);
+            case 'dating': return renderDatingCard(finds);
+            case 'photos': return renderPhotoCard(finds);
+            case 'zones': return await renderZoneCard(finds); // Await renderZoneCard
+            default: return '';
+        }
     });
 
-    // If no categories are selected, show a message
+    // Wait for all cards to be rendered
+    const renderedCards = await Promise.all(cardPromises);
+
+    renderedCards.forEach(cardHtml => {
+        statisticsOverview.innerHTML += cardHtml;
+    });
+
+
     if (enabledCategories.length === 0) {
       statisticsOverview.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Wählen Sie Kategorien oben aus, um Statistiken anzuzeigen.</p>';
     }
@@ -143,7 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
   categoryCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', renderStatistics);
   });
+  if (statsAllSitesCheckbox) {
+      statsAllSitesCheckbox.addEventListener('change', renderStatistics);
+  }
 
   // Initial render on page load
-  renderStatistics();
+  await renderStatistics(); // Await initial render
 });

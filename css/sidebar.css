@@ -2,13 +2,22 @@
 .sidebar {
   width: 220px;
   background: var(--card);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 20px;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
   height: fit-content;
   position: sticky;
-  top: 24px; /* reduced so sidebar stays visible under injected header */
+  top: 100px;
+  transition: var(--transition-fast);
+}
+
+html[data-theme="dark"] .sidebar {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
 
 
@@ -23,46 +32,31 @@
 }
 
 .zone-list li {
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: var(--radius-md);
   color: var(--text);
   cursor: pointer;
-  border: 2px solid transparent;
-  transition: var(--transition);
+  border: 1px solid transparent;
+  transition: var(--transition-fast);
   font-weight: 500;
   position: relative;
   overflow: hidden;
-}
-
-.zone-list li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 3px;
-  background: var(--accent);
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: var(--transition);
+  background: transparent;
+  font-size: 0.95rem;
 }
 
 .zone-list li:hover {
-  background: rgba(56, 189, 248, 0.1);
-  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(244, 164, 96, 0.1);
+  border-color: var(--accent);
   transform: translateX(4px);
-  box-shadow: var(--shadow-sm);
 }
 
 .zone-list li.active {
-  background: linear-gradient(135deg, rgba(43, 108, 176, 0.1), rgba(56, 161, 105, 0.1));
+  background: rgba(244, 164, 96, 0.15);
   color: var(--accent);
   border-color: var(--accent);
-  font-weight: 700;
+  font-weight: 600;
 }
-
-.zone-list li.active::before {
-  transform: scaleY(1);
 }
 
 /* Centered zones panel (modal-like) */

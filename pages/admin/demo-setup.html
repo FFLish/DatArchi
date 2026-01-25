@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Setup - DatArchi Admin</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .info-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #22c55e;
+            line-height: 1.6;
+        }
+        .demo-details {
+            background: #f8faff;
+            border: 1px solid #e0e7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #333;
+        }
+        .demo-details h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+            font-size: 14px;
+        }
+        .demo-details ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .demo-details li {
+            margin-bottom: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+        }
+        .btn-secondary {
+            background: #e8eef7;
+            color: #667eea;
+        }
+        .btn-secondary:hover {
+            background: #dde6f0;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        #status.success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #22c55e;
+            display: block;
+        }
+        #status.error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #ef4444;
+            display: block;
+        }
+        #status.loading {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+            display: block;
+        }
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #0369a1;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Demo Setup</h1>
+        <p class="subtitle">DatArchi Demo-Daten erstellen</p>
+
+        <div class="info-box">
+            ℹ️ Diese Seite erstellt Demo-Benutzer, öffentliche Projekte und archäologische Funde zur Demonstration der Plattform.
+        </div>
+
+        <div class="demo-details">
+            <h3>📋 Was wird erstellt:</h3>
+            <ul>
+                <li><strong>3 Demo-Benutzer</strong> mit unterschiedlichen Rollen</li>
+                <li><strong>4 öffentliche Projekte</strong> mit realistische Ausgrabungsdaten</li>
+                <li><strong>17 archäologische Funde</strong> mit Beschreibungen und Koordinaten</li>
+                <li><strong>Vollständige Dokumentation</strong> aller Funde</li>
+            </ul>
+        </div>
+
+        <div class="demo-details">
+            <h3>👥 Demo-Benutzer-Zugänge:</h3>
+            <ul>
+                <li><strong>demo1@datarchi.de</strong> - Dr. Maria Schmidt (Archäologin)</li>
+                <li><strong>demo2@datarchi.de</strong> - Prof. Hans Müller (Professor)</li>
+                <li><strong>demo3@datarchi.de</strong> - Dr. Anna Weber (Studentin)</li>
+            </ul>
+            <p style="margin-top: 10px; color: #666; font-size: 12px;">
+                Passwort für alle: <code>Demo123456!</code>
+            </p>
+        </div>
+
+        <button class="btn-primary" onclick="setupDemo()" id="setupBtn">
+            ✨ Demo-Daten erstellen
+        </button>
+        <button class="btn-secondary" onclick="location.href='/'">
+            ← Zurück zur Startseite
+        </button>
+
+        <div id="status"></div>
+    </div>
+
+    <script type="module">
+        import { setupDemoData } from '/js/demo-setup.js';
+
+        window.setupDemo = async function() {
+            const btn = document.getElementById('setupBtn');
+            const status = document.getElementById('status');
+
+            btn.disabled = true;
+            status.className = 'loading';
+            status.innerHTML = '<span class="spinner"></span>Erstelle Demo-Daten...';
+
+            try {
+                const result = await setupDemoData();
+                
+                if (result.success) {
+                    status.className = 'success';
+                    status.innerHTML = `
+                        ✅ <strong>Erfolg!</strong><br>
+                        Demo-Daten wurden erfolgreich erstellt.<br><br>
+                        <strong>Teste die Demo:</strong><br>
+                        1. <a href="/pages/public-projects/index.html" style="color: inherit; text-decoration: underline;">Öffentliche Projekte anschauen</a><br>
+                        2. <a href="/pages/profile/index.html" style="color: inherit; text-decoration: underline;">Mit demo1@datarchi.de einloggen</a><br>
+                        Passwort: Demo123456!
+                    `;
+                    btn.disabled = false;
+                    btn.textContent = '✅ Fertig! Neuerliche Daten werden übersprungen.';
+                } else {
+                    status.className = 'error';
+                    status.innerHTML = `❌ Fehler: ${result.error}`;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                status.className = 'error';
+                status.innerHTML = `❌ Fehler: ${error.message}`;
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>

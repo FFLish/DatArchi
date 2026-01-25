@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DatArchi - VRE Übersicht</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header .tagline {
+            font-size: 24px;
+            opacity: 0.95;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background: white;
+            margin: 40px 0;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 i {
+            font-size: 28px;
+        }
+
+        .section h3 {
+            font-size: 20px;
+            color: #764ba2;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section h3:first-child {
+            margin-top: 0;
+        }
+
+        .section h3 i {
+            font-size: 18px;
+        }
+
+        .section ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .section li {
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .section li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .nested-list {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+
+        .nested-list li:before {
+            content: "◦";
+            color: #764ba2;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .header .tagline {
+                font-size: 18px;
+            }
+
+            .section {
+                padding: 25px;
+            }
+
+            .section h2 {
+                font-size: 24px;
+            }
+
+            .section h3 {
+                font-size: 16px;
+            }
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .role-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+
+        .role-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .footer {
+            background: #333;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .toc {
+            background: #f0f4ff;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .toc h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .toc ul {
+            columns: 2;
+            gap: 20px;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            line-height: 1.8;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .toc ul {
+                columns: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Virtual Research Environment (VRE)</h1>
+        <div class="tagline">„GitHub für Archäologie"</div>
+        <p>Eine webbasierte, kollaborative Forschungsplattform speziell für archäologische Daten</p>
+    </div>
+
+    <div class="container">
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3><i class="fas fa-list"></i> Schnellnavigation</h3>
+            <ul>
+                <li><a href="#grundidee">Grundidee</a></li>
+                <li><a href="#problemstellung">Problemstellung</a></li>
+                <li><a href="#zielsetzung">Zielsetzung</a></li>
+                <li><a href="#github-prinzip">GitHub-Prinzip</a></li>
+                <li><a href="#nutzerkonten">Nutzerkonten</a></li>
+                <li><a href="#ausgrabung">Ausgrabungsstätten</a></li>
+                <li><a href="#fundverwaltung">Fundverwaltung</a></li>
+                <li><a href="#karten">Karten & Orte</a></li>
+                <li><a href="#datenformate">Datenformate</a></li>
+                <li><a href="#suche">Suche & Filter</a></li>
+                <li><a href="#zusammenarbeit">Zusammenarbeit</a></li>
+                <li><a href="#rechte">Zugriffsrechte</a></li>
+                <li><a href="#nachvollziehbarkeit">Nachvollziehbarkeit</a></li>
+                <li><a href="#technik">Technische Umsetzung</a></li>
+                <li><a href="#vorteile">Vorteile</a></li>
+                <li><a href="#zukunft">Zukunft</a></li>
+            </ul>
+        </div>
+
+        <!-- Grundidee -->
+        <div class="section" id="grundidee">
+            <h2><i class="fas fa-lightbulb"></i> Grundidee</h2>
+            <ul>
+                <li>Webbasierte Virtual Research Environment (VRE)</li>
+                <li>Digitale Forschungsplattform nach dem Prinzip von GitHub</li>
+                <li>Speziell für archäologische Forschung optimiert</li>
+                <li>Zentrale, strukturierte und kollaborative Arbeitsumgebung</li>
+            </ul>
+        </div>
+
+        <!-- Problemstellung -->
+        <div class="section" id="problemstellung">
+            <h2><i class="fas fa-exclamation-circle"></i> Problemstellung</h2>
+            <div class="highlight-box">
+                <strong>Die Herausforderungen archäologischer Forschung:</strong>
+            </div>
+            <ul>
+                <li>Große Mengen heterogener archäologischer Forschungsdaten</li>
+                <li>Daten liegen verteilt auf verschiedenen Systemen</li>
+                <li>Unterschiedliche Strukturen je Projekt oder Lehrstuhl</li>
+                <li>Schlechte Auffindbarkeit von Funden und Berichten</li>
+                <li>Erschwerte projektübergreifende Zusammenarbeit</li>
+                <li>Hoher Zeitaufwand für Abstimmung und Datensuche</li>
+            </ul>
+        </div>
+
+        <!-- Zielsetzung -->
+        <div class="section" id="zielsetzung">
+            <h2><i class="fas fa-target"></i> Zielsetzung</h2>
+            <ul>
+                <li>Zentrale Plattform für archäologische Forschungsdaten</li>
+                <li>Projektübergreifende Zusammenarbeit ermöglichen</li>
+                <li>Einheitliche Struktur nach wissenschaftlichen Standards</li>
+                <li>Niedrige Einstiegshürde ohne technische Vorkenntnisse</li>
+                <li>Nachhaltige Sicherung von Forschungsdaten</li>
+            </ul>
+        </div>
+
+        <!-- GitHub-Prinzip -->
+        <div class="section" id="github-prinzip">
+            <h2><i class="fas fa-code-branch"></i> GitHub-Prinzip für Archäologie</h2>
+            <p>DatArchi übernimmt das bewährte GitHub-Konzept und adaptiert es für archäologische Arbeitsweisen:</p>
+            <ul>
+                <li>Jeder Archäologe besitzt einen eigenen Account</li>
+                <li>Ausgrabungsstätten entsprechen Projekten (Repositories)</li>
+                <li>Funde entsprechen Datensätzen innerhalb eines Projekts</li>
+                <li>Beiträge sind klar einzelnen Personen zugeordnet</li>
+                <li>Öffentliche und private Projekte möglich</li>
+                <li>Zusammenarbeit durch Einladen weiterer Nutzer</li>
+            </ul>
+        </div>
+
+        <!-- Nutzerkonten -->
+        <div class="section" id="nutzerkonten">
+            <h2><i class="fas fa-user-circle"></i> Nutzerkonten</h2>
+            <ul>
+                <li>Registrierung für Archäologen, Studierende, Institute</li>
+                <li>Persönliche Profile mit Forschungsinteressen</li>
+                <li>Übersicht über eigene und beteiligte Projekte</li>
+                <li>Klare Zuordnung aller Beiträge</li>
+            </ul>
+        </div>
+
+        <!-- Ausgrabungsstätten -->
+        <div class="section" id="ausgrabung">
+            <h2><i class="fas fa-map-marker-alt"></i> Ausgrabungsstätten (Projekte / Repositories)</h2>
+            
+            <h3><i class="fas fa-cog"></i> Verwaltung</h3>
+            <ul>
+                <li>Anlegen neuer Ausgrabungsstätten durch Nutzer</li>
+                <li>Festlegen von öffentlich oder privat</li>
+                <li>Einladung weiterer Archäologen</li>
+                <li>Verwaltung mehrerer Ausgrabungsstätten gleichzeitig</li>
+            </ul>
+
+            <h3><i class="fas fa-shield-alt"></i> Rollenverteilung</h3>
+            <div class="roles-grid">
+                <div class="role-card">
+                    <strong><i class="fas fa-crown"></i> Projektbesitzer</strong>
+                    <p>Vollständige Kontrolle über das Projekt</p>
+                </div>
+                <div class="role-card">
+                    <strong><i class="fas fa-user-check"></i> Mitwirkende</strong>
+                    <p>Bearbeitung und Verwaltung von Inhalten</p>
+                </div>
+                <div class="role-card">
+                    <strong><i class="fas fa-eye"></i> Leserechte</strong>
+                    <p>Nur Ansicht ohne Bearbeitungsmöglichkeiten</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fundverwaltung -->
+        <div class="section" id="fundverwaltung">
+            <h2><i class="fas fa-box"></i> Fundverwaltung</h2>
+            <ul>
+                <li>Anlegen einzelner Funde innerhalb einer Ausgrabungsstätte</li>
+                <li>Eindeutige Fund-ID für jedes Objekt</li>
+                <li>Zuordnung zu Ausgrabungsstätte und Zone</li>
+                <li>Kategorien und Materialien für Klassifikation</li>
+                <li>Verknüpfung mehrerer Funde untereinander</li>
+                <li>Ergänzung durch Berichte und Anmerkungen</li>
+            </ul>
+        </div>
+
+        <!-- Karten und Ortsfunktionen -->
+        <div class="section" id="karten">
+            <h2><i class="fas fa-map"></i> Karten- und Ortsfunktionen</h2>
+            <ul>
+                <li>Interaktive Karte pro Ausgrabungsstätte</li>
+                <li>Hochladen von Orthofotos</li>
+                <li>Setzen von Fundpunkten per Klick</li>
+                <li>Anzeige von Koordinaten</li>
+                <li>Räumliche Visualisierung aller Funde</li>
+                <li>Projektübergreifende Kartenansicht öffentlicher Projekte</li>
+            </ul>
+        </div>
+
+        <!-- Datenformate und Inhalte -->
+        <div class="section" id="datenformate">
+            <h2><i class="fas fa-file-alt"></i> Datenformate und Inhalte</h2>
+            
+            <h3><i class="fas fa-image"></i> Unterstützte Formate</h3>
+            <ul>
+                <li>Fotos</li>
+                <li>Orthofotos</li>
+                <li>3D-Modelle</li>
+                <li>Textberichte</li>
+                <li>Forschungsnotizen</li>
+                <li>Verknüpfte Dokumente</li>
+            </ul>
+
+            <h3><i class="fas fa-sitemap"></i> Datenstruktur</h3>
+            <ul>
+                <li>Einheitliche Struktur nach wissenschaftlichen Standards</li>
+                <li>Nutzung von CIDOC-CRM-Thesauri für Kategorisierung</li>
+                <li>Verknüpfung von:
+                    <ul class="nested-list">
+                        <li>Funden</li>
+                        <li>Orten</li>
+                        <li>Forschern</li>
+                        <li>Dokumenten</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Suche und Filter -->
+        <div class="section" id="suche">
+            <h2><i class="fas fa-search"></i> Suche und Filter</h2>
+            
+            <h3><i class="fas fa-magnifying-glass"></i> Suchmöglichkeiten</h3>
+            <ul>
+                <li>Suche nach Funden</li>
+                <li>Suche nach Ausgrabungsstätten</li>
+                <li>Suche nach Forschern</li>
+            </ul>
+
+            <h3><i class="fas fa-filter"></i> Filteroptionen</h3>
+            <ul>
+                <li>Filter nach Kategorie</li>
+                <li>Filter nach Material</li>
+                <li>Filter nach Zone</li>
+                <li>Filter nach Epoche</li>
+            </ul>
+
+            <h3><i class="fas fa-eye"></i> Darstellungsoptionen</h3>
+            <ul>
+                <li>Listenansicht</li>
+                <li>Kartenansicht</li>
+            </ul>
+        </div>
+
+        <!-- Zusammenarbeit -->
+        <div class="section" id="zusammenarbeit">
+            <h2><i class="fas fa-users"></i> Zusammenarbeit</h2>
+            <ul>
+                <li>Kommentarfunktion bei Funden</li>
+                <li>Kommentarfunktion bei Dokumenten</li>
+                <li>Projektinterner Chat</li>
+                <li>Direkte Diskussion am Objekt</li>
+                <li>Gleichzeitiges Arbeiten mehrerer Nutzer</li>
+            </ul>
+        </div>
+
+        <!-- Zugriffs- und Rechteverwaltung -->
+        <div class="section" id="rechte">
+            <h2><i class="fas fa-lock"></i> Zugriffs- und Rechteverwaltung</h2>
+            <ul>
+                <li>Öffentliche Projekte für Wissensaustausch</li>
+                <li>Private Projekte für vertrauliche Forschung</li>
+                <li>Nutzer- und gruppenspezifische Rechte</li>
+                <li>Kontrolle über Lesen, Bearbeiten und Verwalten</li>
+            </ul>
+        </div>
+
+        <!-- Nachvollziehbarkeit -->
+        <div class="section" id="nachvollziehbarkeit">
+            <h2><i class="fas fa-history"></i> Nachvollziehbarkeit</h2>
+            <ul>
+                <li>Historie aller Änderungen</li>
+                <li>Transparente Dokumentation von Beiträgen</li>
+                <li>Wissenschaftliche Nachprüfbarkeit</li>
+                <li>Langfristige Projektarbeit möglich</li>
+            </ul>
+        </div>
+
+        <!-- Technische Umsetzung -->
+        <div class="section" id="technik">
+            <h2><i class="fas fa-laptop-code"></i> Technische Umsetzung</h2>
+            
+            <h3><i class="fas fa-flask"></i> Prototyp (aktuell)</h3>
+            <ul>
+                <li>HTML für Struktur</li>
+                <li>CSS für Styling</li>
+                <li>JavaScript für Interaktivität</li>
+                <li>Firebase für Cloud-Speicherung</li>
+                <li>Cloud-basiert für gleichzeitigen Zugriff</li>
+                <li>Rapid-Prototyping-Prinzip mit frühem Feedback</li>
+                <li>Schnelle Iterationen basierend auf Nutzer-Feedback</li>
+            </ul>
+
+            <h3><i class="fas fa-rocket"></i> Geplante Endlösung</h3>
+            <ul>
+                <li>HTML für Struktur</li>
+                <li>CSS für Styling</li>
+                <li>JavaScript für Frontend</li>
+                <li>Backend mit PHP</li>
+                <li>MySQL-Datenbank für persistente Speicherung</li>
+            </ul>
+        </div>
+
+        <!-- Vorteile -->
+        <div class="section" id="vorteile">
+            <h2><i class="fas fa-star"></i> Vorteile von DatArchi</h2>
+            <ul>
+                <li><strong>Zeitersparnis:</strong> Schnelle Auffindbarkeit von Forschungsdaten</li>
+                <li><strong>Bessere Datenqualität:</strong> Strukturierte und standardisierte Speicherung</li>
+                <li><strong>Einfachere Zusammenarbeit:</strong> Teams können nahtlos zusammenarbeiten</li>
+                <li><strong>Hohe Transparenz:</strong> Klare Zuordnung aller Arbeitsschritte</li>
+                <li><strong>Langfristige Sicherung:</strong> Cloud-basierte Archivierung von Forschungsdaten</li>
+                <li><strong>Wissenschaftliche Nachprüfbarkeit:</strong> Vollständige Dokumentation aller Änderungen</li>
+            </ul>
+        </div>
+
+        <!-- Besonderheit -->
+        <div class="section">
+            <h2><i class="fas fa-gem"></i> Besonderheit von DatArchi</h2>
+            <ul>
+                <li>Übertragung eines bewährten Softwarekonzepts (GitHub) auf Archäologie</li>
+                <li>Verbindung von klassischer Forschung und moderner Technologie</li>
+                <li>Förderung offener, kollaborativer Wissenschaft</li>
+                <li>Speziell für die Bedürfnisse von Archäologen entwickelt</li>
+            </ul>
+        </div>
+
+        <!-- Entwicklungsprozess -->
+        <div class="section">
+            <h2><i class="fas fa-brain"></i> Entwicklungsprozess</h2>
+            
+            <h3><i class="fas fa-people-group"></i> Expert-Feedback</h3>
+            <ul>
+                <li><strong>Anthony Barrett:</strong> Archäologische Arbeitsweise</li>
+                <li><strong>José Braga:</strong> Probleme bei Ausgrabungsstätten</li>
+                <li><strong>Diamantis Panagiotopoulos:</strong> GitHub-Idee</li>
+            </ul>
+
+            <h3><i class="fas fa-tasks"></i> Prozessschritte</h3>
+            <ul>
+                <li>Brainstorming zu Archäologie und bestehenden Problemen</li>
+                <li>Gespräche mit Experten und Forschern</li>
+                <li>Austausch mit Studierenden</li>
+                <li>Mehrere Feedback- und Verbesserungszyklen</li>
+                <li>Iterative Entwicklung basierend auf Nutzer-Feedback</li>
+            </ul>
+        </div>
+
+        <!-- Zukunft -->
+        <div class="section" id="zukunft">
+            <h2><i class="fas fa-globe"></i> Projektziel für die Zukunft</h2>
+            <div class="highlight-box">
+                <strong>Vision: DatArchi als internationale Forschungsplattform</strong>
+            </div>
+            <ul>
+                <li>Internationale Forschungsplattform für digitale Archäologie</li>
+                <li>Standardwerkzeug für archäologische Datenmanagement</li>
+                <li>Nachhaltiger Wissensaustausch zwischen Forschern weltweit</li>
+                <li>Stärkung der globalen wissenschaftlichen Zusammenarbeit</li>
+                <li>Langfristige Sicherung archäologischer Erkenntnisse</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024-2026 DatArchi - Virtual Research Environment für Archäologie</p>
+    </div>
+
+    <script type="module" src="../js/injectHeaderFooter.js"></script>
+    <script type="module" src="../js/auth-guard.js"></script>
+</body>
+</html>

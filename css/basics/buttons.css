@@ -1,79 +1,80 @@
 /* Button Styles */
 .btn {
   display: inline-block;
-  padding: 10px 16px;
+  padding: 11px 24px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-fast);
   font-size: 14px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.3px;
 }
 
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(2,6,12,0.45);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 .btn:active {
   transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 } 
-
-/* Primary hover uses a slightly darker accent */
-.btn-primary:hover {
-  filter: brightness(0.92);
-}
 
 /* Primary Button */
 .btn-primary {
-  background-color: var(--accent);
+  background: var(--accent);
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #1e5394;
+  background: #ff9533;
 }
 
 /* Secondary Button */
 .btn-secondary {
-  background-color: var(--muted);
-  color: white;
+  background: #cbd5e1;
+  color: var(--text);
 }
 
 .btn-secondary:hover {
-  background-color: #4b5563;
+  background: #94a3b8;
+  color: white;
 }
 
 /* Success Button */
 .btn-success {
-  background-color: var(--success);
+  background: var(--success);
   color: white;
 }
 
 .btn-success:hover {
-  background-color: #059669;
+  background: #7ac800;
 }
 
 /* Danger Button */
 .btn-danger {
-  background-color: var(--danger);
+  background: var(--danger);
   color: white;
 }
 
 .btn-danger:hover {
-  background-color: #dc2626;
+  background: #c75c0a;
 }
 
 /* Outline Button */
 .btn-outline {
-  background-color: transparent;
+  background: transparent;
   border: 2px solid var(--accent);
   color: var(--accent);
 }
 
 .btn-outline:hover {
-  background-color: var(--accent);
+  background: var(--accent);
   color: white;
 }
 

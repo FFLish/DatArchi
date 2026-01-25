@@ -1,58 +1,570 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DatArchi</title>
-  <link rel="stylesheet" href="/DatArchi/css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f97316">
+  <meta name="description" content="DatArchi - Virtual Research Environment für Archäologie. Zentrale Datenverwaltung, Zusammenarbeit und Analyse für archäologische Forschung.">
+  <meta name="keywords" content="Archäologie, Forschung, Datenmanagement, Zusammenarbeit, Virtual Research Environment">
+  <title>DatArchi - Virtual Research Environment für Archäologie</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" as="style" href="css/styles.css">
+  <link rel="preload" as="font" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin>
+  
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(244, 164, 96, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(218, 165, 32, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Focus visible styles for accessibility */
+    *:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .hero-section {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 100px 20px;
+      text-align: center;
+      color: var(--text);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-section h1 {
+      font-size: clamp(36px, 8vw, 56px);
+      margin-bottom: 20px;
+      font-weight: 900;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      letter-spacing: -1px;
+      animation: slideInFromTop 0.8s ease-out;
+    }
+
+    .hero-section .lead {
+      font-size: clamp(16px, 4vw, 20px);
+      max-width: 750px;
+      margin: 0 auto 40px;
+      opacity: 0.95;
+      line-height: 1.8;
+      animation: slideInFromTop 1s ease-out 0.2s backwards;
+    }
+
+    .auth-wrapper {
+      display: none;
+    }
+
+    .auth-container {
+      display: none;
+    }
+
+    .auth-form-wrapper {
+      display: none;
+    }
+
+    /* CTA Buttons */
+    .hero-section a {
+      font-family: inherit;
+      animation: slideInFromBottom 0.8s ease-out 0.3s backwards;
+    }
+
+    .hero-section a:hover {
+      box-shadow: 0 12px 35px rgba(249, 115, 22, 0.4);
+      transform: translateY(-4px);
+    }
+
+    .hero-section a:nth-child(2) {
+      animation: slideInFromBottom 0.8s ease-out 0.4s backwards;
+    }
+
+    @keyframes slideInFromBottom {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInFromLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideInFromRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideInFromTop {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .auth-form-wrapper h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #f97316, #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-form-wrapper .form-subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .form-group input::placeholder {
+      color: #aaa;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
+      background: white;
+      transform: translateY(-2px);
+    }
+
+    .form-group input:valid {
+      border-color: #44aa00;
+    }
+
+    .form-group input.error {
+      border-color: #ff4444;
+      background: rgba(255, 68, 68, 0.05);
+    }
+
+    .password-input-group {
+      position: relative;
+      display: flex;
+    }
+
+    .password-input-group input {
+      flex: 1;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #666;
+      font-size: 16px;
+      transition: color 0.2s;
+    }
+
+    .password-toggle-btn:hover {
+      color: #f97316;
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 14px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .form-check {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .form-check input {
+      width: auto;
+      margin-right: 8px;
+      cursor: pointer;
+      accent-color: #f97316;
+    }
+
+    .form-check span {
+      color: #666;
+      font-weight: 500;
+    }
+
+    .form-options a {
+      color: #f97316;
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition-fast);
+    }
+
+    .form-options a:hover {
+      color: #fb923c;
+      text-decoration: underline;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(249, 115, 22, 0.4);
+    }
+
+    .submit-btn:hover:not(:disabled)::before {
+      left: 100%;
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .submit-btn:disabled:hover {
+      transform: none;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+    }
+
+    .divider {
+      text-align: center;
+      margin: 24px 0;
+      position: relative;
+      color: #999;
+      font-weight: 500;
+    }
+
+    .divider:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: #e0e0e0;
+    }
+
+    .divider span {
+      position: relative;
+      background: white;
+      padding: 0 10px;
+      font-size: 13px;
+    }
+
+    .alert {
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      animation: slideDown 0.3s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-danger {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert-warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .password-strength {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .strength-bar {
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      margin-bottom: 4px;
+      overflow: hidden;
+    }
+
+    .strength-bar.weak {
+      background: #ff4444;
+    }
+
+    .strength-bar.medium {
+      background: #ffaa00;
+    }
+
+    .strength-bar.strong {
+      background: #44aa00;
+    }
+
+    .terms-link {
+      color: #f97316;
+      text-decoration: none;
+    }
+
+    .terms-link:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
+  <div id="header-container"></div>
 
-  <div class="layout">
-    <main class="main">
-      <header class="page-hero">
-        <h1>Die Vergangenheit digitalisieren, Fund für Fund</h1>
-        <p class="lead">DatArchi ist Ihre moderne, webbasierte Lösung, um archäologische Entdeckungen präzise zu dokumentieren, zu kartieren und zu verwalten. Konzentrieren Sie sich auf die Forschung, nicht auf den Papierkram.</p>
-        <a href="/DatArchi/pages/funde/eingeben.html" class="btn btn-primary btn-lg" style="margin-top: 16px;">Jetzt ersten Fund erfassen</a>
-        <a href="/DatArchi/pages/map/index.html" class="btn btn-secondary btn-lg" style="margin-top: 16px;">Zur Karte</a>
-      </header>
-      
-      <section class="features-overview">
-        <h2>Eine Komplettlösung für die moderne Archäologie</h2>
-        <div class="features-grid">
-          <div class="feature-item">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent" style="margin-bottom: 12px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-            <h3>Visuelles Zonen-Management</h3>
-            <p>Definieren Sie Ausgrabungszonen als Gitter oder manuell gezeichnete Polygone direkt auf Ihrem Lageplan. Behalten Sie stets den Überblick über den Grabungsfortschritt.</p>
-          </div>
-          <div class="feature-item">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent" style="margin-bottom: 12px;"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"></path></svg>
-            <h3>Detaillierte Funderfassung</h3>
-            <p>Erfassen Sie jeden Fund mit Titel, Beschreibung, Material, Datierung, Koordinaten und Fotos. Unsere strukturierte Eingabemaske sorgt für konsistente Daten.</p>
-          </div>
-          <div class="feature-item">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent" style="margin-bottom: 12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9
- 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            <h3>Interaktive Karten</h3>
-            <p>Nutzen Sie die integrierte Kartenfunktion, um Fundorte exakt zu verorten. Jeder Fund erscheint als Marker auf der Karte für eine schnelle visuelle Referenz.</p>
-          </div>
-          <div class="feature-item">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent" style="margin-bottom: 12px;"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-            <h3>Offline-Fähigkeit & Datenhoheit</h3>
-            <p>Alle Daten werden ausschließlich in Ihrem Browser gespeichert. Sie haben die volle Kontrolle und können auch ohne Internetverbindung arbeiten.</p>
-          </div>
-        </div>
-      </section>
-    </main>
+  <div class="hero-section">
+    <h1>DatArchi</h1>
+    <p class="lead">Virtual Research Environment für Archäologie<br/>
+    <strong>GitHub für Archäologie</strong> – Die digitale Plattform für moderne archäologische Forschung</p>
+    <div style="margin-top: 40px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+      <a href="/pages/public-projects/index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: rgba(255, 255, 255, 0.95); color: #f97316; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0,0,0,0.2); text-transform: uppercase; letter-spacing: 0.5px;">
+        <i class="fas fa-eye"></i> Projekte ansehen
+      </a>
+      <a href="/pages/profile/index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; color: white; border: 2px solid white; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;">
+        <i class="fas fa-sign-in-alt"></i> Anmelden / Registrieren
+      </a>
+    </div>
   </div>
 
-  <script type="module" src="/DatArchi/js/injectHeaderFooter.js"></script>
-  <script type="module" src="/DatArchi/js/header/header.js"></script>
-  <script type="module" src="/DatArchi/js/header/nav-mobile.js"></script>
-  <script type="module" src="/DatArchi/js/footer/footer.js"></script>
-  <script type="module" src="/DatArchi/js/theme-toggle.js"></script>
+  <!-- Features Section -->
+  <section class="features-intro" style="background: white; padding: 80px 20px;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <h2 style="text-align: center; font-size: clamp(28px, 6vw, 36px); margin-bottom: 30px; color: #333; font-weight: 700;">Was ist DatArchi?</h2>
+      <p style="text-align: center; font-size: 16px; color: #666; max-width: 700px; margin: 0 auto 60px; line-height: 1.8;">
+        DatArchi ist die moderne Virtual Research Environment für Archäologen. Zentralisieren Sie Ihre Forschungsdaten, 
+        arbeiten Sie kollaborativ und nutzen Sie intelligente Analyse-Tools – alles an einem Ort.
+      </p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px;">
+        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
+          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-database"></i></div>
+          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Datenmanagement</h3>
+          <p style="color: #666; line-height: 1.7; font-size: 15px;">Zentralisiert alle archäologischen Daten an einem Ort – Funde, Ausgrabungsstätten, Zonen und Schichten.</p>
+        </div>
+        
+        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
+          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-users"></i></div>
+          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Kollaboration</h3>
+          <p style="color: #666; line-height: 1.7; font-size: 15px;">Arbeiten Sie mit Kollegen zusammen – teilen Sie Daten, diskutieren Sie Funde und dokumentieren Sie gemeinsam.</p>
+        </div>
+        
+        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
+          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-map"></i></div>
+          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Räumliche Analyse</h3>
+          <p style="color: #666; line-height: 1.7; font-size: 15px;">Visualisieren Sie Ausgrabungsstätten auf interaktiven Karten und erstellen Sie Zonen für präzise Dokumentation.</p>
+        </div>
+        
+        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
+          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-lock"></i></div>
+          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Sicherheit & Datenschutz</h3>
+          <p style="color: #666; line-height: 1.7; font-size: 15px;">Kontrollieren Sie die Sichtbarkeit Ihrer Daten – privat oder öffentlich für die wissenschaftliche Gemeinschaft.</p>
+        </div>
 
+        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
+          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-chart-bar"></i></div>
+          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Statistiken & Analyse</h3>
+          <p style="color: #666; line-height: 1.7; font-size: 15px;">Analysieren Sie Ihre Funde mit integrierten Statistiken, Auswertungen und Berichten.</p>
+        </div>
 
+        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
+          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-mobile-alt"></i></div>
+          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Überall Zugriff</h3>
+          <p style="color: #666; line-height: 1.7; font-size: 15px;">Greifen Sie von überall auf Ihre Forschungsdaten zu – Desktop, Tablet oder Smartphone.</p>
+        </div>
+      </div>
 
+      <div style="background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: white; padding: 60px 40px; border-radius: 16px; text-align: center; box-shadow: 0 12px 40px rgba(249, 115, 22, 0.2); margin-bottom: 40px;">
+        <h3 style="font-size: clamp(20px, 4vw, 24px); margin-bottom: 20px; font-weight: 700;">GitHub für Archäologie</h3>
+        <p style="font-size: 16px; line-height: 1.8; max-width: 700px; margin: 0 auto; opacity: 0.95;">
+          DatArchi revolutioniert die archäologische Forschung durch digitale Zusammenarbeit, 
+          strukturierte Datenverwaltung und offene Wissenschaft. Ähnlich wie GitHub für Software-Entwickler 
+          ist DatArchi die Plattform für Archäologen weltweit.
+        </p>
+      </div>
+
+      <div style="background: rgba(249, 115, 22, 0.05); padding: 50px 40px; border-radius: 16px; border: 2px dashed #f97316; text-align: center;">
+        <h3 style="font-size: 22px; margin-bottom: 20px; color: #333; font-weight: 700;">
+          <i class="fas fa-rocket" style="color: #f97316; margin-right: 10px;"></i>Bereit zum Start?
+        </h3>
+        <p style="font-size: 16px; color: #666; margin-bottom: 30px; line-height: 1.7;">
+          Erstellen Sie kostenlos Ihren Account und beginnen Sie sofort mit der Verwaltung Ihrer archäologischen Projekte.
+        </p>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+          <a href="/pages/profile/index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 32px; background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.boxShadow='0 12px 30px rgba(249, 115, 22, 0.4)'; this.style.transform='translateY(-3px)';" onmouseout="this.style.boxShadow='0 4px 15px rgba(249, 115, 22, 0.3)'; this.style.transform='none';">
+            <i class="fas fa-arrow-right"></i> Jetzt registrieren
+          </a>
+          <a href="/pages/public-projects/index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 32px; background: white; color: #f97316; border: 2px solid #f97316; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.boxShadow='0 8px 20px rgba(249, 115, 22, 0.15)'; this.style.backgroundColor='#fff5f0';" onmouseout="this.style.boxShadow='none'; this.style.backgroundColor='white';">
+            <i class="fas fa-eye"></i> Beispiele ansehen
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-container"></div>
+
+<script type="module" src="js/injectHeaderFooter.js"></script>
+<script type="module" src="js/improvements.js"></script>
 </body>
 </html>

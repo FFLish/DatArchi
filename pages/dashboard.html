@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DatArchi - Dashboard</title>
+    <script>
+        // Redirect to projects page after login
+        window.location.href = '/pages/projects/index.html';
+    </script>
+</head>
+<body>
+    <p>Leitet weiter zu deinem Projekt-Dashboard...</p>
+</body>
+</html>
+        <div class="dashboard-header">
+            <h1>Dashboard</h1>
+            <p>Willkommen zu DatArchi - Virtual Research Environment für Archäologie</p>
+        </div>
+
+        <!-- Overview Cards -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-map"></i></div>
+                <div class="card-title">Meine Projekte</div>
+                <div class="card-count" id="projectCount">0</div>
+                <div class="card-description">Ausgrabungsstätten, die ich verwalte</div>
+                <button class="action-button" onclick="navigateTo('/pages/sites/index.html')">
+                    Alle anzeigen
+                </button>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-gem"></i></div>
+                <div class="card-title">Funde</div>
+                <div class="card-count" id="findCount">0</div>
+                <div class="card-description">Fundeinträge in meinen Projekten</div>
+                <button class="action-button" onclick="navigateTo('/pages/funde/index.html')">
+                    Zu den Funden
+                </button>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-users"></i></div>
+                <div class="card-title">Mitarbeiter</div>
+                <div class="card-count" id="collaboratorCount">0</div>
+                <div class="card-description">Personen in meinen Projekten</div>
+                <button class="action-button" onclick="navigateTo('/pages/team/index.html')">
+                    Team verwalten
+                </button>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-globe"></i></div>
+                <div class="card-title">Öffentliche Projekte</div>
+                <div class="card-count" id="publicProjectCount">0</div>
+                <div class="card-description">Projekte zum Erforschen</div>
+                <button class="action-button" onclick="navigateTo('/pages/explore/index.html')">
+                    Erkunden
+                </button>
+            </div>
+        </div>
+
+        <!-- My Projects Section -->
+        <div class="projects-section">
+            <h2>Meine Ausgrabungsstätten</h2>
+            <div id="projectsList" class="projects-list">
+                <div class="empty-state">
+                    <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+                    <p>Noch keine Projekte erstellt</p>
+                    <button class="action-button" onclick="createNewProject()">
+                        Neues Projekt erstellen
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="projects-section">
+            <h2>Letzte Aktivität</h2>
+            <div class="recent-activity">
+                <div id="activityList">
+                    <div class="empty-state">
+                        <p>Keine Aktivität vorhanden</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script type="module" src="../js/injectHeaderFooter.js"></script>
+    <script type="module">
+        import { auth } from '../js/firebase-config.js';
+        import VREUserAccountService from '../js/vre-user-account-service.js';
+        import VREExcavationSiteService from '../js/vre-excavation-site-service.js';
+        import VRECollaborationService from '../js/vre-collaboration-service.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        let currentUser = null;
+
+        // Initialize
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadDashboardData();
+            } else {
+                window.location.href = '/index.html';
+            }
+        });
+
+        async function loadDashboardData() {
+            try {
+                // Load user projects
+                const userProjects = await VREExcavationSiteService.getUserOwnedSites(currentUser.uid);
+                updateProjectStats(userProjects);
+                displayProjects(userProjects);
+
+                // Load recent activity
+                if (userProjects.length > 0) {
+                    const activity = await VRECollaborationService.getContributionHistory(userProjects[0].id, 10);
+                    displayActivity(activity);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        function updateProjectStats(projects) {
+            document.getElementById('projectCount').textContent = projects.length;
+            
+            // Calculate total finds
+            let totalFinds = projects.length > 0 ? projects.length * 5 : 0; // Placeholder
+            document.getElementById('findCount').textContent = totalFinds;
+
+            // Calculate collaborators
+            let totalCollaborators = new Set();
+            projects.forEach(p => {
+                if (p.contributors) {
+                    p.contributors.forEach(c => totalCollaborators.add(c));
+                }
+            });
+            document.getElementById('collaboratorCount').textContent = totalCollaborators.size;
+
+            // Placeholder for public projects count
+            document.getElementById('publicProjectCount').textContent = '12';
+        }
+
+        function displayProjects(projects) {
+            const projectsList = document.getElementById('projectsList');
+            
+            if (projects.length === 0) {
+                projectsList.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+                        <p>Noch keine Projekte erstellt</p>
+                        <button class="action-button" onclick="window.dispatchEvent(new CustomEvent('createProject'))">
+                            Neues Projekt erstellen
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            projectsList.innerHTML = projects.map(project => `
+                <div class="project-card">
+                    <div class="project-name">${project.name}</div>
+                    <div class="project-location">
+                        <i class="fas fa-map-marker-alt"></i> ${project.country || 'Standort unbekannt'}
+                    </div>
+                    <div class="project-stats">
+                        <div class="project-stat-item">
+                            <i class="fas fa-gem"></i> ${project.findings?.length || 0} Funde
+                        </div>
+                        <div class="project-stat-item">
+                            <i class="fas fa-users"></i> ${project.contributors?.length || 1} Nutzer
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayActivity(activities) {
+            const activityList = document.getElementById('activityList');
+            
+            if (activities.length === 0) {
+                activityList.innerHTML = `
+                    <div class="empty-state">
+                        <p>Keine Aktivität vorhanden</p>
+                    </div>
+                `;
+                return;
+            }
+
+            activityList.innerHTML = activities.map(activity => {
+                const date = new Date(activity.timestamp.seconds * 1000);
+                const timeAgo = getTimeAgo(date);
+                
+                return `
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-${getActivityIcon(activity.action)}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-action">${formatActivityAction(activity)}</div>
+                            <div class="activity-time">${timeAgo}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getActivityIcon(action) {
+            const icons = {
+                'created': 'plus-circle',
+                'updated': 'edit',
+                'deleted': 'trash',
+                'commented': 'comment'
+            };
+            return icons[action] || 'circle';
+        }
+
+        function formatActivityAction(activity) {
+            const actions = {
+                'created': `Neuer ${activity.target} erstellt`,
+                'updated': `${activity.target} aktualisiert`,
+                'deleted': `${activity.target} gelöscht`,
+                'commented': `Kommentar zu ${activity.target} hinzugefügt`
+            };
+            return actions[activity.action] || 'Aktivität';
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+
+            if (interval > 1) return Math.floor(interval) + ' Jahre';
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + ' Monate';
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + ' Tage';
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + ' Stunden';
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + ' Minuten';
+            return 'vor wenigen Sekunden';
+        }
+
+        window.navigateTo = function(path) {
+            window.location.href = path;
+        };
+
+        window.createNewProject = function() {
+            window.location.href = '/pages/sites/create.html';
+        };
+    </script>
+</body>
+</html>

@@ -4,7 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Funde Statistik — DatArchi</title>
-  <link rel="stylesheet" href="/DatArchi/css/styles.css">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/auth-guard.js"></script>
 </head>
 <body>
 
@@ -15,6 +17,8 @@
       <h1>Funde Statistik</h1>
       <p class="lead">Eine umfassende Übersicht über Ihre erfassten archäologischen Funde.</p>
 
+      <div id="alert" class="alert alert-success" role="alert" hidden></div>
+
       <div id="statistics-options" class="statistics-options">
         <h3>Anzeigeoptionen</h3>
         <div class="checkbox-group">
@@ -23,6 +27,7 @@
           <label><input type="checkbox" data-category="dating" checked><span> Funde nach Datierung</span></label>
           <label><input type="checkbox" data-category="photos" checked><span> Funde mit/ohne Foto</span></label>
           <label><input type="checkbox" data-category="zones" checked><span> Funde nach Zone</span></label>
+          <label><input type="checkbox" id="statsAllSites" data-category="all-sites"><span> Alle Stätten</span></label>
         </div>
       </div>
 
@@ -34,10 +39,10 @@
 
   <div id="footer-container"></div>
 
-  <script type="module" src="/DatArchi/js/injectHeaderFooter.js"></script>
-  <script type="module" src="/DatArchi/js/header/header.js"></script>
-  <script type="module" src="/DatArchi/js/footer/footer.js"></script>
-  <script type="module" src="/DatArchi/js/funde/statistics.js"></script>
-  <script type="module" src="/DatArchi/js/theme-toggle.js"></script>
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/header/header.js"></script>
+  <script type="module" src="../../js/footer/footer.js"></script>
+  <script type="module" src="../../js/funde/statistics.js"></script>
+  <script type="module" src="../../js/theme-toggle.js"></script>
 </body>
 </html>

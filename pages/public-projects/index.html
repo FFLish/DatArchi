@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Öffentliche Projekte - DatArchi</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/projects.css">
+    <link rel="stylesheet" href="/css/public-projects.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="module" src="../../js/injectHeaderFooter.js"></script>
+</head>
+<body>
+    <div id="header-container"></div>
+    
+    <main class="projects-container">
+        <div class="projects-header">
+            <div class="header-content">
+                <h1><i class="fas fa-globe"></i> Öffentliche Projekte</h1>
+                <p>Entdecke Forschungsprojekte von Archäologen weltweit</p>
+            </div>
+        </div>
+
+        <div class="projects-filters">
+            <input type="text" id="searchProjects" placeholder="Projekte durchsuchen..." class="search-input">
+            <div class="filters-row">
+                <select id="filterRegion" class="filter-select">
+                    <option value="">Alle Regionen</option>
+                    <option value="Europa">Europa</option>
+                    <option value="Asia">Asien</option>
+                    <option value="Nordafrika">Nordafrika</option>
+                    <option value="Deutschland">Deutschland</option>
+                </select>
+                <select id="filterPeriod" class="filter-select">
+                    <option value="">Alle Epochen</option>
+                    <option value="Prähistorisch">Prähistorisch</option>
+                    <option value="Römisch">Römisch</option>
+                    <option value="Mittelalter">Mittelalter</option>
+                    <option value="Modern">Modern</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="projectsList" class="projects-grid">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Projekte werden geladen...
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal für Projektdetails -->
+    <div id="projectDetailModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close">&times;</span>
+            <div id="projectDetailContent">
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script type="module" src="../../js/public-projects.js"></script>
+</body>
+</html>

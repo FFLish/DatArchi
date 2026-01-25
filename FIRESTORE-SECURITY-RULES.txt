@@ -1,0 +1,86 @@
+/**
+ * FIRESTORE SECURITY RULES
+ * 
+ * Diese Regeln sollten in der Firebase Console unter "Firestore Database" > "Rules" eingegeben werden
+ * Copy & Paste den gesamten Inhalt in den Rules Editor
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Authentifizierte Benutzer
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Ist der Benutzer der Besitzer des Dokuments?
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Ist das Projekt öffentlich?
+    function isPublic(resource) {
+      return resource.data.isPublic == true || resource.data.visibility == 'public';
+    }
+    
+    // Kann der Benutzer auf das Projekt zugreifen? (Owner oder Public)
+    function canAccessProject(resource) {
+      return isOwner(resource.data.userId) || isPublic(resource);
+    }
+    
+    // ===== BENUTZER RULES =====
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      
+      match /profile {
+        allow read: if true;
+        allow write: if isOwner(userId);
+      }
+    }
+    
+    // ===== PROJEKTE RULES =====
+    match /projects/{projectId} {
+      // Lesen: Nur Owner oder wenn öffentlich
+      allow read: if canAccessProject(resource);
+      
+      // Erstellen: Nur authentifizierte Benutzer
+      allow create: if isSignedIn();
+      
+      // Aktualisieren: Nur Owner
+      allow update: if isOwner(resource.data.userId);
+      
+      // Löschen: Nur Owner
+      allow delete: if isOwner(resource.data.userId);
+      
+      // Finds Subkollektion
+      match /finds/{findId} {
+        // Allow read if user can access the project (owner or public)
+        allow read: if canAccessProject(get(/databases/$(database)/documents/projects/$(projectId)));
+        allow create: if isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.userId);
+        allow update, delete: if isOwner(resource.data.userId) || isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.userId);
+      }
+    }
+    
+    // ===== FUNDE RULES (Toplevel) =====
+    match /finds/{findId} {
+      // Allow read if user is owner
+      allow read: if isOwner(resource.data.userId);
+      
+      // Erstellen und Bearbeiten: Nur Owner
+      allow create, update, delete: if isOwner(resource.data.userId) || isSignedIn();
+    }
+    
+    // ===== AUSGRABUNGSSTÄTTEN RULES =====
+    match /excavationSites/{siteId} {
+      allow read: if true;
+      allow create, update: if isSignedIn();
+      allow delete: if false;
+    }
+    
+    // ===== DEFAULT (alles andere verbieten) =====
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

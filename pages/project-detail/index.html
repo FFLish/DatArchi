@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projekt Details - DatArchi</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/projects.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script type="module" src="../../js/injectHeaderFooter.js"></script>
+    <style>
+        .project-detail-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .project-header {
+            background: linear-gradient(135deg, #5b21b6 0%, #0891b2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 20px;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .project-image-container {
+            flex: 0 0 auto;
+            width: 300px;
+            height: 250px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .project-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .project-image-container {
+                width: 100%;
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .project-header {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .project-image-container {
+                width: 100%;
+                height: 150px;
+            }
+            
+            .project-meta {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px;
+            }
+            
+            .project-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .project-actions .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .project-header-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .project-title-section h1 {
+            color: white;
+            margin: 0 0 10px 0;
+        }
+
+        .project-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .meta-item i {
+            font-size: 1.2rem;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .project-actions .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .project-actions .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+            width: 100%;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: #5b21b6;
+            border-bottom-color: #5b21b6;
+        }
+
+        .tab-btn:hover {
+            color: #5b21b6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .project-header {
+                flex-direction: column;
+            }
+
+            .project-actions {
+                width: 100%;
+            }
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 i {
+            color: #5b21b6;
+        }
+
+        .map-container {
+            border-radius: 8px;
+            overflow: hidden;
+            height: 400px;
+            background: #f0f0f0;
+            margin-bottom: 20px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .finds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .find-card {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .find-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .find-image {
+            width: 100%;
+            height: 150px;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .find-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .find-info {
+            padding: 12px;
+        }
+
+        .find-info h4 {
+            margin: 0 0 6px 0;
+            font-size: 0.9rem;
+        }
+
+        .find-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-box-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .members-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5b21b6, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .member-info h4 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .member-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            color: #5b21b6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            gap: 12px;
+        }
+
+        /* Fundorte Card Styles */
+        .fundorte-card {
+            display: flex;
+            gap: 30px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .fundorte-image-wrapper {
+            flex: 0 0 auto;
+            width: 350px;
+            height: 350px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+
+        .fundorte-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            display: block;
+        }
+
+        .fundorte-card:hover .fundorte-img {
+            transform: scale(1.05);
+        }
+
+        .fundorte-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: auto;
+        }
+
+        .fundort-marker {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.8rem;
+            transform: translate(-50%, -50%);
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+        }
+
+        .fundort-marker:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .fundort-marker.active {
+            background: linear-gradient(135deg, #5b21b6, #7c3aed);
+            border-color: #fff;
+        }
+
+        .fundort-marker-tooltip {
+            position: absolute;
+            background: rgba(31, 41, 55, 0.95);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            pointer-events: none;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            z-index: 20;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .fundort-marker-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid rgba(31, 41, 55, 0.95);
+        }
+
+        .fundorte-content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fundorte-content h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+            color: #1f2937;
+        }
+
+        .fundorte-list {
+            margin-top: 20px;
+            flex: 1;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .fundort-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f9fafb;
+            border-left: 4px solid #5b21b6;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #1f2937;
+        }
+
+        html[data-theme="dark"] .fundort-item {
+            background: #2d1810;
+            border-left-color: #ffb84d;
+            color: #fffaf0;
+        }
+
+        .fundort-item:hover {
+            background: #f3f4f6;
+            transform: translateX(5px);
+            border-left-color: #ef4444;
+        }
+
+        html[data-theme="dark"] .fundort-item:hover {
+            background: #3d2715;
+            border-left-color: #ffd700;
+            transform: translateX(5px);
+        }
+
+        .fundort-item.active {
+            background: #ede9fe;
+            border-left-color: #5b21b6;
+            box-shadow: 0 2px 8px rgba(91, 33, 182, 0.1);
+        }
+
+        html[data-theme="dark"] .fundort-item.active {
+            background: #4d2c1a;
+            border-left-color: #ffd700;
+            box-shadow: 0 2px 8px rgba(255, 184, 77, 0.2);
+        }
+
+        .fundort-item h4 {
+            margin: 0 0 6px 0;
+            color: #1f2937;
+            font-size: 0.95rem;
+        }
+
+        html[data-theme="dark"] .fundort-item h4 {
+            color: #fffaf0;
+        }
+
+        .fundort-item p {
+            margin: 0 0 4px 0;
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+
+        html[data-theme="dark"] .fundort-item p {
+            color: #f4a460;
+        }
+
+        .fundort-item .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #0369a1;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-right: 6px;
+            margin-top: 6px;
+        }
+
+        html[data-theme="dark"] .fundort-item .badge {
+            background: #4d2c1a;
+            color: #ffb84d;
+            border: 1px solid #ffb84d;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .fundorte-card {
+                flex-direction: column;
+            }
+
+            .fundorte-image-wrapper {
+                width: 100%;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main class="project-detail-container">
+        <a href="/pages/projects/index.html" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Zurück zu Projekten
+        </a>
+
+        <!-- Project Header -->
+        <div class="project-header" id="projectHeader">
+            <div class="project-image-container">
+                <img src="/partials/images/ausgrabungsstätte.jpg" alt="Ausgrabungsstätte" class="project-header-image">
+            </div>
+            <div class="project-title-section">
+                <h1 id="projectTitle">Projekt wird geladen...</h1>
+                <p id="projectDescription" style="margin-top: 10px; opacity: 0.95;"></p>
+                <div class="project-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="projectLocation">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span id="projectPeriod">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-cube"></i>
+                        <span id="projectFinds">0 Funde</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-users"></i>
+                        <span id="projectMembers">1 Mitglied</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-actions">
+                <button class="btn" onclick="editProject()"><i class="fas fa-edit"></i> Bearbeiten</button>
+                <button class="btn btn-primary" onclick="openAddFindModal()"><i class="fas fa-folder-open"></i> Öffnen</button>
+                <button class="btn" onclick="shareProject()"><i class="fas fa-share"></i> Teilen</button>
+                <button class="btn btn-danger" onclick="deleteProject()"><i class="fas fa-trash"></i> Löschen</button>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="overview"><i class="fas fa-chart-bar"></i> Übersicht</button>
+            <button class="tab-btn" data-tab="finds"><i class="fas fa-cube"></i> Funde verwalten</button>
+            <button class="tab-btn" data-tab="locations"><i class="fas fa-map"></i> Fundorte</button>
+            <button class="tab-btn" data-tab="team"><i class="fas fa-users"></i> Team</button>
+            <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> Einstellungen</button>
+        </div>
+
+        <!-- TAB: Overview -->
+        <div class="tab-content active" id="overview">
+            <div class="grid-2">
+                <div class="section">
+                    <h2><i class="fas fa-chart-bar"></i> Statistiken</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-box-number" id="statsFinds">0</div>
+                            <div class="stat-box-label">Funde</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-number" id="statsZones">0</div>
+                            <div class="stat-box-label">Zonen</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-number" id="statsDays">0</div>
+                            <div class="stat-box-label">Tage aktiv</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-number" id="statsTeam">1</div>
+                            <div class="stat-box-label">Mitglieder</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><i class="fas fa-info-circle"></i> Projektdetails</h2>
+                    <div class="form-row">
+                        <div>
+                            <strong>Erstellt:</strong>
+                            <p id="createdDate">-</p>
+                        </div>
+                        <div>
+                            <strong>Zuletzt aktualisiert:</strong>
+                            <p id="updatedDate">-</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>Beschreibung:</strong>
+                        <p id="descriptionText" style="color: #666; margin-top: 8px;">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-history"></i> Letzte Aktivitäten</h2>
+                <div id="recentActivity">
+                    <div class="no-data">
+                        <i class="fas fa-inbox"></i>
+                        <p>Keine Aktivitäten vorhanden</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Finds Management -->
+        <div class="tab-content" id="finds">
+            <div class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
+                    <h2 style="margin: 0;"><i class="fas fa-cube"></i> Funde verwalten</h2>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="openAddFindModal()">
+                            <i class="fas fa-plus"></i> Neuen Fund hinzufügen
+                        </button>
+                        <button class="btn" onclick="addTestFinds()" style="background: #10b981; border-color: #10b981; color: white;">
+                            <i class="fas fa-flask"></i> Test-Funde laden
+                        </button>
+                    </div>
+                </div>
+
+                <div id="findsList" class="finds-grid">
+                    <div class="no-data">
+                        <i class="fas fa-search"></i>
+                        <p>Keine Funde vorhanden</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Locations/Map -->
+        <div class="tab-content" id="locations">
+            <div class="section">
+                <h2><i class="fas fa-map"></i> Fundorte und Ausgrabungen</h2>
+                
+                <div class="map-container" style="width: 100%; height: 600px; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+                    <div id="fundorte-map" style="width: 100%; height: 100%;"></div>
+                </div>
+
+                <div class="fundorte-content" style="margin-top: 30px;">
+                    <h3 id="fundorteTitle">Alle Funde an dieser Ausgrabungsstätte</h3>
+                    <p id="fundorteDescription" style="color: #666; margin: 10px 0; font-size: 0.95rem;">Klicken Sie auf einen Marker auf der Karte oder auf einen Fund unten, um mehr Details zu sehen</p>
+                    
+                    <div id="fundorteList" class="fundorte-list">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> Funde werden geladen...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Team -->
+        <div class="tab-content" id="team">
+            <div class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;"><i class="fas fa-users"></i> Projektteam</h2>
+                    <button class="btn btn-primary" onclick="openAddMemberModal()">
+                        <i class="fas fa-user-plus"></i> Mitglied hinzufügen
+                    </button>
+                </div>
+
+                <div class="members-list" id="membersList">
+                    <div class="no-data">
+                        <i class="fas fa-users"></i>
+                        <p>Keine Mitglieder hinzugefügt</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Settings -->
+        <div class="tab-content" id="settings">
+            <div class="form-section">
+                <h2><i class="fas fa-cog"></i> Projekteinstellungen</h2>
+                
+                <form id="settingsForm" style="margin-top: 20px;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="settingName">Projektname</label>
+                            <input type="text" id="settingName" placeholder="Projektname">
+                        </div>
+                        <div class="form-group">
+                            <label for="settingPeriod">Zeitraum</label>
+                            <input type="text" id="settingPeriod" placeholder="z.B. Römisch">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="settingLocation">Ort</label>
+                            <input type="text" id="settingLocation" placeholder="z.B. Bayern, Deutschland">
+                        </div>
+                        <div class="form-group">
+                            <label for="settingVisibility">Sichtbarkeit</label>
+                            <select id="settingVisibility">
+                                <option value="private">Privat</option>
+                                <option value="public">Öffentlich</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="settingDescription">Beschreibung</label>
+                        <textarea id="settingDescription" rows="4" placeholder="Projektbeschreibung..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Änderungen speichern
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Edit Project -->
+    <div id="editProjectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editProjectModal')">&times;</span>
+            <h2>Projekt bearbeiten</h2>
+            <form id="editProjectForm">
+                <div class="form-group">
+                    <label for="editProjectTitle">Projekttitel *</label>
+                    <input type="text" id="editProjectTitle" required placeholder="z.B. Römische Villa">
+                </div>
+
+                <div class="form-group">
+                    <label for="editProjectDescription">Beschreibung *</label>
+                    <textarea id="editProjectDescription" rows="4" required placeholder="Beschreiben Sie Ihr Projekt..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editProjectLocation">Fundort</label>
+                    <input type="text" id="editProjectLocation" placeholder="z.B. Köln, Deutschland">
+                </div>
+
+                <div class="form-group">
+                    <label for="editProjectPeriod">Zeitperiode</label>
+                    <input type="text" id="editProjectPeriod" placeholder="z.B. Römisch, 1.-2. Jahrhundert">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i> Änderungen speichern
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add Find -->
+    <div id="addFindModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addFindModal')">&times;</span>
+            <h2>Neuen Fund hinzufügen</h2>
+            <form id="addFindForm">
+                <div class="form-group">
+                    <label for="findTitle">Fundtitel *</label>
+                    <input type="text" id="findTitle" required placeholder="z.B. Keramikscherbe">
+                </div>
+
+                <div class="form-group">
+                    <label for="findMaterial">Material</label>
+                    <input type="text" id="findMaterial" placeholder="z.B. Keramik, Bronze">
+                </div>
+
+                <div class="form-group">
+                    <label for="findCategory">Kategorie</label>
+                    <select id="findCategory">
+                        <option value="gefaesse">Gefäße</option>
+                        <option value="werkzeuge">Werkzeuge</option>
+                        <option value="schmuck">Schmuck</option>
+                        <option value="waffen">Waffen</option>
+                        <option value="objekte">Objekte</option>
+                        <option value="sonstiges">Sonstiges</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="findDating">Datierung</label>
+                    <input type="text" id="findDating" placeholder="z.B. 1. Jahrhundert n.Chr.">
+                </div>
+
+                <div class="form-group">
+                    <label for="findDescription">Beschreibung</label>
+                    <textarea id="findDescription" rows="4" placeholder="Detaillierte Beschreibung..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="findLatitude">Breitengrad</label>
+                        <input type="number" id="findLatitude" step="0.0001" placeholder="0.0000">
+                    </div>
+                    <div class="form-group">
+                        <label for="findLongitude">Längengrad</label>
+                        <input type="number" id="findLongitude" step="0.0001" placeholder="0.0000">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i> Fund speichern
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add Member -->
+    <div id="addMemberModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addMemberModal')">&times;</span>
+            <h2>Mitglied hinzufügen</h2>
+            <form id="addMemberForm">
+                <div class="form-group">
+                    <label for="memberEmail">Email oder Benutzername *</label>
+                    <input type="text" id="memberEmail" required placeholder="archaeo@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="memberRole">Rolle</label>
+                    <select id="memberRole">
+                        <option value="editor">Editor</option>
+                        <option value="viewer">Viewer</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-plus"></i> Mitglied hinzufügen
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="../../js/page-enhancements.js"></script>
+    <script type="module" src="../../js/project-detail.js"></script>
+</body>
+</html>

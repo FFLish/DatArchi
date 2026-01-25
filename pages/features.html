@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DatArchi - Funktionen der VRE</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="module" src="../js/injectHeaderFooter.js"></script>
+    <style>
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .feature-section {
+            margin-bottom: 60px;
+        }
+
+        .feature-section h2 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--color-primary, #0066cc);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid var(--color-primary, #0066cc);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            color: var(--color-primary, #0066cc);
+            margin-bottom: 16px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 16px;
+        }
+
+        .feature-list li {
+            padding: 6px 0;
+            color: #666;
+        }
+
+        .feature-list li:before {
+            content: "✓ ";
+            color: var(--color-primary, #0066cc);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .github-comparison {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .comparison-column h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--color-primary, #0066cc);
+        }
+
+        .comparison-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-item:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .comparison-value {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .highlight strong {
+            color: #856404;
+        }
+
+        .data-structure {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        .cta-section {
+            text-align: center;
+            background: var(--color-primary, #0066cc);
+            color: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin: 40px 0;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: var(--color-primary, #0066cc);
+            padding: 12px 32px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-section h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="features-container">
+        <!-- Header -->
+        <div class="feature-section" style="text-align: center; margin-bottom: 40px;">
+            <h1>DatArchi - Virtual Research Environment für Archäologie</h1>
+            <p style="font-size: 18px; color: #666; max-width: 800px; margin: 20px auto;">
+                GitHub für Archäologie - Eine zentrale, strukturierte und kollaborative Plattform für archäologische Forschungsdaten
+            </p>
+        </div>
+
+        <!-- GitHub Concept -->
+        <div class="feature-section">
+            <h2>Das GitHub-Prinzip für Archäologie</h2>
+            <div class="github-comparison">
+                <div class="comparison-grid">
+                    <div class="comparison-column">
+                        <h3>🔷 GitHub (Software)</h3>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Account</div>
+                            <div class="comparison-value">Entwickler/in</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Repository</div>
+                            <div class="comparison-value">Softwareprojekt</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Files/Issues</div>
+                            <div class="comparison-value">Dateien & Tasks</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Collaboration</div>
+                            <div class="comparison-value">Pull Requests, Comments</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Visibility</div>
+                            <div class="comparison-value">Public/Private</div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-column">
+                        <h3>DatArchi (Archäologie)</h3>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Account</div>
+                            <div class="comparison-value">Archäolog/in</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Ausgrabungsstätte</div>
+                            <div class="comparison-value">Forschungsprojekt</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Funde</div>
+                            <div class="comparison-value">Artefakte & Dokumentation</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Collaboration</div>
+                            <div class="comparison-value">Diskussionen, Kommentare</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Visibility</div>
+                            <div class="comparison-value">Öffentlich/Privat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Features -->
+        <div class="feature-section">
+            <h2>Kernfunktionen</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-user-circle"></i></div>
+                    <div class="feature-title">Nutzerkonten</div>
+                    <div class="feature-description">
+                        Erstellen Sie Ihr Profil als Archäolog/in, Student/in oder Institut
+                    </div>
+                    <ul class="feature-list">
+                        <li>Persönliche Profile</li>
+                        <li>Forschungsinteressen</li>
+                        <li>Projektübersicht</li>
+                        <li>Beitrags-Historie</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-map"></i></div>
+                    <div class="feature-title">Ausgrabungsstätten</div>
+                    <div class="feature-description">
+                        Verwalten Sie Ihre archäologischen Ausgrabungsprojekte
+                    </div>
+                    <ul class="feature-list">
+                        <li>Standort & Koordinaten</li>
+                        <li>Zeitraum & Periode</li>
+                        <li>Team-Management</li>
+                        <li>Öffentlich/Privat</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-gem"></i></div>
+                    <div class="feature-title">Fundverwaltung</div>
+                    <div class="feature-description">
+                        Erfassen und dokumentieren Sie jeden Fund strukturiert
+                    </div>
+                    <ul class="feature-list">
+                        <li>Auto-generierte Fund-IDs</li>
+                        <li>Kategorisierung</li>
+                        <li>Materialbestimmung</li>
+                        <li>Zuordnung zu Zonen</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-image"></i></div>
+                    <div class="feature-title">Multimediale Inhalte</div>
+                    <div class="feature-description">
+                        Speichern Sie Fotos, 3D-Modelle, Berichte und mehr
+                    </div>
+                    <ul class="feature-list">
+                        <li>Orthofotos</li>
+                        <li>3D-Modelle</li>
+                        <li>Textberichte</li>
+                        <li>Verknüpfte Dokumente</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                    <div class="feature-title">Zusammenarbeit</div>
+                    <div class="feature-description">
+                        Arbeiten Sie mit Ihrem Team in Echtzeit zusammen
+                    </div>
+                    <ul class="feature-list">
+                        <li>Diskussionen</li>
+                        <li>Kommentare</li>
+                        <li>Ankündigungen</li>
+                        <li>Projektinterner Chat</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+                    <div class="feature-title">Interaktive Karten</div>
+                    <div class="feature-description">
+                        Visualisieren Sie Fundorte räumlich auf Orthofotos
+                    </div>
+                    <ul class="feature-list">
+                        <li>Orthofoto-Upload</li>
+                        <li>Fundpunkte platzieren</li>
+                        <li>Zonen zeichnen</li>
+                        <li>Koordinaten-Management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="feature-section">
+            <h2>Suche & Filter</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-search"></i></div>
+                    <div class="feature-title">Globale Suche</div>
+                    <div class="feature-description">
+                        Finden Sie schnell was Sie suchen
+                    </div>
+                    <ul class="feature-list">
+                        <li>Nach Funden suchen</li>
+                        <li>Nach Ausgrabungsstätten suchen</li>
+                        <li>Nach Forschern suchen</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-filter"></i></div>
+                    <div class="feature-title">Intelligente Filter</div>
+                    <div class="feature-description">
+                        Verfeinern Sie Ihre Suche nach verschiedenen Kriterien
+                    </div>
+                    <ul class="feature-list">
+                        <li>Nach Kategorie</li>
+                        <li>Nach Material</li>
+                        <li>Nach Zone</li>
+                        <li>Nach Periode</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div class="feature-title">Visualisierungen</div>
+                    <div class="feature-description">
+                        Stellen Sie Ihre Daten auf verschiedene Arten dar
+                    </div>
+                    <ul class="feature-list">
+                        <li>Listen-Ansicht</li>
+                        <li>Karten-Ansicht</li>
+                        <li>Statistiken</li>
+                        <li>Diagramme</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Access Control -->
+        <div class="feature-section">
+            <h2>Zugriff & Rechteverwaltung</h2>
+            <div class="highlight">
+                <strong>🔐 Vollständige Kontrolle über Ihre Daten</strong>
+                <p>Entscheiden Sie selbst, wer Ihre Forschungsdaten sehen und bearbeiten darf. DatArchi bietet granulare Zugriffskontrolle auf Projekt- und Nutzerebene.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-globe"></i></div>
+                    <div class="feature-title">Öffentliche Projekte</div>
+                    <div class="feature-description">
+                        Teilen Sie Ihre Erkenntnisse mit der archäologischen Gemeinschaft
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-lock"></i></div>
+                    <div class="feature-title">Private Projekte</div>
+                    <div class="feature-description">
+                        Halten Sie vertrauliche Forschungsdaten sicher
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="feature-title">Rollenbasierte Rechte</div>
+                    <div class="feature-description">
+                        Owner, Contributor, Viewer
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Structure -->
+        <div class="feature-section">
+            <h2>Wissenschaftliche Datenstruktur</h2>
+            <div class="highlight">
+                <strong>📊 Nach wissenschaftlichen Standards</strong>
+                <p>DatArchi nutzt CIDOC-CRM-Thesauri und standardisierte Datenstrukturen, um Ihre Forschungsdaten zukunftssicher und austauschbar zu machen.</p>
+            </div>
+            <div class="data-structure">
+                <pre>Funde
+├── Find-ID: eindeutig identifiziert
+├── Kategorie: Keramik, Knochen, Metall, ...
+├── Material: Ton, Bronze, Kalkstein, ...
+├── Beschreibung: detaillierte Dokumentation
+├── Koordinaten: latitude, longitude, tiefe
+├── Zone: räumliche Zuordnung
+├── Periode: zeitliche Einordnung
+├── Zustand: Erhaltungszustand
+├── Bilder: Fotos und Orthofotos
+├── 3D-Modell: digitale Rekonstruktion
+├── Berichte: Analyseergebnisse
+├── Verknüpfungen: zu anderen Funden
+└── Kommentare: Diskussionen und Anmerkungen</pre>
+            </div>
+        </div>
+
+        <!-- Audit Trail -->
+        <div class="feature-section">
+            <h2>Vollständige Nachvollziehbarkeit</h2>
+            <div class="highlight">
+                <strong>📜 Transparente Dokumentation</strong>
+                <p>Jeder Beitrag wird aufgezeichnet. Wer hat was wann geändert? DatArchi dokumentiert Ihre gesamte Forschungsarbeit für maximale wissenschaftliche Nachprüfbarkeit.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-history"></i></div>
+                    <div class="feature-title">Änderungshistorie</div>
+                    <div class="feature-description">
+                        Alle Änderungen sind dokumentiert
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-user-tag"></i></div>
+                    <div class="feature-title">Beitragsnachweis</div>
+                    <div class="feature-description">
+                        Klare Zuordnung zu Forschern
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="feature-title">Nachprüfbarkeit</div>
+                    <div class="feature-description">
+                        Wissenschaftliche Validierung möglich
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>Starten Sie noch heute mit DatArchi</h2>
+            <p>Kostenlos, unbegrenzt, für jeden Archäologen</p>
+            <a href="/index.html" class="cta-button">Zum Login</a>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script type="module" src="../js/injectHeaderFooter.js"></script>
+    <script type="module" src="../js/auth-guard.js"></script>
+    <script type="module" src="../js/header/header.js"></script>
+    <script type="module" src="../js/footer/footer.js"></script>
+</body>
+</html>

@@ -1,4 +1,20 @@
+// js/injectHeaderFooter.js
+// ====================
 // Inject header and footer from external HTML files
+
+// Determine site root based on current location
+const getSiteRoot = () => {
+  const pathname = window.location.pathname;
+  // If hosted on GitHub Pages, the repo name is part of the path
+  if (pathname.includes('/DatArchi/')) {
+    return window.location.origin + '/DatArchi/';
+  }
+  // For local development or other hosting, assume root is '/'
+  return window.location.origin + '/';
+};
+
+const SITE_ROOT = getSiteRoot();
+
 async function injectSection(selector, url) {
   const el = document.querySelector(selector);
   if (!el) return;
@@ -40,61 +56,75 @@ function adjustLinks(container, siteRoot) {
 }
 
 function ensureContainers() {
-  if (!document.querySelector('#header-container')) {
-    const headerDiv = document.createElement('div');
-    headerDiv.id = 'header-container';
-    document.body.prepend(headerDiv);
+  // Support multiple possible container IDs
+  const possibleHeaderIds = ['header-container', 'headerContainer', 'header_container'];
+  const possibleFooterIds = ['footer-container', 'footerContainer', 'footer_container'];
+
+  // Check and create header container
+  let headerEl = null;
+  for (const id of possibleHeaderIds) {
+    headerEl = document.querySelector(`#${id}`);
+    if (headerEl) break;
   }
-  if (!document.querySelector('#footer-container')) {
-    const footerDiv = document.createElement('div');
-    footerDiv.id = 'footer-container';
-    document.body.appendChild(footerDiv);
+  if (!headerEl) {
+    headerEl = document.createElement('div');
+    headerEl.id = 'header-container';
+    document.body.prepend(headerEl);
+  }
+
+  // Check and create footer container
+  let footerEl = null;
+  for (const id of possibleFooterIds) {
+    footerEl = document.querySelector(`#${id}`);
+    if (footerEl) break;
+  }
+  if (!footerEl) {
+    footerEl = document.createElement('div');
+    footerEl.id = 'footer-container';
+    document.body.appendChild(footerEl);
   }
 }
+
+let loaded = false;
+let lastError = null;
+
+// Function to reload header and footer
+async function reloadHeaderFooter() {
+  ensureContainers();
+
+  const siteRoot = SITE_ROOT;
+  const headerUrl = new URL('partials/header.html', siteRoot).href;
+  const footerUrl = new URL('partials/footer.html', siteRoot).href;
+  
+  try {
+    await Promise.all([
+      injectSection('#header-container', headerUrl),
+      injectSection('#footer-container', footerUrl)
+    ]);
+
+    const headerEl = document.querySelector('#header-container');
+    const footerEl = document.querySelector('#footer-container');
+
+    adjustLinks(headerEl, siteRoot);
+    adjustLinks(footerEl, siteRoot);
+
+    document.dispatchEvent(new Event('headerFooterReady'));
+  } catch (err) {
+    console.warn('reloadHeaderFooter: failed to reload partials:', err);
+  }
+}
+
+// Export reload function globally
+window.reloadHeaderFooter = reloadHeaderFooter;
 
 document.addEventListener('DOMContentLoaded', async () => {
   ensureContainers();
 
-  let loaded = false;
-  let lastError = null;
-
-  // Determine the correct site root URL
-  let siteRoot;
-  if (document.location.protocol === 'file:') {
-    // For local file viewing, root is two levels up from this script
-    siteRoot = new URL('../../', import.meta.url).href;
-  } else {
-    // For http(s) protocols, handle potential subdirectories (like GitHub Pages)
-    const origin = document.location.origin;
-    const pathname = document.location.pathname;
-    
-    // Heuristic for GitHub Pages: if path contains repo name, use it as base
-    const repoName = 'DatArchi'; // Your repository name
-    const ghPagesBasePath = `/${repoName}/`;
-    
-    if (pathname.startsWith(ghPagesBasePath)) {
-      siteRoot = `${origin}${ghPagesBasePath}`;
-    } else {
-      // Otherwise, assume it's served from the root
-      siteRoot = origin + '/';
-    }
-  }
-
-  // Ensure siteRoot always ends with a slash
-  if (!siteRoot.endsWith('/')) {
-    siteRoot += '/';
-  }
-
-  console.log('[Debug] Origin:', document.location.origin);
-  console.log('[Debug] Pathname:', document.location.pathname);
-  console.log('[Debug] Calculated siteRoot:', siteRoot);
+  const siteRoot = SITE_ROOT; // Use the imported site root
 
   const headerUrl = new URL('partials/header.html', siteRoot).href;
   const footerUrl = new URL('partials/footer.html', siteRoot).href;
-
-  console.log('[Debug] Fetching Header from:', headerUrl);
-  console.log('[Debug] Fetching Footer from:', footerUrl);
-
+  
   try {
     await Promise.all([
       injectSection('#header-container', headerUrl),
@@ -110,6 +140,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     loaded = true;
     document.dispatchEvent(new Event('headerFooterReady'));
+
+    // Load mobile navigation script after header is injected
+    const navScript = document.createElement('script');
+    navScript.type = 'module';
+    navScript.src = new URL('header/nav-mobile.js', SITE_ROOT + 'js/').href;
+    document.head.appendChild(navScript);
 
   } catch (err) {
     lastError = err;

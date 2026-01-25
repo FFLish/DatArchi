@@ -1,54 +1,60 @@
 /* Variables and Root Styles */
 :root {
-  /* Light theme variables (default) */
-  --bg: #f9fafb;
-  --card: #ffffff;
-  --card-darker: #f0f2f5; /* Light mode */
-  --text: #1f2937;
-  --muted: #6b7280;
-  --accent: #3b82f6;
-  --accent-2: #10b981;
-  --danger: #ef4444;
+  /* Light theme variables (default) - Archaeological Yellow-Orange */
+  --bg: #fffaf0;
+  --card: #fffef9;
+  --card-darker: #fef3e6; /* Light mode - warm gold */
+  --text: #3e2723;
+  --muted: #a0826d;
+  --accent: #f4a460;
+  --accent-2: #daa520;
+  --accent-3: #d97706;
+  --danger: #d97706;
   --warning: #f59e0b;
-  --success: #22c55e;
-  --info: #3b82f6;
-  --dark: #111827;
-  --light: #f9fafb;
-  --border: rgba(0, 0, 0, 0.08);
+  --success: #84cc16;
+  --info: #f4a460;
+  --dark: #1b0f0a;
+  --light: #fef3e6;
+  --border: rgba(244, 164, 96, 0.2);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.09);
+  --shadow-lg: 0 15px 40px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 30px 60px rgba(0, 0, 0, 0.15);
+  --shadow-neon: 0 0 30px rgba(244, 164, 96, 0.3);
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 14px;
-  --transition: all 0.28s cubic-bezier(.2, .9, .3, 1);
+  --radius-xl: 20px;
+  --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --header-height: 72px;
-  --glass: rgba(255, 255, 255, 0.5);
+  --glass: rgba(255, 255, 255, 0.8);
   --content-padding: 24px;
 }
 
 html[data-theme="dark"] {
-  /* Dark professional palette */
-  --bg: #111827; /* page background */
-  --card: #1f2937; /* cards, panels */
-  --card-darker: #1a222e; /* Dark mode */
-  --text: #f9fafb; /* main text */
-  --muted: #9ca3af; /* subdued text */
-  --accent: #38bdf8; /* primary accent */
-  --accent-2: #34d399;
-  --danger: #f43f5e;
-  --warning: #f59e0b;
-  --success: #10b981;
-  --info: #3b82f6;
-  --dark: #071019; /* extra dark tone */
-  --light: #f9fafb;
-  --border: rgba(255, 255, 255, 0.1);
-  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.35);
-  --shadow-xl: 0 40px 90px rgba(0, 0, 0, 0.4);
-  --glass: rgba(255, 255, 255, 0.03);
+  /* Dark professional palette - Warm Archaeological Yellow-Orange */
+  --bg: #1a0f08; /* page background - very dark earth */
+  --card: #2d1810; /* cards, panels - dark amber */
+  --card-darker: #1a0f08; /* Dark mode */
+  --text: #fffaf0; /* main text - warm cream */
+  --muted: #f4a460; /* subdued text - sandy orange */
+  --accent: #ffb84d; /* primary accent - warm orange */
+  --accent-2: #ffd700; /* secondary accent - golden yellow */
+  --accent-3: #ff8c00;
+  --danger: #ff8c00;
+  --warning: #ffb347;
+  --success: #b8cc00;
+  --info: #ffb84d;
+  --dark: #0d0705; /* extra dark tone */
+  --light: #f4a460;
+  --border: rgba(255, 184, 77, 0.25);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 40px 90px rgba(0, 0, 0, 0.6);
+  --shadow-neon: 0 0 40px rgba(255, 184, 77, 0.3);
+  --glass: rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -72,4 +78,5 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
 }

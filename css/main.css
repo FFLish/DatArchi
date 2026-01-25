@@ -1,8 +1,8 @@
 /* Main Layout and General Styles */
 .layout {
   display: flex;
-  gap: 28px;
-  padding: 32px var(--content-padding);
+  gap: 24px;
+  padding: 28px var(--content-padding);
   width: 100%;
   flex: 1;
 }
@@ -11,8 +11,19 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  animation: fadeIn 0.6s ease-out;
+  gap: 20px;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
@@ -33,26 +44,42 @@
 } 
 
 .page-hero {
-  padding: 40px 24px;
-  background-color: var(--card);
+  padding: 44px 24px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
   border-radius: var(--radius-lg);
   text-align: center;
-  border: 1px solid var(--border);
-  margin-bottom: 8px; /* Adjust as needed */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 0;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1), transparent);
+  pointer-events: none;
 }
 
 .page-hero h1 {
-  font-size: 40px;
-  font-weight: 800;
+  font-size: 36px;
+  font-weight: 700;
   margin-bottom: 8px;
   line-height: 1.2;
+  position: relative;
+  z-index: 1;
 }
 
 .page-hero .lead {
-  font-size: 18px;
-  color: var(--muted);
+  font-size: 16px;
   max-width: 650px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  opacity: 0.95;
 }
 
 .image-map {
@@ -60,14 +87,14 @@
   background: var(--card);
   padding: 16px;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   border: 1px solid var(--border);
   overflow: hidden;
-  transition: var(--transition);
+  transition: var(--transition-fast);
 }
 
 .image-map:hover {
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 

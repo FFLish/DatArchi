@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test User Setup - DatArchi Admin</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .admin-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .admin-panel h1 {
+            color: var(--text);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-panel h1 i {
+            color: var(--accent);
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(244, 164, 96, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(244, 164, 96, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .message.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: rgba(244, 164, 96, 0.1);
+            border: 1px solid rgba(244, 164, 96, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: var(--text);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: var(--accent);
+        }
+    </style>
+    <script type="module" src="../../js/injectHeaderFooter.js"></script>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="admin-container">
+        <div class="admin-panel">
+            <h1><i class="fas fa-flask"></i> Test Projekte erstellen</h1>
+            
+            <div class="info-box">
+                <strong>ℹ️ Anleitung:</strong><br>
+                Geben Sie die Benutzer-ID und den Namen des Benutzers ein, für den Test-Projekte erstellt werden sollen. Es werden automatisch 3 archäologische Test-Projekte mit Funden erstellt.
+            </div>
+
+            <form id="testUserForm">
+                <div class="form-group">
+                    <label for="userId">Benutzer-ID (aus Firebase):</label>
+                    <input type="text" id="userId" placeholder="z.B. DpGQmJ2mVfTk4g7hJ8xK9p0qL1" value="sGsaBu2P3tVlUZOTBtc5H8e2Zc82" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="userName">Benutzername:</label>
+                    <input type="text" id="userName" placeholder="z.B. tristancoutant" value="tristancoutant" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Test-Projekte erstellen
+                </button>
+            </form>
+
+            <div id="messageContainer"></div>
+
+            <div id="projectList" style="display: none; margin-top: 30px;">
+                <h2 style="color: var(--text); margin-top: 0;">Erstellte Projekte:</h2>
+                <ul id="projects" style="color: var(--muted); list-style: none; padding: 0;">
+                    <li>• Römische Villa am Rhein</li>
+                    <li>• Keltische Siedlung Taunus</li>
+                    <li>• Mittelalterliches Kloster Bayern</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script type="module">
+        import { createTestProjectsForUser } from '../../js/test-user-setup.js';
+
+        const form = document.getElementById('testUserForm');
+        const messageContainer = document.getElementById('messageContainer');
+        const projectList = document.getElementById('projectList');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const userId = document.getElementById('userId').value.trim();
+            const userName = document.getElementById('userName').value.trim();
+
+            if (!userId || !userName) {
+                showMessage('Bitte füllen Sie alle Felder aus.', 'error');
+                return;
+            }
+
+            try {
+                // Disable button
+                const button = form.querySelector('button');
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner loading-spinner"></i> Erstelle Projekte...';
+
+                // Show info message
+                showMessage(`Erstelle Test-Projekte für ${userName}...`, 'info');
+
+                // Call the setup function
+                await createTestProjectsForUser(userId, userName);
+
+                // Show success message
+                showMessage(`✅ Test-Projekte erfolgreich für ${userName} erstellt! Sie können diese auf der öffentliche Projekte Seite anschauen.`, 'success');
+
+                // Show project list
+                projectList.style.display = 'block';
+
+                // Reset form
+                form.reset();
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-plus"></i> Test-Projekte erstellen';
+
+            } catch (error) {
+                console.error('Fehler:', error);
+                showMessage(`❌ Fehler: ${error.message}`, 'error');
+                const button = form.querySelector('button');
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-plus"></i> Test-Projekte erstellen';
+            }
+        });
+
+        function showMessage(text, type) {
+            messageContainer.innerHTML = `
+                <div class="message ${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${text}</span>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

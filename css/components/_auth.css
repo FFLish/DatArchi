@@ -1,0 +1,24 @@
+/* css/components/_auth.css */
+
+.auth-section {
+  margin-top: 24px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-input {
+  width: 100%;
+  max-width: 300px;
+  /* Re-use styles from forms.css for padding, border-radius, border, etc. */
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}

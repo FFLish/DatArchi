@@ -1,7 +1,9 @@
 // js/theme-toggle.js
+// ====================
+// Dark/Light theme toggle functionality
+
 (function() {
   const THEME_STORAGE_KEY = 'datarchi.theme';
-  const themeToggleButton = document.getElementById('theme-toggle');
   const htmlElement = document.documentElement;
 
   function applyTheme(theme) {
@@ -24,7 +26,7 @@
     applyTheme(initialTheme);
   }
 
-  // Need to wait for the header to be injected
+  // Wait for the header to be injected before attaching event listener
   document.addEventListener('headerFooterReady', () => {
     const themeToggleButton = document.getElementById('theme-toggle');
     if (themeToggleButton) {
@@ -32,7 +34,6 @@
     }
   });
 
-
-  // Run initialization
+  // Run initialization immediately
   initializeTheme();
 })();

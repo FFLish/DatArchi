@@ -4,10 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Karte - DatArchi</title>
-  <link rel="stylesheet" href="/DatArchi/css/styles.css">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/auth-guard.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
+  <div id="header-container"></div>
 
   <div class="layout">
     <aside class="sidebar">
@@ -23,6 +26,25 @@
                 <div id="gridInfoMessage" class="hint-message" style="margin-top: 8px;"></div>
             </details>
         </div>
+
+        <details id="projectSelectorDetails" open>
+          <summary>Projekt wählen</summary>
+          <div class="project-selector" style="padding: 12px;">
+            <select id="projectSelect" class="form-control" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+              <option value="">-- Wähle ein Projekt --</option>
+            </select>
+            <a href="/pages/sites/index.html" class="btn btn-primary btn-sm" style="display: block; margin-top: 12px; text-align: center;">+ Neues Projekt</a>
+          </div>
+        </details>
+
+        <details id="fundAddDetails" open>
+          <summary>Fund hinzufügen</summary>
+          <div class="fund-add-panel" style="padding: 12px;">
+            <button id="quickAddFundBtn" class="btn btn-accent btn-sm" style="width: 100%;">Fund erfassen</button>
+            <p class="text-muted" style="font-size: 12px; margin-top: 8px; text-align: center;">Klicke auf die Karte um einen Fund zu platzieren</p>
+          </div>
+        </details>
+
       <details id="zoneListDetails" open>
         <summary>Zonenliste</summary>
         <ul class="zone-list" id="zoneList">
@@ -41,12 +63,14 @@
     </main>
   </div>
 
+  <div id="footer-container"></div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="/DatArchi/js/injectHeaderFooter.js"></script>
-  <script type="module" src="/DatArchi/js/header/header.js"></script>
-  <script type="module" src="/DatArchi/js/header/nav-mobile.js"></script>
-  <script type="module" src="/DatArchi/js/footer/footer.js"></script>
-  <script type="module" src="/DatArchi/js/main-map.js"></script>
-  <script type="module" src="/DatArchi/js/theme-toggle.js"></script>
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/header/header.js"></script>
+  <script type="module" src="../../js/header/nav-mobile.js"></script>
+  <script type="module" src="../../js/footer/footer.js"></script>
+  <script type="module" src="../../js/main-map.js"></script>
+  <script type="module" src="../../js/theme-toggle.js"></script>
 </body>
 </html>

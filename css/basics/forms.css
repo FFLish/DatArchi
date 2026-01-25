@@ -14,12 +14,13 @@ input[type="date"],
 textarea,
 select {
   width: 100%;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border: 1px solid var(--border);
-  border-radius: 8px; /* Softer radius */
-  background-color: var(--bg); /* Blend with page background */
+  border-radius: 8px;
+  background-color: var(--card);
   color: var(--text);
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
+  font-weight: 500;
 }
 
 input[type="text"]:focus,
@@ -31,23 +32,25 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* More subtle focus shadow */
+  box-shadow: 0 0 0 3px rgba(244, 164, 96, 0.1);
 } 
 
 textarea {
   resize: vertical;
   min-height: 100px;
+  font-family: 'Inter', sans-serif;
 }
 
 label {
   display: block;
-  margin-bottom: 8px; /* Increased spacing */
-  font-weight: 500; /* Lighter font weight */
+  margin-bottom: 8px;
+  font-weight: 600;
   color: var(--text);
+  font-size: 14px;
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .form-row {
@@ -56,27 +59,30 @@ label {
   gap: 16px;
 }
 
-
 .form-group label {
   margin-bottom: 8px;
 }
 
 input[type="checkbox"],
 input[type="radio"] {
-  margin-right: 6px;
+  margin-right: 8px;
   cursor: pointer;
+  accent-color: var(--accent);
+  width: 18px;
+  height: 18px;
 }
 
 input[type="checkbox"] + label,
 input[type="radio"] + label {
   display: inline;
   margin-bottom: 0;
-  font-weight: normal;
+  font-weight: 500;
   cursor: pointer;
 }
 
 .form-error {
   border-color: var(--danger) !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15) !important;
 }
 
 .error-message {

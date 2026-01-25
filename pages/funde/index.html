@@ -6,8 +6,247 @@
   <title>Funde — DatArchi</title>
   <link rel="stylesheet" href="../../css/styles.css">
   <link rel="stylesheet" href="../../css/funde.css">
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/auth-guard.js"></script>
+
+  <style>
+    /* Tab Styling */
+    .tab-navigation {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      color: #6b7280;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover {
+      color: #1f2937;
+    }
+
+    .tab-btn.active {
+      border-bottom-color: #5b21b6;
+      color: #1f2937;
+    }
+
+    .tab-content {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Fundorte Map Styling */
+    .finds-karte-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .fundorte-image-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-height: 500px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f3f4f6;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .fundorte-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .fundorte-markers {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+    }
+
+    .fundort-marker {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border: 3px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 0.8rem;
+      transform: translate(-50%, -50%);
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+    }
+
+    .fundort-marker:hover {
+      transform: translate(-50%, -50%) scale(1.2);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .fundort-marker.active {
+      background: linear-gradient(135deg, #5b21b6, #7c3aed);
+      border-color: #fff;
+    }
+
+    .fundort-marker-tooltip {
+      position: absolute;
+      background: rgba(31, 41, 55, 0.95);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      pointer-events: none;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-bottom: 8px;
+      z-index: 20;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .fundort-marker-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid rgba(31, 41, 55, 0.95);
+    }
+
+    .fundorte-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .fundort-item {
+      padding: 16px;
+      background: #f9fafb;
+      border-left: 4px solid #5b21b6;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      color: #1f2937;
+    }
+
+    html[data-theme="dark"] .fundort-item {
+      background: #2d1810;
+      border-left-color: #ffb84d;
+      color: #fffaf0;
+    }
+
+    .fundort-item:hover {
+      background: #f3f4f6;
+      transform: translateX(5px);
+      border-left-color: #ef4444;
+    }
+
+    html[data-theme="dark"] .fundort-item:hover {
+      background: #3d2715;
+      border-left-color: #ffd700;
+      transform: translateX(5px);
+    }
+
+    .fundort-item.active {
+      background: #ede9fe;
+      border-left-color: #7c3aed;
+      box-shadow: 0 2px 8px rgba(91, 33, 182, 0.1);
+    }
+
+    html[data-theme="dark"] .fundort-item.active {
+      background: #4d2c1a;
+      border-left-color: #ffd700;
+      box-shadow: 0 2px 8px rgba(255, 184, 77, 0.2);
+    }
+
+    .fundort-item h4 {
+      margin: 0 0 8px 0;
+      color: #1f2937;
+      font-size: 1rem;
+    }
+
+    html[data-theme="dark"] .fundort-item h4 {
+      color: #fffaf0;
+    }
+
+    .fundort-item p {
+      margin: 4px 0;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    html[data-theme="dark"] .fundort-item p {
+      color: #f4a460;
+    }
+
+    .fundort-item .badge {
+      display: inline-block;
+      background: #dbeafe;
+      color: #0369a1;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-right: 6px;
+      margin-top: 4px;
+    }
+
+    html[data-theme="dark"] .fundort-item .badge {
+      background: #4d2c1a;
+      color: #ffb84d;
+      border: 1px solid #ffb84d;
+    }
+
+    @media (max-width: 768px) {
+      .fundorte-image-wrapper {
+        max-height: 300px;
+      }
+
+      .fundorte-list {
+        grid-template-columns: 1fr;
+      }
+
+      .tab-btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div id="header-container"></div>
 
   <main class="main">
     <div class="d-flex justify-between align-center flex-wrap gap-2">
@@ -18,16 +257,93 @@
       <a class="btn btn-primary" href="eingeben.html">Neuen Fund erfassen</a>
     </div>
 
-    <div id="finds-list" class="finds-grid">
-      <!-- Finds will be injected here by JavaScript -->
+    <!-- Tab Navigation -->
+    <div class="tab-navigation" style="margin: 24px 0; border-bottom: 1px solid #e5e7eb; display: flex; gap: 0;">
+      <button class="tab-btn active" id="tab-liste" onclick="switchTab('liste')" style="padding: 12px 24px; border: none; background: none; cursor: pointer; border-bottom: 3px solid #5b21b6; color: #1f2937; font-weight: 500;">
+        <i class="fas fa-list"></i> Liste
+      </button>
+      <button class="tab-btn" id="tab-karte" onclick="switchTab('karte')" style="padding: 12px 24px; border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; color: #6b7280; font-weight: 500;">
+        <i class="fas fa-map"></i> Karte
+      </button>
+    </div>
+
+    <!-- Liste Tab -->
+    <div id="tab-content-liste" class="tab-content active">
+      <div class="finds-filter-container" style="margin: 24px 0;">
+        <div class="form-row">
+          <div class="form-group" style="flex-grow: 1;">
+            <input type="search" id="searchInput" placeholder="Funde durchsuchen (Titel, Beschreibung)..." />
+          </div>
+          <div class="form-group">
+            <select id="materialFilter">
+              <option value="">Alle Materialien</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+          </div>
+          <div class="form-group">
+            <select id="kategorieFilter">
+              <option value="">Alle Kategorien</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 12px;">
+          <input type="checkbox" id="searchAllSites" name="searchAllSites" />
+          <label for="searchAllSites" style="display: inline;">Alle Stätten durchsuchen</label>
+        </div>
+      </div>
+
+      <div id="finds-list" class="finds-grid">
+        <!-- Finds will be injected here by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Karte Tab -->
+    <div id="tab-content-karte" class="tab-content" style="display: none;">
+      <div class="finds-karte-container" style="margin: 24px 0;">
+        <div class="fundorte-image-wrapper">
+          <img src="/partials/images/ausgrabungsstätte.jpg" alt="Ausgrabungsstätte" class="fundorte-image" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+          <div id="fundorte-markers-funde" class="fundorte-markers"></div>
+        </div>
+
+        <div id="fundorteList-funde" class="fundorte-list" style="margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+          <!-- Fundorte list will be injected here by JavaScript -->
+        </div>
+      </div>
     </div>
   </main>
 
+  <div id="footer-container"></div>
 
   <script type="module" src="../../js/injectHeaderFooter.js"></script>
   <script type="module" src="../../js/header/header.js"></script>
   <script type="module" src="../../js/footer/footer.js"></script>
-  <script type="module" src="../../js/objekte.js"></script>
+  <script type="module" src="../../js/main.js"></script>
+  <script type="module" src="../../js/funde/funde-map.js"></script>
   <script type="module" src="../../js/theme-toggle.js"></script>
+
+  <script>
+    // Tab switching function
+    window.switchTab = function(tab) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.borderBottomColor = 'transparent';
+        btn.style.color = '#6b7280';
+      });
+
+      // Show selected tab
+      document.getElementById('tab-content-' + tab).style.display = 'block';
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('tab-' + tab).style.borderBottomColor = '#5b21b6';
+      document.getElementById('tab-' + tab).style.color = '#1f2937';
+
+      // If Karte tab is opened, update the map
+      if (tab === 'karte') {
+        window.updateFundorteMapTab?.();
+      }
+    };
+  </script>
 </body>
 </html>

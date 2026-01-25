@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - DatArchi</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 32px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .card h2 {
+            color: #333;
+            margin: 0 0 10px 0;
+            font-size: 20px;
+        }
+        .card p {
+            color: #666;
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .card.demo {
+            border-top: 3px solid #22c55e;
+        }
+        .card.test {
+            border-top: 3px solid #3b82f6;
+        }
+        .back-link {
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Zurück zur Startseite</a>
+        <h1>⚙️ Admin Panel</h1>
+
+        <div class="grid">
+            <a href="/pages/admin/demo-setup.html" class="card demo">
+                <div class="card-icon">✨</div>
+                <h2>Demo-Daten Setup</h2>
+                <p>Erstelle Demo-Benutzer, öffentliche Projekte und archäologische Funde zur Demonstration der Plattform.</p>
+            </a>
+
+            <a href="/pages/admin/test-user-setup.html" class="card test">
+                <div class="card-icon">👤</div>
+                <h2>Test Projekte für User</h2>
+                <p>Erstelle Test-Projekte für einen spezifischen Benutzer mit vordefinierten Daten und Funden.</p>
+            </a>
+
+            <a href="/pages/admin/test-data.html" class="card test">
+                <div class="card-icon">🧪</div>
+                <h2>Test-Daten Admin</h2>
+                <p>Verwalte Test-Daten und Entwicklungs-Daten für die Plattform.</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

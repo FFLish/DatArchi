@@ -4,11 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fund erfassen — DatArchi</title>
-  <link rel="stylesheet" href="/DatArchi/css/styles.css">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/pages-optimized.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/auth-guard.js"></script>
+  <script type="module" src="../../js/funde/eingeben-optimizer.js"></script>
 
 </head>
 <body>
+  <div id="header-container"></div>
 
   <main class="main">
     <div class="form-container">
@@ -18,14 +23,25 @@
       <form id="fundForm">
         <div id="alert" class="alert alert-success" role="alert" hidden></div>
 
-        <div class="form-group">
-          <label for="titel">Titel</label>
-          <input id="titel" name="titel" type="text" placeholder="Kurzer Titel des Fundes" required />
+        <div class="form-row">
+          <div class="form-group" style="flex-grow: 2;">
+            <label for="titel">Titel</label>
+            <input id="titel" name="titel" type="text" placeholder="Kurzer Titel des Fundes" required />
+          </div>
+          <div class="form-group" style="flex-grow: 1;">
+            <label for="fundId">Fund-ID</label>
+            <input id="fundId" name="fundId" type="text" placeholder="Eindeutige ID, z.B. TS-2024-001" />
+          </div>
         </div>
 
         <div class="form-group">
           <label for="beschreibung">Beschreibung</label>
           <textarea id="beschreibung" name="beschreibung" placeholder="Detaillierte Beschreibung des Fundes, des Kontexts und des Zustands."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="berichte">Berichte / Anmerkungen</label>
+          <textarea id="berichte" name="berichte" placeholder="Anmerkungen von beteiligten Forschern, z.B. Restaurierungsbedarf."></textarea>
         </div>
 
         <div class="form-row">
@@ -34,34 +50,65 @@
             <input id="material" name="material" type="text" placeholder="z. B. Keramik, Bronze, Eisen" />
           </div>
           <div class="form-group">
-            <label for="datierung">Datierung</label>
-            <input id="datierung" name="datierung" type="text" placeholder="z. B. 2. Jh. v. Chr., Eisenzeit" />
+            <label for="kategorie">Kategorie</label>
+            <select id="kategorie" name="kategorie">
+              <option value="">Bitte wählen...</option>
+              <option value="organisch">Organisch</option>
+              <option value="werkzeuge">Werkzeuge</option>
+              <option value="gefaesse">Gefäße</option>
+              <option value="ruinen">Ruinen / Architektur</option>
+              <option value="sonstiges">Sonstiges</option>
+            </select>
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group">
-            <label for="funddatum">Funddatum</label>
-            <input id="funddatum" name="funddatum" type="date" />
-          </div>
+            <div class="form-group">
+                <label for="datierung">Datierung</label>
+                <input id="datierung" name="datierung" type="text" placeholder="z. B. 2. Jh. v. Chr., Eisenzeit" />
+            </div>
+            <div class="form-group">
+              <label for="funddatum">Funddatum</label>
+              <input id="funddatum" name="funddatum" type="date" />
+            </div>
+        </div>
+
+        <div class="form-row">
           <div class="form-group">
             <label for="foto">Foto (optional)</label>
             <input id="foto" name="foto" type="file" accept="image/*" />
           </div>
+          <div class="form-group">
+            <label for="modell">3D-Modell (optional)</label>
+            <input id="modell" name="modell" type="file" accept=".obj,.glb,.gltf" />
+          </div>
         </div>
 
+        <div class="form-group">
+            <label>Sichtbarkeit</label>
+            <div>
+                <input type="radio" id="privacy-private" name="privacy" value="private" checked>
+                <label for="privacy-private">Privat (nur für Teammitglieder sichtbar)</label>
+            </div>
+            <div>
+                <input type="radio" id="privacy-public" name="privacy" value="public">
+                <label for="privacy-public">Öffentlich (für alle sichtbar)</label>
+            </div>
+        </div>
 
-              <div class="form-group">
-                <label>Fundort (Kartenklick)</label>
-                <div id="fundMap" class="image-map fund-map-container" aria-label="Karte mit Fundposition"></div>
-                <p class="text-muted fund-map-hint">Klicken Sie direkt in die Karte, um eine Position auszuwählen.</p>
-                <input type="hidden" id="latitude" name="latitude" />
-                <input type="hidden" id="longitude" name="longitude" />
-              </div>
+        <div class="form-group">
+          <label>Fundort (Kartenklick)</label>
+          <div id="fundMap" class="image-map fund-map-container" aria-label="Karte mit Fundposition"></div>
+          <p class="text-muted fund-map-hint">Klicken Sie direkt in die Karte, um eine Position auszuwählen.</p>
+          <input type="hidden" id="latitude" name="latitude" />
+          <input type="hidden" id="longitude" name="longitude" />
+        </div>
+
         <div class="form-group form-actions-group">
           <button type="submit" class="btn btn-primary btn-lg">Fund speichern</button>
           <input type="number" id="numExampleFinds" value="10" min="1" class="input-example-finds"/>
           <button type="button" id="addExampleFindsBtn" class="btn btn-secondary btn-lg">Beispielfunde hinzufügen</button>
+          <button type="button" id="deleteAllFindsBtn" class="btn btn-danger btn-lg" style="margin-left: auto;">Alle Funde löschen</button>
         </div>
       </form>
     </div>
@@ -69,12 +116,13 @@
     <div id="savedList" class="saved-finds-list"></div>
   </main>
 
+  <div id="footer-container"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="/DatArchi/js/injectHeaderFooter.js"></script>
-  <script type="module" src="/DatArchi/js/header/header.js"></script>
-  <script type="module" src="/DatArchi/js/footer/footer.js"></script>
-  <script type="module" src="/DatArchi/js/funde/eingeben.js"></script>
-  <script type="module" src="/DatArchi/js/theme-toggle.js"></script>
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/header/header.js"></script>
+  <script type="module" src="../../js/footer/footer.js"></script>
+  <script type="module" src="../../js/funde/eingeben.js"></script>
+  <script type="module" src="../../js/theme-toggle.js"></script>
 </body>
 </html>

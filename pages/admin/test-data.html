@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test-Daten Admin - DatArchi</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/projects.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="module" src="../../js/injectHeaderFooter.js"></script>
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .admin-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .admin-section h2 {
+            color: #1a1a2e;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .admin-section h2 i {
+            color: #5b21b6;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-card-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .data-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #1a1a2e;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            color: #666;
+        }
+        
+        .data-table tr:hover {
+            background: #fafafa;
+        }
+        
+        .data-table .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .badge-public {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-private {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .badge-active {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .console-output {
+            background: #1a1a2e;
+            color: #00ff00;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+        
+        .console-line {
+            margin: 4px 0;
+        }
+        
+        .console-success {
+            color: #00ff00;
+        }
+        
+        .console-error {
+            color: #ff6b6b;
+        }
+        
+        .console-info {
+            color: #87ceeb;
+        }
+    </style>
+</head>
+<body>
+    <div id="headerContainer"></div>
+    
+    <main class="admin-container">
+        <div class="projects-header" style="margin-bottom: 40px;">
+            <div class="header-content">
+                <h1><i class="fas fa-flask"></i> Test-Daten Admin Panel</h1>
+                <p>Verwalte und überwache die Beispieldaten für Projekte und Funde</p>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="admin-section">
+            <h2><i class="fas fa-chart-bar"></i> Statistiken</h2>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-card-number">-</div>
+                    <div class="stat-card-label">Projekte</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-number">-</div>
+                    <div class="stat-card-label">Funde</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-number">-</div>
+                    <div class="stat-card-label">Benutzer</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-number">-</div>
+                    <div class="stat-card-label">Öffentliche Projekte</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="admin-section">
+            <h2><i class="fas fa-cogs"></i> Aktionen</h2>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="resetTestData()">
+                    <i class="fas fa-redo"></i> Auf Test-Daten zurücksetzen
+                </button>
+                <button class="btn btn-secondary" onclick="exportTestData()">
+                    <i class="fas fa-download"></i> Test-Daten exportieren
+                </button>
+                <button class="btn btn-secondary" onclick="clearLocalStorage()">
+                    <i class="fas fa-trash"></i> Lokale Daten löschen
+                </button>
+                <button class="btn btn-secondary" onclick="refreshStats()">
+                    <i class="fas fa-sync"></i> Statistiken aktualisieren
+                </button>
+            </div>
+            <div class="console-output" id="consoleOutput">
+                <div class="console-line console-info">&gt; Willkommen im Admin Panel</div>
+            </div>
+        </div>
+
+        <!-- Projects Section -->
+        <div class="admin-section">
+            <h2><i class="fas fa-folder"></i> Projekte ({{ projectCount }})</h2>
+            <table class="data-table" id="projectsTable">
+                <thead>
+                    <tr>
+                        <th>Projektname</th>
+                        <th>Besitzer</th>
+                        <th>Sichtbarkeit</th>
+                        <th>Funde</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="projectsTableBody">
+                    <tr><td colspan="5">Laden...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Finds Section -->
+        <div class="admin-section">
+            <h2><i class="fas fa-cube"></i> Funde ({{ findCount }})</h2>
+            <table class="data-table" id="findsTable">
+                <thead>
+                    <tr>
+                        <th>Fund-Titel</th>
+                        <th>Material</th>
+                        <th>Kategorie</th>
+                        <th>Projekt</th>
+                        <th>Datierung</th>
+                    </tr>
+                </thead>
+                <tbody id="findsTableBody">
+                    <tr><td colspan="5">Laden...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Users Section -->
+        <div class="admin-section">
+            <h2><i class="fas fa-users"></i> Benutzer ({{ userCount }})</h2>
+            <table class="data-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Institution</th>
+                        <th>Rolle</th>
+                        <th>Sterne</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr><td colspan="5">Laden...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script type="module">
+        import { injectHeaderFooter } from '/js/injectHeaderFooter.js';
+        await injectHeaderFooter();
+    </script>
+
+    <script type="module">
+        import { projectsDB } from '/js/projects-database.js';
+
+        // Log function
+        function log(message, type = 'info') {
+            const console = document.getElementById('consoleOutput');
+            const line = document.createElement('div');
+            line.className = `console-line console-${type}`;
+            line.textContent = `> ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        // Refresh statistics
+        function refreshStats() {
+            const stats = projectsDB.getStats();
+            const cards = document.querySelectorAll('.stat-card-number');
+            cards[0].textContent = stats.projects;
+            cards[1].textContent = stats.finds;
+            cards[2].textContent = stats.users;
+            cards[3].textContent = stats.publicProjects;
+            
+            log(`Statistiken aktualisiert: ${stats.projects} Projekte, ${stats.finds} Funde, ${stats.users} Benutzer`, 'success');
+            loadProjectsTable();
+            loadFindsTable();
+            loadUsersTable();
+        }
+
+        // Load projects table
+        function loadProjectsTable() {
+            const tbody = document.getElementById('projectsTableBody');
+            const projects = projectsDB.projects;
+            
+            tbody.innerHTML = projects.map(p => `
+                <tr>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.ownerName || 'Anonym'}</td>
+                    <td><span class="badge badge-${p.visibility}">${p.visibility === 'public' ? 'Öffentlich' : 'Privat'}</span></td>
+                    <td>${p.findCount || 0}</td>
+                    <td><span class="badge badge-${p.status}">${p.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // Load finds table
+        function loadFindsTable() {
+            const tbody = document.getElementById('findsTableBody');
+            const finds = projectsDB.finds;
+            
+            tbody.innerHTML = finds.map(f => `
+                <tr>
+                    <td><strong>${f.titel}</strong></td>
+                    <td>${f.material}</td>
+                    <td>${f.kategorie}</td>
+                    <td>${projectsDB.projects.find(p => p.id === f.projectId)?.name || 'Unbekannt'}</td>
+                    <td>${f.datierung}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Load users table
+        function loadUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            const users = projectsDB.users;
+            
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td><strong>${u.name}</strong></td>
+                    <td>${u.email}</td>
+                    <td>${u.institution}</td>
+                    <td>${u.role}</td>
+                    <td>${u.stars}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Reset to test data
+        window.resetTestData = async function() {
+            if (confirm('Alle Daten auf Test-Daten zurücksetzen?')) {
+                await projectsDB.resetToTestData();
+                log('✓ Auf Test-Daten zurückgesetzt', 'success');
+                refreshStats();
+            }
+        };
+
+        // Export test data
+        window.exportTestData = function() {
+            const data = {
+                projects: projectsDB.projects,
+                finds: projectsDB.finds,
+                users: projectsDB.users
+            };
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `datarchi-testdata-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            log(`✓ Test-Daten exportiert als ${exportFileDefaultName}`, 'success');
+        };
+
+        // Clear local storage
+        window.clearLocalStorage = function() {
+            if (confirm('Alle lokalen Daten wirklich löschen?')) {
+                localStorage.removeItem('dbc_projects');
+                localStorage.removeItem('dbc_finds');
+                localStorage.removeItem('dbc_users');
+                log('✓ Lokale Daten gelöscht', 'success');
+                location.reload();
+            }
+        };
+
+        // Initialize
+        window.refreshStats = refreshStats;
+        refreshStats();
+    </script>
+</body>
+</html>

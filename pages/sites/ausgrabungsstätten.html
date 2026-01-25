@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ausgrabungsstätten — DatArchi</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sites-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+        }
+
+        .sites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .site-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .site-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .site-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .site-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .site-status-badge {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .site-info {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .site-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .site-actions button,
+        .site-actions a {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #5568d3;
+        }
+
+        .btn-invite {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-invite:hover {
+            background: #ffb300;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ee5a52;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .contributors-list {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .contributor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .contributor-item:last-child {
+            border-bottom: none;
+        }
+
+        .contributor-name {
+            font-weight: 500;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .contributor-role {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-subtext {
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        @media (max-width: 768px) {
+            .sites-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="sites-container">
+        <div style="margin-bottom: 40px;">
+            <h1 style="font-size: 32px; margin-bottom: 10px; color: #333;">Ausgrabungsstätten</h1>
+            <p style="font-size: 16px; color: #666;">Erstellen und verwalten Sie Ihre archäologischen Ausgrabungsprojekte</p>
+        </div>
+
+        <div class="header-actions">
+            <button id="createSiteBtn" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Neue Stätte erstellen
+            </button>
+        </div>
+
+        <div id="sitesAlert"></div>
+
+        <div id="sitesList" class="sites-grid">
+            <!-- Sites will be loaded here -->
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon"><i class="fas fa-map"></i></div>
+            <div class="empty-state-text">Keine Ausgrabungsstätten erstellt</div>
+            <div class="empty-state-subtext">Erstellen Sie Ihre erste Stätte, um zu beginnen</div>
+        </div>
+    </div>
+
+    <!-- Create Site Modal -->
+    <div id="createSiteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Neue Ausgrabungsstätte</span>
+                <button class="modal-close" data-close="createSiteModal">×</button>
+            </div>
+
+            <div id="createSiteError" class="alert alert-danger" hidden>
+                <i class="fas fa-exclamation-circle"></i>
+                <span></span>
+            </div>
+
+            <form id="createSiteForm">
+                <div class="form-group">
+                    <label for="siteName">Name der Stätte</label>
+                    <input type="text" id="siteName" placeholder="z.B. Villa Rustica am Weinberg" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="siteLocation">Ort/Region</label>
+                    <input type="text" id="siteLocation" placeholder="z.B. Mosel-Region, Deutschland">
+                </div>
+
+                <div class="form-group">
+                    <label for="siteDescription">Beschreibung</label>
+                    <textarea id="siteDescription" rows="4" placeholder="Beschreiben Sie die Ausgrabungsstätte..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="sitePeriod">Archäologische Periode</label>
+                    <select id="sitePeriod">
+                        <option value="">Auswählen...</option>
+                        <option value="paleolithic">Paläolithikum</option>
+                        <option value="mesolithic">Mesolithikum</option>
+                        <option value="neolithic">Neolithikum</option>
+                        <option value="bronze">Bronzezeit</option>
+                        <option value="iron">Eisenzeit</option>
+                        <option value="roman">Römische Zeit</option>
+                        <option value="medieval">Mittelalter</option>
+                        <option value="early_modern">Frühe Neuzeit</option>
+                        <option value="modern">Moderne</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        <i class="fas fa-check"></i> Erstellen
+                    </button>
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" data-close="createSiteModal">
+                        Abbrechen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invite Contributor Modal -->
+    <div id="inviteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Mitarbeiter einladen</span>
+                <button class="modal-close" data-close="inviteModal">×</button>
+            </div>
+
+            <div id="inviteError" class="alert alert-danger" hidden>
+                <i class="fas fa-exclamation-circle"></i>
+                <span></span>
+            </div>
+
+            <div id="inviteSuccess" class="alert alert-success" hidden>
+                <i class="fas fa-check-circle"></i>
+                <span></span>
+            </div>
+
+            <form id="inviteForm">
+                <div class="form-group">
+                    <label for="contributorEmail">E-Mail-Adresse</label>
+                    <input type="email" id="contributorEmail" placeholder="name@beispiel.de" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contributorRole">Rolle</label>
+                    <select id="contributorRole" required>
+                        <option value="contributor">Mitarbeiter (können Funde erstellen)</option>
+                        <option value="editor">Editor (können Daten bearbeiten)</option>
+                        <option value="admin">Administrator (volle Kontrolle)</option>
+                    </select>
+                </div>
+
+                <div id="siteContributors" class="contributors-list" style="display: none;">
+                    <strong style="font-size: 12px; color: #666;">Aktuelle Mitarbeiter:</strong>
+                    <div id="contributorsList"></div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        <i class="fas fa-paper-plane"></i> Einladung senden
+                    </button>
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" data-close="inviteModal">
+                        Abbrechen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script type="module" src="../../js/injectHeaderFooter.js"></script>
+    <script type="module" src="../../js/auth-guard.js"></script>
+    <script type="module" src="../../js/theme-toggle.js"></script>
+    <script type="module">
+        import { auth } from '../../js/firebase-config.js';
+        import VREExcavationSiteService from '../../js/vre-excavation-site-service.js';
+        import VREUserAccountService from '../../js/vre-user-account-service.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        let currentUser = null;
+        let currentSiteId = null;
+
+        // Initialize
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadSites();
+            }
+        });
+
+        // Modal management
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            // Clear form
+            const form = document.querySelector(`#${modalId} form`);
+            if (form) form.reset();
+        }
+
+        document.querySelectorAll('[data-close]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                closeModal(e.target.getAttribute('data-close'));
+            });
+        });
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Load sites
+        async function loadSites() {
+            try {
+                const userAccount = await VREUserAccountService.getUserAccount(currentUser.uid);
+                const sitesList = document.getElementById('sitesList');
+                const emptyState = document.getElementById('emptyState');
+
+                if (!userAccount.ownedProjects || userAccount.ownedProjects.length === 0) {
+                    sitesList.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                sitesList.innerHTML = '';
+
+                for (const siteId of userAccount.ownedProjects) {
+                    try {
+                        const site = await VREExcavationSiteService.getExcavationSite(siteId);
+                        const card = createSiteCard(site);
+                        sitesList.appendChild(card);
+                    } catch (err) {
+                        console.error('Error loading site:', err);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading sites:', error);
+                showAlert('Fehler beim Laden der Stätten', 'danger');
+            }
+        }
+
+        function createSiteCard(site) {
+            const card = document.createElement('div');
+            card.className = 'site-card';
+            
+            const contributorCount = site.contributors ? Object.keys(site.contributors).length : 0;
+            
+            card.innerHTML = `
+                <div class="site-card-header">
+                    <div class="site-card-title">${site.name}</div>
+                    <div class="site-status-badge">Aktiv</div>
+                </div>
+                
+                ${site.location ? `<div class="site-info"><i class="fas fa-map-marker-alt"></i> ${site.location}</div>` : ''}
+                ${site.description ? `<p style="font-size: 13px; color: #666; margin-bottom: 8px;">${site.description}</p>` : ''}
+                
+                <div class="site-info">
+                    <i class="fas fa-users"></i> 
+                    <span>${contributorCount} Mitarbeiter</span>
+                </div>
+                
+                <div class="site-actions">
+                    <a href="/pages/project-detail/index.html?project=${site.id}" class="btn-view">
+                        <i class="fas fa-folder-open"></i> Details
+                    </a>
+                    <button class="btn-invite invite-btn" data-site-id="${site.id}">
+                        <i class="fas fa-user-plus"></i> Einladen
+                    </button>
+                </div>
+            `;
+
+            card.querySelector('.invite-btn').addEventListener('click', () => {
+                currentSiteId = site.id;
+                loadContributors(site);
+                openModal('inviteModal');
+            });
+
+            return card;
+        }
+
+        async function loadContributors(site) {
+            const contributorsList = document.getElementById('contributorsList');
+            const siteContributors = document.getElementById('siteContributors');
+
+            if (!site.contributors || Object.keys(site.contributors).length === 0) {
+                siteContributors.style.display = 'none';
+                return;
+            }
+
+            siteContributors.style.display = 'block';
+            contributorsList.innerHTML = '';
+
+            for (const [userId, role] of Object.entries(site.contributors)) {
+                try {
+                    const userAccount = await VREUserAccountService.getUserAccount(userId);
+                    const item = document.createElement('div');
+                    item.className = 'contributor-item';
+                    item.innerHTML = `
+                        <span class="contributor-name">${userAccount.name}</span>
+                        <span class="contributor-role">${role}</span>
+                    `;
+                    contributorsList.appendChild(item);
+                } catch (err) {
+                    console.error('Error loading contributor:', err);
+                }
+            }
+        }
+
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.getElementById('sitesAlert');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
+            
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        // Create Site Form
+        document.getElementById('createSiteBtn').addEventListener('click', () => {
+            openModal('createSiteModal');
+        });
+
+        document.getElementById('createSiteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('siteName').value;
+            const location = document.getElementById('siteLocation').value;
+            const description = document.getElementById('siteDescription').value;
+            const period = document.getElementById('sitePeriod').value;
+            const error = document.getElementById('createSiteError');
+            const btn = e.target.querySelector('button[type="submit"]');
+
+            error.hidden = true;
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> Wird erstellt...';
+
+                const siteData = {
+                    name,
+                    location,
+                    description,
+                    period,
+                    privacy: 'private',
+                    createdBy: currentUser.uid
+                };
+
+                await VREExcavationSiteService.createExcavationSite(siteData, currentUser.uid);
+
+                closeModal('createSiteModal');
+                showAlert('Ausgrabungsstätte erfolgreich erstellt!', 'success');
+                await loadSites();
+            } catch (err) {
+                error.querySelector('span').textContent = err.message;
+                error.hidden = false;
+                console.error('Error creating site:', err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Erstellen';
+            }
+        });
+
+        // Invite Form
+        document.getElementById('inviteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('contributorEmail').value;
+            const role = document.getElementById('contributorRole').value;
+            const error = document.getElementById('inviteError');
+            const success = document.getElementById('inviteSuccess');
+            const btn = e.target.querySelector('button[type="submit"]');
+
+            error.hidden = true;
+            success.hidden = true;
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> Wird gesendet...';
+
+                // Find user by email
+                const users = await VREUserAccountService.searchUsers(email);
+                
+                if (users.length === 0) {
+                    error.querySelector('span').textContent = 'Benutzer mit dieser E-Mail-Adresse nicht gefunden';
+                    error.hidden = false;
+                    return;
+                }
+
+                const contributorUserId = users[0].id;
+
+                // Add contributor
+                await VREExcavationSiteService.addContributor(currentSiteId, contributorUserId, role);
+
+                success.querySelector('span').textContent = `${email} wurde erfolgreich als ${role} hinzugefügt!`;
+                success.hidden = false;
+
+                setTimeout(() => {
+                    closeModal('inviteModal');
+                    loadSites();
+                }, 2000);
+            } catch (err) {
+                error.querySelector('span').textContent = err.message;
+                error.hidden = false;
+                console.error('Error inviting contributor:', err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Einladung senden';
+            }
+        });
+    </script>
+</body>
+</html>

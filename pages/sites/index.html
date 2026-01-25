@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ausgrabungsstätten verwalten — DatArchi</title>
+  <link rel="stylesheet" href="../../css/styles.css">
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/auth-guard.js"></script>
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <main class="main">
+    <div class="form-container" style="max-width: 1200px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+          <h1>Ausgrabungsstätten</h1>
+          <p class="lead">Verwalten Sie Ihre Ausgrabungsprojekte und wechseln Sie zwischen Stätten.</p>
+        </div>
+        <button id="createNewSiteBtn" class="btn btn-primary" style="white-space: nowrap;">
+          <i class="fas fa-plus"></i> Neue Stätte erstellen
+        </button>
+      </div>
+
+      <div id="alert" class="alert alert-success" role="alert" hidden></div>
+
+      <div class="sites-container" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+        
+        <div class="sites-list">
+          <h2 style="margin-bottom: 20px;">Bestehende Stätten</h2>
+          <ul id="sitesList" class="item-list" style="list-style: none; padding: 0; display: grid; gap: 12px;">
+            <!-- Site items will be injected here -->
+          </ul>
+          <div id="noSitesMessage" style="padding: 30px; text-align: center; background: rgba(244, 164, 96, 0.05); border-radius: 8px; border: 2px dashed rgba(244, 164, 96, 0.3); display: none;">
+            <i class="fas fa-inbox" style="font-size: 32px; color: var(--muted); margin-bottom: 10px;"></i>
+            <p>Keine Stätten vorhanden. Erstellen Sie eine neue Stätte um zu beginnen!</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <!-- Modal für neue Stätte -->
+  <div id="createSiteModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto; padding: 20px;">
+    <div style="background: var(--card); border-radius: 12px; max-width: 600px; margin: 50px auto; padding: 0; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+      
+      <!-- Modal Header -->
+      <div style="padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="margin: 0; font-size: 20px;">Neue Ausgrabungsstätte erstellen</h2>
+        <button id="closeModalBtn" type="button" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted); padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div style="padding: 30px;">
+        <form id="createSiteForm">
+          <div class="form-group">
+            <label for="siteName">Name der Stätte *</label>
+            <input type="text" id="siteName" placeholder="z.B. Villa Rustica am Weinberg" required>
+          </div>
+
+          <div class="form-group">
+            <label for="siteDescription">Beschreibung</label>
+            <textarea id="siteDescription" placeholder="Kurze Beschreibung der Ausgrabungsstätte..." style="width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; min-height: 100px; font-family: inherit; resize: vertical;"></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+              <label for="siteCountry">Land</label>
+              <input type="text" id="siteCountry" placeholder="z.B. Deutschland">
+            </div>
+            <div class="form-group">
+              <label for="siteRegion">Region</label>
+              <input type="text" id="siteRegion" placeholder="z.B. Bayern">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+              <label for="sitePeriod">Zeitperiode</label>
+              <input type="text" id="sitePeriod" placeholder="z.B. Römisch">
+            </div>
+            <div class="form-group">
+              <label for="siteVisibility">Sichtbarkeit</label>
+              <select id="siteVisibility" style="width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; font-family: inherit;">
+                <option value="private">Privat (nur ich)</option>
+                <option value="public">Öffentlich</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="siteMapImage">Kartenbild / Orthofoto (optional)</label>
+            <input type="file" id="siteMapImage" accept="image/*">
+            <p class="text-muted" style="font-size: 12px; margin-top: 4px;">Dieses Bild wird als Grundlage für die Kartierungsfunktionen verwendet.</p>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="padding: 20px 30px; border-top: 1px solid var(--border); display: flex; gap: 12px; justify-content: flex-end;">
+        <button id="cancelModalBtn" type="button" class="btn btn-secondary">
+          <i class="fas fa-times"></i> Abbrechen
+        </button>
+        <button id="submitCreateSiteBtn" type="button" class="btn btn-primary">
+          <i class="fas fa-check"></i> Stätte erstellen
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="../../js/injectHeaderFooter.js"></script>
+  <script type="module" src="../../js/header/header.js"></script>
+  <script type="module" src="../../js/footer/footer.js"></script>
+  <script type="module" src="../../js/theme-toggle.js"></script>
+  <script type="module" src="../../js/sites.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="32" fill="url(#gradientBg)"/>
+  
+  <!-- Main shield shape for archaeology -->
+  <defs>
+    <linearGradient id="gradientBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f4a460;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#daa520;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradientShield" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield outline -->
+  <path d="M 32 10 L 42 15 L 42 28 C 42 40 32 50 32 50 C 32 50 22 40 22 28 L 22 15 Z" 
+        fill="url(#gradientShield)" stroke="white" stroke-width="1.5"/>
+  
+  <!-- Database/Data symbol inside shield -->
+  <g transform="translate(32, 32)">
+    <!-- Horizontal lines representing data -->
+    <line x1="-8" y1="-6" x2="8" y2="-6" stroke="#f4a460" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-8" y1="0" x2="8" y2="0" stroke="#f4a460" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-8" y1="6" x2="8" y2="6" stroke="#f4a460" stroke-width="1.5" stroke-linecap="round"/>
+    
+    <!-- Vertical indicator (artifact/data marker) -->
+    <circle cx="0" cy="-6" r="1.5" fill="#f4a460"/>
+    <circle cx="0" cy="0" r="1.5" fill="#f4a460"/>
+    <circle cx="0" cy="6" r="1.5" fill="#f4a460"/>
+  </g>
+</svg>

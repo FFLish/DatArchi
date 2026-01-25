@@ -1,9 +1,41 @@
 <header class="site-header">
   <div class="header-inner max-w">
 
-    <a class="brand" href="/DatArchi/index.html" title="DatArchi Startseite">
+    <a class="brand" href="/index.html" title="DatArchi Startseite">
       <div class="logo-container">
-        <img src="/DatArchi/partials/icons/trowel.svg" alt="DatArchi Logo" class="logo-icon" />
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
+          <!-- Background circle -->
+          <circle cx="32" cy="32" r="32" fill="url(#gradientBg)"/>
+          
+          <!-- Main shield shape for archaeology -->
+          <defs>
+            <linearGradient id="gradientBg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#f4a460;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#daa520;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="gradientShield" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Shield outline -->
+          <path d="M 32 10 L 42 15 L 42 28 C 42 40 32 50 32 50 C 32 50 22 40 22 28 L 22 15 Z" 
+                fill="url(#gradientShield)" stroke="white" stroke-width="1.5"/>
+          
+          <!-- Database/Data symbol inside shield -->
+          <g transform="translate(32, 32)">
+            <!-- Horizontal lines representing data -->
+            <line x1="-8" y1="-6" x2="8" y2="-6" stroke="#f4a460" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="-8" y1="0" x2="8" y2="0" stroke="#f4a460" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="-8" y1="6" x2="8" y2="6" stroke="#f4a460" stroke-width="1.5" stroke-linecap="round"/>
+            
+            <!-- Vertical indicator (artifact/data marker) -->
+            <circle cx="0" cy="-6" r="1.5" fill="#f4a460"/>
+            <circle cx="0" cy="0" r="1.5" fill="#f4a460"/>
+            <circle cx="0" cy="6" r="1.5" fill="#f4a460"/>
+          </g>
+        </svg>
       </div>
       <div class="brand-text">
         <p class="project-name">DatArchi</p>
@@ -14,28 +46,24 @@
     <div class="header-right-container">
         <div class="header-static-controls">
             <button id="theme-toggle" class="btn btn-icon" title="Toggle theme" aria-label="Toggle theme">
-              <img src="/DatArchi/partials/icons/sun.svg" alt="Light mode" class="sun header-icon" />
-              <img src="/DatArchi/partials/icons/moon.svg" alt="Dark mode" class="moon header-icon" />
+              <img src="/partials/icons/sun.svg" alt="Light mode" class="sun header-icon" />
+              <img src="/partials/icons/moon.svg" alt="Dark mode" class="moon header-icon" />
             </button>
         </div>
 
         <input id="navToggle" class="nav-toggle" type="checkbox" aria-hidden="true">
-        <label for="navToggle" class="nav-toggle-label" aria-hidden="true">
-          <img src="/DatArchi/partials/icons/menu.svg" alt="Menu" class="header-icon nav-icon-menu" />
-          <img src="/DatArchi/partials/icons/arrow-down.svg" alt="Close" class="header-icon nav-icon-clear" />
+        <label for="navToggle" class="nav-toggle-label" aria-hidden="true" id="navToggleLabel">
+          <img src="/partials/icons/menu.svg" alt="Menu" class="header-icon nav-icon-menu" />
+          <img src="/partials/icons/arrow-down.svg" alt="Close" class="header-icon nav-icon-clear" />
         </label>
 
         <div class="header-menu">
           <nav class="header-nav" id="mainNav" aria-label="Hauptnavigation">
-            <a href="/DatArchi/index.html" class="nav-link">Start</a>
-            <a href="/DatArchi/pages/map/index.html" class="nav-link">Karte</a>
-            <a href="/DatArchi/pages/funde/index.html" class="nav-link">Funde</a>
-            <a href="/DatArchi/pages/funde/statistics.html" class="nav-link">Statistik</a>
+            <a href="/index.html" class="nav-link"><i class="fas fa-home"></i> Startseite</a>
+            <a href="/pages/projects/index.html" class="nav-link"><i class="fas fa-folder"></i> Meine Projekte</a>
+            <a href="/pages/public-projects/index.html" class="nav-link"><i class="fas fa-globe"></i> Discover</a>
+            <a href="/pages/profile/index.html" class="nav-link"><i class="fas fa-user-circle"></i> Profil</a>
           </nav>
-
-          <div class="header-controls">
-            <a href="/DatArchi/pages/funde/eingeben.html" class="btn btn-primary btn-sm">Fund erfassen</a>
-          </div>
         </div>
     </div>
 

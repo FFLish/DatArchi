@@ -3,6 +3,9 @@
 /* Import a modern variable font for improved typography */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
+/* Global Improvements - Load first for better cascade */
+@import url('./improvements-global.css');
+
 /* Basic/Foundation Styles */
 @import url('./basics/variables.css');
 @import url('./basics/typography.css');
@@ -10,8 +13,15 @@
 @import url('./basics/forms.css');
 @import url('./basics/utilities.css');
 
+/* Animations and Modern Effects */
+@import url('./animations.css');
+
+/* Improvements and Optimizations */
+@import url('./improvements.css');
+
 /* Component Styles */
 @import url('./components/alerts.css');
+@import url('./components/_auth.css');
 @import url('./header.css');
 @import url('./navbar.css');
 @import url('./sidebar.css');
