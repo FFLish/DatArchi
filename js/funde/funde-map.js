@@ -40,9 +40,9 @@ export async function updateFundorteMapTab() {
                  style="left: ${x}%; top: ${y}%;" 
                  onclick="selectFundortMap(${index}); event.stopPropagation();"
                  data-index="${index}"
-                 title="${find.titel || find.name || 'Unbenannt'}">
+                 title="${find.name || find.titel || 'Unbenannt'}">
                 ${index + 1}
-                <div class="fundort-marker-tooltip">${find.titel || find.name || 'Fund ' + (index + 1)}</div>
+                <div class="fundort-marker-tooltip">${find.name || find.titel || 'Fund ' + (index + 1)}</div>
             </div>
         `;
     }).join('');
@@ -56,18 +56,18 @@ export async function updateFundorteMapTab() {
              data-index="${index}"
              style="padding: 16px; border-left: 4px solid #5b21b6; background: #f9f9f9; border-radius: 6px; cursor: pointer; transition: all 0.3s ease;">
             <h4 style="margin: 0 0 8px 0; color: #1f2937;">
-                <i class="fas fa-cube" style="color: #5b21b6; margin-right: 8px;"></i>${index + 1}. ${find.titel || find.name || 'Unbenannt'}
+                <i class="fas fa-cube" style="color: #5b21b6; margin-right: 8px;"></i>${index + 1}. ${find.name || find.titel || 'Unbenannt'}
             </h4>
-            <p style="margin: 4px 0; color: #4b5563; font-size: 0.9rem;"><strong>Kategorie:</strong> ${find.kategorie || find.category || 'Unbekannt'}</p>
+            <p style="margin: 4px 0; color: #4b5563; font-size: 0.9rem;"><strong>Kategorie:</strong> ${find.category || find.kategorie || 'Unbekannt'}</p>
             <p style="margin: 4px 0; color: #4b5563; font-size: 0.9rem;"><strong>Material:</strong> ${find.material || '-'}</p>
-            <p style="margin: 4px 0; color: #4b5563; font-size: 0.9rem;"><strong>Entdeckung:</strong> ${find.datierung || find.dateFound || find.dating || '-'}</p>
-            <p style="margin: 4px 0; color: #4b5563; font-size: 0.9rem;"><strong>Entdecker:</strong> ${find.entdecker || find.discoverer || '-'}</p>
-            <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <p style="margin: 4px 0; color: #4b5563; font-size: 0.9rem;"><strong>Entdeckung:</strong> ${find.dating || find.datierung || find.dateFound || '-'}</p>
+            <p style="margin: 4px 0; color: #4b5563; font-size: 0.9rem;"><strong>Entdecker:</strong> ${find.discoverer || find.entdecker || '-'}</p>
+                <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
                 <span class="badge" style="display: inline-block; padding: 4px 8px; background: #f0f0f0; border-radius: 4px; font-size: 0.8rem; color: #666;">
-                    <i class="fas fa-map-marker-alt"></i> ${find.fundort || find.location || 'Keine Position'}
+                    <i class="fas fa-map-marker-alt"></i> ${ (find.latitude != null && find.longitude != null) ? (Number(find.latitude).toFixed(4) + ', ' + Number(find.longitude).toFixed(4)) : (find.fundort || find.location || 'Keine Position') }
                 </span>
                 <span class="badge" style="display: inline-block; padding: 4px 8px; background: #fce7f3; border-radius: 4px; font-size: 0.8rem; color: #be185d;">
-                    <i class="fas fa-layer-group"></i> ${find.datierung || find.period || 'Unbekannt'}
+                    <i class="fas fa-layer-group"></i> ${find.dating || find.datierung || find.period || 'Unbekannt'}
                 </span>
             </div>
         </div>

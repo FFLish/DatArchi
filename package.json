@@ -1,0 +1,64 @@
+{
+  "name": "datarchi",
+  "version": "1.0.0",
+  "description": "DatArchi - Professional Archaeological Data Management Platform",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite",
+    "serve": "vite preview --port 3000",
+    "lint": "eslint src/",
+    "format": "prettier --write 'src/**/*.{js,css,html}'",
+    "test": "jest",
+    "analyze": "webpack-bundle-analyzer build/dist/stats.json",
+    "deploy": "npm run build && ./build/scripts/deploy.sh"
+  },
+  "keywords": [
+    "archaeology",
+    "excavation",
+    "research",
+    "data-management",
+    "CIDOC-CRM",
+    "firestore",
+    "mapping"
+  ],
+  "author": "DatArchi Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/DatArchi.git"
+  },
+  "homepage": "https://datarchi.example.com",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.0",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
+    "vite": "^5.0.0",
+    "webpack-bundle-analyzer": "^4.10.1"
+  },
+  "dependencies": {
+    "firebase": "^12.7.0",
+    "leaflet": "^1.9.4",
+    "tweetnacl": "^1.0.3",
+    "dompurify": "^3.0.6"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

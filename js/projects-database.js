@@ -346,7 +346,8 @@ class ProjectsDatabase {
         const materials = {};
 
         finds.forEach(find => {
-            categories[find.kategorie] = (categories[find.kategorie] || 0) + 1;
+            const category = find.category || find.kategorie;
+            categories[category] = (categories[category] || 0) + 1;
             materials[find.material] = (materials[find.material] || 0) + 1;
         });
 

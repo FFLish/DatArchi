@@ -1,8 +1,16 @@
 import { firebaseService } from '../firebase-service.js';
 import { auth, storage } from '../firebase-config.js';
+import { setupImageSystem } from '../image-system-init.js';
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize image system
+  try {
+    setupImageSystem();
+  } catch (error) {
+    console.warn('⚠️ Image system initialization warning:', error.message);
+  }
+  
   let activeSite = await db.getActiveSite();
   if (!activeSite) {
       console.error('No active site found. Redirecting to site management.');

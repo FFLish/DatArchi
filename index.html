@@ -8,13 +8,13 @@
   <meta name="keywords" content="Archäologie, Forschung, Datenmanagement, Zusammenarbeit, Virtual Research Environment">
   <title>DatArchi - Virtual Research Environment für Archäologie</title>
   
-  <!-- Preload critical resources -->
-  <link rel="preload" as="style" href="css/styles.css">
-  <link rel="preload" as="font" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin>
-  
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- Critical resources: preload non-blocking and preconnect to CDN -->
+  <link rel="preload" href="css/styles.css" as="style" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="css/styles.css"></noscript>
   <link rel="stylesheet" href="css/homepage.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
   <style>
     * {
       margin: 0;
@@ -171,7 +171,7 @@
     }
 
     .auth-form-wrapper .form-subtitle {
-      color: #666;
+      color: var(--muted);
       font-size: 14px;
       margin-bottom: 30px;
       position: relative;
@@ -187,7 +187,7 @@
     .form-group label {
       display: block;
       margin-bottom: 8px;
-      color: #333;
+      color: var(--text);
       font-weight: 600;
       font-size: 14px;
     }
@@ -195,33 +195,34 @@
     .form-group input {
       width: 100%;
       padding: 14px 16px;
-      border: 2px solid #e0e0e0;
+      border: 2px solid var(--border);
       border-radius: 12px;
       font-size: 14px;
       transition: all 0.3s ease;
       font-family: inherit;
-      background: rgba(255, 255, 255, 0.8);
+      background: var(--card);
+      color: var(--text);
     }
 
     .form-group input::placeholder {
-      color: #aaa;
+      color: var(--muted);
     }
 
     .form-group input:focus {
       outline: none;
-      border-color: #f97316;
-      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
-      background: white;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(244, 164, 96, 0.15);
+      background: var(--card);
       transform: translateY(-2px);
     }
 
     .form-group input:valid {
-      border-color: #44aa00;
+      border-color: var(--success);
     }
 
     .form-group input.error {
-      border-color: #ff4444;
-      background: rgba(255, 68, 68, 0.05);
+      border-color: var(--danger);
+      background: rgba(217, 119, 6, 0.05);
     }
 
     .password-input-group {
@@ -241,13 +242,13 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: #666;
+      color: var(--muted);
       font-size: 16px;
       transition: color 0.2s;
     }
 
     .password-toggle-btn:hover {
-      color: #f97316;
+      color: var(--accent);
     }
 
     .form-options {
@@ -270,30 +271,30 @@
       width: auto;
       margin-right: 8px;
       cursor: pointer;
-      accent-color: #f97316;
+      accent-color: var(--accent);
     }
 
     .form-check span {
-      color: #666;
+      color: var(--text);
       font-weight: 500;
     }
 
     .form-options a {
-      color: #f97316;
+      color: var(--accent);
       text-decoration: none;
       font-weight: 600;
       transition: var(--transition-fast);
     }
 
     .form-options a:hover {
-      color: #fb923c;
+      color: var(--accent-2);
       text-decoration: underline;
     }
 
     .submit-btn {
       width: 100%;
       padding: 14px 20px;
-      background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
       color: white;
       border: none;
       border-radius: 12px;
@@ -348,7 +349,7 @@
       text-align: center;
       margin: 24px 0;
       position: relative;
-      color: #999;
+      color: var(--muted);
       font-weight: 500;
     }
 
@@ -359,12 +360,12 @@
       top: 50%;
       width: 100%;
       height: 1px;
-      background: #e0e0e0;
+      background: var(--border);
     }
 
     .divider span {
       position: relative;
-      background: white;
+      background: var(--card);
       padding: 0 10px;
       font-size: 13px;
     }
@@ -397,27 +398,27 @@
     }
 
     .alert-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(34, 197, 94, 0.3);
     }
 
     .alert-danger {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+      background: rgba(217, 119, 6, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(217, 119, 6, 0.3);
     }
 
     .alert-warning {
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeeba;
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
 
     .alert-info {
-      background: #d1ecf1;
-      color: #0c5460;
-      border: 1px solid #bee5eb;
+      background: rgba(244, 164, 96, 0.1);
+      color: var(--info);
+      border: 1px solid rgba(244, 164, 96, 0.3);
     }
 
     .loading-spinner {
@@ -437,36 +438,206 @@
     .password-strength {
       margin-top: 8px;
       font-size: 12px;
-      color: #666;
+      color: var(--muted);
     }
 
     .strength-bar {
       height: 4px;
-      background: #e0e0e0;
+      background: var(--border);
       border-radius: 2px;
       margin-bottom: 4px;
       overflow: hidden;
     }
 
     .strength-bar.weak {
-      background: #ff4444;
+      background: var(--danger);
     }
 
     .strength-bar.medium {
-      background: #ffaa00;
+      background: var(--warning);
     }
 
     .strength-bar.strong {
-      background: #44aa00;
+      background: var(--success);
     }
 
     .terms-link {
-      color: #f97316;
+      color: var(--accent);
       text-decoration: none;
     }
 
     .terms-link:hover {
       text-decoration: underline;
+    }
+
+    #identify {
+      margin-bottom: 40px;
+    }
+
+    #identify h2 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      color: var(--accent);
+      position: relative;
+    }
+
+    #identify h2::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    }
+
+    #identify p {
+      margin-bottom: 16px;
+      position: relative;
+      padding-left: 24px;
+    }
+
+    #identify p::marker {
+      content: '✔️';
+      color: var(--accent);
+      font-size: 18px;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    /* DESIGN Section Styles */
+    #design {
+      background: var(--card);
+      padding: 40px 20px;
+      border-radius: 12px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.35s ease;
+    }
+
+    #design h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: var(--accent);
+      position: relative;
+    }
+
+    #design h2::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    }
+
+    #design p {
+      margin-bottom: 16px;
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    #design ul {
+      margin-left: 20px;
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    #design li {
+      margin-bottom: 8px;
+      position: relative;
+      padding-left: 24px;
+    }
+
+    #design li::marker {
+      content: '✔️';
+      color: var(--accent);
+      font-size: 18px;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    /* CREATE Section Styles */
+    #create {
+      background: var(--card);
+      padding: 40px 20px;
+      border-radius: 12px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.35s ease;
+    }
+
+    #create h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: var(--accent);
+      position: relative;
+    }
+
+    #create h2::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    }
+
+    #create p {
+      margin-bottom: 16px;
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    #create p strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* ITERATE Section Styles */
+    #iterate {
+      background: var(--card);
+      padding: 40px 20px;
+      border-radius: 12px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.35s ease;
+    }
+
+    #iterate h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: var(--accent);
+      position: relative;
+    }
+
+    #iterate h2::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    }
+
+    #iterate p {
+      margin-bottom: 16px;
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    #iterate p strong {
+      color: var(--text-primary);
+      font-weight: 600;
     }
   </style>
 </head>
@@ -488,83 +659,85 @@
   </div>
 
   <!-- Features Section -->
-  <section class="features-intro" style="background: white; padding: 80px 20px;">
+  <section class="features-intro" style="background: var(--card); padding: 80px 20px; transition: background-color 0.35s ease;">
     <div style="max-width: 1200px; margin: 0 auto;">
-      <h2 style="text-align: center; font-size: clamp(28px, 6vw, 36px); margin-bottom: 30px; color: #333; font-weight: 700;">Was ist DatArchi?</h2>
-      <p style="text-align: center; font-size: 16px; color: #666; max-width: 700px; margin: 0 auto 60px; line-height: 1.8;">
+      <h2 style="text-align: center; font-size: clamp(28px, 6vw, 36px); margin-bottom: 30px; color: var(--text); font-weight: 700;">Was ist DatArchi?</h2>
+      <p style="text-align: center; font-size: 16px; color: var(--muted); max-width: 700px; margin: 0 auto 60px; line-height: 1.8;">
         DatArchi ist die moderne Virtual Research Environment für Archäologen. Zentralisieren Sie Ihre Forschungsdaten, 
         arbeiten Sie kollaborativ und nutzen Sie intelligente Analyse-Tools – alles an einem Ort.
       </p>
       
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px;">
-        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
-          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-database"></i></div>
-          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Datenmanagement</h3>
-          <p style="color: #666; line-height: 1.7; font-size: 15px;">Zentralisiert alle archäologischen Daten an einem Ort – Funde, Ausgrabungsstätten, Zonen und Schichten.</p>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-database"></i></div>
+          <h3 class="feature-title">Datenmanagement</h3>
+          <p class="feature-desc">Zentralisiert alle archäologischen Daten an einem Ort – Funde, Ausgrabungsstätten, Zonen und Schichten.</p>
         </div>
         
-        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
-          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-users"></i></div>
-          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Kollaboration</h3>
-          <p style="color: #666; line-height: 1.7; font-size: 15px;">Arbeiten Sie mit Kollegen zusammen – teilen Sie Daten, diskutieren Sie Funde und dokumentieren Sie gemeinsam.</p>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-users"></i></div>
+          <h3 class="feature-title">Kollaboration</h3>
+          <p class="feature-desc">Arbeiten Sie mit Kollegen zusammen – teilen Sie Daten, diskutieren Sie Funde und dokumentieren Sie gemeinsam.</p>
         </div>
         
-        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
-          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-map"></i></div>
-          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Räumliche Analyse</h3>
-          <p style="color: #666; line-height: 1.7; font-size: 15px;">Visualisieren Sie Ausgrabungsstätten auf interaktiven Karten und erstellen Sie Zonen für präzise Dokumentation.</p>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-map"></i></div>
+          <h3 class="feature-title">Räumliche Analyse</h3>
+          <p class="feature-desc">Visualisieren Sie Ausgrabungsstätten auf interaktiven Karten und erstellen Sie Zonen für präzise Dokumentation.</p>
         </div>
         
-        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
-          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-lock"></i></div>
-          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Sicherheit & Datenschutz</h3>
-          <p style="color: #666; line-height: 1.7; font-size: 15px;">Kontrollieren Sie die Sichtbarkeit Ihrer Daten – privat oder öffentlich für die wissenschaftliche Gemeinschaft.</p>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-lock"></i></div>
+          <h3 class="feature-title">Sicherheit & Datenschutz</h3>
+          <p class="feature-desc">Kontrollieren Sie die Sichtbarkeit Ihrer Daten – privat oder öffentlich für die wissenschaftliche Gemeinschaft.</p>
         </div>
 
-        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
-          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-chart-bar"></i></div>
-          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Statistiken & Analyse</h3>
-          <p style="color: #666; line-height: 1.7; font-size: 15px;">Analysieren Sie Ihre Funde mit integrierten Statistiken, Auswertungen und Berichten.</p>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+          <h3 class="feature-title">Statistiken & Analyse</h3>
+          <p class="feature-desc">Analysieren Sie Ihre Funde mit integrierten Statistiken, Auswertungen und Berichten.</p>
         </div>
 
-        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 16px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;" onmouseover="this.style.boxShadow='0 16px 32px rgba(249, 115, 22, 0.15)'; this.style.transform='translateY(-8px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; this.style.transform='none';">
-          <div style="font-size: 56px; margin-bottom: 20px; color: #f97316; line-height: 1;"><i class="fas fa-mobile-alt"></i></div>
-          <h3 style="font-size: 20px; margin-bottom: 12px; color: #333; font-weight: 700;">Überall Zugriff</h3>
-          <p style="color: #666; line-height: 1.7; font-size: 15px;">Greifen Sie von überall auf Ihre Forschungsdaten zu – Desktop, Tablet oder Smartphone.</p>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+          <h3 class="feature-title">Überall Zugriff</h3>
+          <p class="feature-desc">Greifen Sie von überall auf Ihre Forschungsdaten zu – Desktop, Tablet oder Smartphone.</p>
         </div>
       </div>
 
-      <div style="background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: white; padding: 60px 40px; border-radius: 16px; text-align: center; box-shadow: 0 12px 40px rgba(249, 115, 22, 0.2); margin-bottom: 40px;">
-        <h3 style="font-size: clamp(20px, 4vw, 24px); margin-bottom: 20px; font-weight: 700;">GitHub für Archäologie</h3>
-        <p style="font-size: 16px; line-height: 1.8; max-width: 700px; margin: 0 auto; opacity: 0.95;">
+      <div class="cta-banner">
+        <h3 class="cta-title">GitHub für Archäologie</h3>
+        <p class="cta-desc">
           DatArchi revolutioniert die archäologische Forschung durch digitale Zusammenarbeit, 
           strukturierte Datenverwaltung und offene Wissenschaft. Ähnlich wie GitHub für Software-Entwickler 
           ist DatArchi die Plattform für Archäologen weltweit.
         </p>
       </div>
 
-      <div style="background: rgba(249, 115, 22, 0.05); padding: 50px 40px; border-radius: 16px; border: 2px dashed #f97316; text-align: center;">
-        <h3 style="font-size: 22px; margin-bottom: 20px; color: #333; font-weight: 700;">
-          <i class="fas fa-rocket" style="color: #f97316; margin-right: 10px;"></i>Bereit zum Start?
+      <div class="cta-section">
+        <h3 class="cta-heading">
+          <i class="fas fa-rocket"></i>Bereit zum Start?
         </h3>
-        <p style="font-size: 16px; color: #666; margin-bottom: 30px; line-height: 1.7;">
+        <p class="cta-text">
           Erstellen Sie kostenlos Ihren Account und beginnen Sie sofort mit der Verwaltung Ihrer archäologischen Projekte.
         </p>
-        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-          <a href="/pages/profile/index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 32px; background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.boxShadow='0 12px 30px rgba(249, 115, 22, 0.4)'; this.style.transform='translateY(-3px)';" onmouseout="this.style.boxShadow='0 4px 15px rgba(249, 115, 22, 0.3)'; this.style.transform='none';">
+        <div class="cta-buttons">
+          <a href="/pages/profile/index.html" class="cta-btn cta-primary">
             <i class="fas fa-arrow-right"></i> Jetzt registrieren
           </a>
-          <a href="/pages/public-projects/index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 32px; background: white; color: #f97316; border: 2px solid #f97316; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.boxShadow='0 8px 20px rgba(249, 115, 22, 0.15)'; this.style.backgroundColor='#fff5f0';" onmouseout="this.style.boxShadow='none'; this.style.backgroundColor='white';">
+          <a href="/pages/public-projects/index.html" class="cta-btn cta-secondary">
             <i class="fas fa-eye"></i> Beispiele ansehen
           </a>
         </div>
       </div>
     </div>
-  </section>
-
   <div id="footer-container"></div>
 
-<script type="module" src="js/injectHeaderFooter.js"></script>
-<script type="module" src="js/improvements.js"></script>
+<script type="module" src="js/main-auth.js" defer></script>
+<script type="module" src="js/injectHeaderFooter.js" defer></script>
+<script type="module" defer src="js/performance-monitor.js"></script>
+<script type="module" defer src="js/resource-optimizer.js"></script>
+<script type="module" defer src="js/image-lazy-loader.js"></script>
+<script type="module" defer src="js/improvements.js"></script>
 </body>
 </html>

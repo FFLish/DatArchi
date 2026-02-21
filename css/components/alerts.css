@@ -25,19 +25,48 @@
 .alert-success {
   background: rgba(132, 204, 22, 0.15);
   color: var(--success);
+  border: 1px solid rgba(132, 204, 22, 0.3);
 }
 
 .alert-danger {
   background: rgba(211, 119, 39, 0.15);
   color: var(--danger);
+  border: 1px solid rgba(211, 119, 39, 0.3);
 }
 
 .alert-warning {
   background: rgba(244, 164, 96, 0.15);
   color: var(--accent);
+  border: 1px solid rgba(244, 164, 96, 0.3);
 }
 
 .alert-info {
   background: rgba(244, 164, 96, 0.15);
   color: var(--info);
+  border: 1px solid rgba(244, 164, 96, 0.3);
+}
+
+/* Dark mode alerts */
+html[data-theme="dark"] .alert-success {
+  background: rgba(184, 204, 0, 0.15);
+  color: #b8cc00;
+  border-color: rgba(184, 204, 0, 0.3);
+}
+
+html[data-theme="dark"] .alert-danger {
+  background: rgba(255, 140, 0, 0.15);
+  color: #ff8c00;
+  border-color: rgba(255, 140, 0, 0.3);
+}
+
+html[data-theme="dark"] .alert-warning {
+  background: rgba(255, 184, 77, 0.15);
+  color: #ffb84d;
+  border-color: rgba(255, 184, 77, 0.3);
+}
+
+html[data-theme="dark"] .alert-info {
+  background: rgba(255, 184, 77, 0.15);
+  color: #ffb84d;
+  border-color: rgba(255, 184, 77, 0.3);
 }

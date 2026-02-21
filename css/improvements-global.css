@@ -100,6 +100,38 @@
   border-color: var(--border-medium);
 }
 
+/* Icon button styling - especially theme toggle */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-light);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-primary);
+}
+
+.btn-icon:hover {
+  background: var(--bg-tertiary);
+  transform: scale(1.05);
+  border-color: var(--border-medium);
+}
+
+.btn-icon:active {
+  transform: scale(0.98);
+}
+
+.btn-icon img {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
 /* Danger button */
 .btn-danger {
   background: var(--error-color);
@@ -199,10 +231,12 @@ select {
   padding: 20px;
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
+  color: var(--text-primary);
 }
 
 .card:hover {
   box-shadow: var(--shadow-md);
+  border-color: var(--border-medium);
 }
 
 .card-header {
@@ -218,10 +252,27 @@ select {
   margin: 0;
 }
 
-/* ============================================
-   IMPROVED MODAL STYLES
-   ============================================ */
+/* Global theme-aware styling */
+.site-header {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color 0.35s ease, border-color 0.35s ease;
+}
 
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header-right-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Modal improvements for both themes */
 .modal {
   display: none;
   position: fixed;
@@ -234,6 +285,7 @@ select {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   animation: fadeIn 0.3s ease-out;
+  transition: background-color 0.35s ease;
 }
 
 .modal.show {
@@ -252,6 +304,8 @@ select {
   overflow-y: auto;
   box-shadow: var(--shadow-xl);
   animation: slideUp 0.3s ease-out;
+  border: 1px solid var(--border-light);
+  transition: background-color 0.35s ease, border-color 0.35s ease;
 }
 
 .modal-content h2 {
@@ -622,6 +676,32 @@ p {
 }
 
 /* ============================================
+   STICKY FOOTER LAYOUT
+   ============================================ */
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#header-container,
+main,
+.layout {
+  flex-shrink: 0;
+}
+
+#footer-container,
+.site-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* ============================================
    DARK MODE SUPPORT
    ============================================ */
 
@@ -642,4 +722,82 @@ p {
   .modal {
     background-color: rgba(0, 0, 0, 0.7);
   }
+}
+
+/* Support explicit theme toggle via data-theme on the <html> element */
+html[data-theme="dark"] {
+  --text-primary: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --bg-tertiary: #0f172a;
+  
+  --border-light: #374151;
+  --border-medium: #4b5563;
+}
+
+html[data-theme="light"] {
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
+}
+
+/* Smooth theme transitions */
+html {
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+body {
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* Additional mobile improvements: clearer header, responsive images, stacked grids */
+@media (max-width: 768px) {
+  .header-inner {
+    padding: 8px 12px;
+    align-items: center;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-left: 8px;
+  }
+
+  .project-name { font-size: 18px; }
+  .project-tagline { font-size: 12px; color: var(--text-tertiary); }
+
+  .header-right-container { display: flex; align-items: center; gap: 8px; }
+
+  /* hide large sidebars and ensure main content uses full width */
+  .sidebar { display: none !important; }
+  .max-w, .main-content, .content { padding-left: 12px; padding-right: 12px; }
+
+  /* responsive images and media */
+  img, .responsive-img, picture img { max-width: 100%; height: auto; display: block; }
+
+  /* make cards/ grids single column on smaller screens */
+  .projects-grid, .grid, .cards-grid { grid-template-columns: 1fr !important; }
+
+  .logo-icon { width: 28px; height: 28px; }
+  .btn { min-height: 44px; }
+  .btn-icon { padding: 8px; border-radius: 8px; }
+  .site-footer { padding: 12px 14px; }
+}
+
+@media (max-width: 480px) {
+  .project-name { font-size: 16px; }
+  .project-tagline { font-size: 11px; }
+  h1 { font-size: 20px; }
+  .header-menu { top: 56px; left: 8px; right: 8px; }
 }

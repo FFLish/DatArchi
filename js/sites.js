@@ -6,10 +6,21 @@
 import { auth, db } from './firebase-config.js';
 import { VREExcavationSiteService } from './vre-excavation-site-service.js';
 import { VREUserAccountService } from './vre-user-account-service.js';
+import { getRandomExcavationSiteImage } from './image-utilities.js';
+import { setupImageSystem } from './image-system-init.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
 let currentUser = null;
 let currentUserAccount = null;
+
+// Initialize image system on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        setupImageSystem();
+    } catch (error) {
+        console.warn('⚠️ Image system initialization warning:', error.message);
+    }
+});
 
 // Initialize page
 onAuthStateChanged(auth, async (user) => {

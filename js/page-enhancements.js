@@ -1,8 +1,17 @@
 // js/page-enhancements.js
 // Global page enhancements and utilities
 
+import { setupImageSystem } from './image-system-init.js';
+
 // Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize image system
+    try {
+        setupImageSystem();
+    } catch (error) {
+        console.warn('⚠️ Image system initialization warning:', error.message);
+    }
+    
     // 1. Enhance all links to smooth scroll
     enhanceLinks();
     

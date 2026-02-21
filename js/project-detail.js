@@ -1,5 +1,7 @@
 import { firebaseService } from '/js/firebase-service.js';
 import { auth } from '/js/firebase-config.js';
+import { getRandomFindImage } from '/js/image-utilities.js';
+import { setupImageSystem } from '/js/image-system-init.js';
 import { formatDate, getCategoryIcon, getMaterialColor } from '/js/page-enhancements.js';
 
 // Get project ID from URL
@@ -11,8 +13,17 @@ let findsUnsubscriber = null;
 let fundorteMap = null;
 let mapMarkers = {};
 
+// Initialize image system on load
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        setupImageSystem();
+    } catch (error) {
+        console.warn('⚠️ Image system initialization warning:', error.message);
+    }
+});
+
 /**
- * Initialisiere Leaflet Map mit Ausgrabungsstätte-Bild (horizontal, vollständig)
+ * Initialisiere Leaflet Map mit zufälligem Ausgrabungsstätte-Bild (horizontal, vollständig)
  */
 function initializeMap() {
     if (fundorteMap) {
@@ -38,8 +49,8 @@ function initializeMap() {
     // Verwende asymmetrische Bounds um horizontales Format zu erzeugen
     const bounds = L.latLngBounds([[0, 0], [60, 100]]);
     
-    // Füge Ausgrabungsstätte-Bild als Layer hinzu
-    const imageUrl = '../../partials/images/ausgrabungsstätte.jpg';
+    // Verwende zufälliges Ausgrabungsstätte-Bild
+    const imageUrl = getRandomExcavationSiteImage();
     L.imageOverlay(imageUrl, bounds).addTo(fundorteMap);
     
     // Setze Kartenausschnitt auf Bild mit Padding
@@ -223,37 +234,45 @@ async function updateFindsList(finds = null) {
         return;
     }
 
-    const findCardsHtml = finds.map(find => `
-        <div class="find-card" onclick="editFind('${find.id}')">
-            <div class="find-image">
-                ${find.image ? `<img src="${find.image}" alt="${find.name || find.title}">` : 
-                  `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #5b21b6, #7c3aed); color: white; font-size: 2rem;">
-                    <i class="fas fa-cube"></i>
-                  </div>`}
-            </div>
-            <div class="find-info">
-                <h4>${find.name || find.title || 'Unbenannt'}</h4>
-                <p><strong>Kategorie:</strong> ${find.category || 'Unbekannt'}</p>
-                <p><strong>Material:</strong> ${find.material || '-'}</p>
-                <p><strong>Entdeckung:</strong> ${find.dateFound || find.dating || '-'}</p>
-                <p><strong>Entdecker:</strong> ${find.discoverer || '-'}</p>
-                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb; display: flex; gap: 8px;">
-                    <button class="btn btn-sm" onclick="editFind('${find.id}'); event.stopPropagation();">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteFind('${find.id}'); event.stopPropagation();">
-                        <i class="fas fa-trash"></i>
-                    </button>
+    const findCardsHtml = finds.map(find => {
+        const category = find.category || 'Unbekannt';
+        const material = find.material || '-';
+        const discovered = find.discoverer || '-';
+        const findImageUrl = find.image || getRandomFindImage();
+        
+        return `
+            <div class="find-card" onclick="editFind('${find.id}')">
+                <div class="find-image">
+                    ${findImageUrl && !findImageUrl.includes('undefined') ? `<img src="${findImageUrl}" alt="${find.name || find.title}">` : 
+                      `<i class="fas fa-cube"></i>`}
+                </div>
+                <div class="find-info">
+                    <h4 title="${find.name || find.title || 'Unbenannt'}">${find.name || find.title || 'Unbenannt'}</h4>
+                    <p><i class="fas fa-tag"></i> ${category}</p>
+                    <p><i class="fas fa-palette"></i> ${material}</p>
+                    <p><i class="fas fa-user"></i> ${discovered}</p>
+                    <div class="find-badges" style="margin-top: auto;">
+                        ${find.dating ? `<span class="find-badge"><i class="fas fa-calendar"></i> ${find.dating}</span>` : ''}
+                        ${find.condition ? `<span class="find-badge"><i class="fas fa-star"></i> ${find.condition}</span>` : ''}
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button class="btn btn-sm" style="flex: 1; font-size: 0.8rem;" onclick="editFind('${find.id}'); event.stopPropagation();">
+                            <i class="fas fa-edit"></i> Bearbeiten
+                        </button>
+                        <button class="btn btn-sm btn-danger" style="flex: 1; font-size: 0.8rem;" onclick="deleteFind('${find.id}'); event.stopPropagation();">
+                            <i class="fas fa-trash"></i> Löschen
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 
     document.getElementById('findsList').innerHTML = findCardsHtml;
 }
 
 /**
- * Aktualisiere die Fundorte-Anzeige mit allen Funden als Marker auf der Karte
+ * Aktualisiere die Fundorte-Anzeige mit allen Funden als Marker auf der Bild
  */
 async function updateFundorteList(finds = null) {
     // Hole Funde wenn nicht übergeben
@@ -262,6 +281,7 @@ async function updateFundorteList(finds = null) {
     }
     
     const fundorteListElement = document.getElementById('fundorteList');
+    const fundorteMarkersElement = document.getElementById('fundorteMarkers');
     
     if (finds.length === 0) {
         fundorteListElement.innerHTML = `
@@ -270,96 +290,49 @@ async function updateFundorteList(finds = null) {
                 <p style="margin: 10px 0 0 0; color: #6b7280;">Noch keine Funde an dieser Ausgrabungsstätte gefunden</p>
             </div>
         `;
+        fundorteMarkersElement.innerHTML = '';
         return;
     }
 
-    // Initialisiere Karte wenn nötig
-    if (!fundorteMap) {
-        initializeMap();
-    }
-    
-    // Entferne alte Marker
-    Object.values(mapMarkers).forEach(marker => fundorteMap.removeLayer(marker));
-    mapMarkers = {};
-    
-    // Erstelle Custom Marker Icons
-    const markerIcons = {
-        'Keramik': '🏺',
-        'Münze': '🪙',
-        'Schmuck': '💎',
-        'Werkzeug': '🔨',
-        'Waffe': '⚔️',
-        'Knochen': '🦴',
-        'Stein': '🪨',
-        'Metall': '⚙️',
-        'Sonstiges': '📦'
-    };
-
-    // Sammle alle Positionen um Kartenausschnitt zu berechnen
-    const validCoordinates = finds.filter(f => f.latitude && f.longitude);
-    let bounds = null;
-
-    // Erstelle Marker auf der Karte mit Funden
+    // Erstelle Marker auf dem Bild
+    let markersHTML = '';
     finds.forEach((find, index) => {
-        // Koordinaten im Bereich 0-100 für das Ausgrabungsstätte-Bild
-        let lat = find.latitude || (Math.random() * 80 + 10);
-        let lng = find.longitude || (Math.random() * 80 + 10);
+        // Koordinaten in Prozent (0-100) für positionierung auf dem Bild
+        const x = find.latitude ? (find.latitude % 100) : (Math.random() * 80 + 10);
+        const y = find.longitude ? (find.longitude % 100) : (Math.random() * 80 + 10);
         
-        const category = find.category || 'Sonstiges';
-        const icon = markerIcons[category] || '📍';
+        const markerNumber = index + 1;
+        const findName = find.name || find.title || 'Fund ' + markerNumber;
         
-        // Erstelle HTML für Popup
-        const popupContent = `
-            <div style="min-width: 250px;">
-                <h4 style="margin: 0 0 10px 0; color: #5b21b6;">${index + 1}. ${find.name || find.title || 'Unbenannt'}</h4>
-                <p style="margin: 5px 0;"><strong>Kategorie:</strong> ${category}</p>
-                <p style="margin: 5px 0;"><strong>Material:</strong> ${find.material || '-'}</p>
-                <p style="margin: 5px 0;"><strong>Periode:</strong> ${find.period || '-'}</p>
-                <p style="margin: 5px 0;"><strong>Entdecker:</strong> ${find.discoverer || '-'}</p>
-                <p style="margin: 5px 0;"><strong>Datum:</strong> ${find.dateFound || find.dating || '-'}</p>
-                <p style="margin: 5px 0;"><strong>Position:</strong> ${find.location || 'Keine Angabe'}</p>
-                ${find.description ? `<p style="margin: 5px 0; border-top: 1px solid #e5e7eb; padding-top: 8px;">${find.description}</p>` : ''}
+        markersHTML += `
+            <div class="fundort-marker" 
+                 data-index="${index}"
+                 style="left: ${x}%; top: ${y}%;"
+                 onclick="selectFundortMarker(${index}); event.stopPropagation();"
+                 title="${findName}">
+                <span>${markerNumber}</span>
+                <div class="fundort-marker-tooltip">${findName}</div>
             </div>
         `;
-        
-        // Erstelle Marker
-        const marker = L.marker([lat, lng], {
-            title: find.name || find.title || 'Fund ' + (index + 1)
-        })
-            .bindPopup(popupContent)
-            .addTo(fundorteMap);
-        
-        // Speichere Marker für später
-        mapMarkers[index] = marker;
-        
-        // Erweitere Bounds
-        if (!bounds) {
-            bounds = L.latLngBounds([lat, lng], [lat, lng]);
-        } else {
-            bounds.extend([lat, lng]);
-        }
     });
-
-    // Passe Kartenausschnitt an alle Marker an
-    if (bounds && Object.keys(mapMarkers).length > 0) {
-        fundorteMap.fitBounds(bounds, { padding: [50, 50] });
-    }
+    fundorteMarkersElement.innerHTML = markersHTML;
 
     // Erstelle Liste mit Funden
     const fundorteHTML = finds.map((find, index) => {
         const category = find.category || 'Sonstiges';
+        const markerNumber = index + 1;
         return `
             <div class="fundort-item" 
-                 onclick="selectFundortOnMap(${index})" 
+                 onclick="selectFundortMarker(${index})" 
                  data-index="${index}">
-                <h4><i class="fas fa-cube" style="color: #5b21b6; margin-right: 8px;"></i>${index + 1}. ${find.name || find.title || 'Unbenannt'}</h4>
-                <p><strong>Kategorie:</strong> ${category}</p>
-                <p><strong>Material:</strong> ${find.material || '-'}</p>
-                <p><strong>Entdeckung:</strong> ${find.dateFound || find.dating || '-'}</p>
-                <p><strong>Entdecker:</strong> ${find.discoverer || '-'}</p>
-                <div>
-                    <span class="badge"><i class="fas fa-map-marker-alt"></i> ${find.location || 'Keine Position'}</span>
-                    <span class="badge" style="background: #fce7f3; color: #be185d;"><i class="fas fa-layer-group"></i> ${find.period || 'Unbekannt'}</span>
+                <h4><span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 50%; color: white; font-size: 0.75rem; font-weight: bold; margin-right: 8px;">${markerNumber}</span>${find.name || find.title || 'Unbenannt'}</h4>
+                <p><i class="fas fa-tag" style="color: #5b21b6; margin-right: 6px;"></i><strong>${category}</strong></p>
+                <p><i class="fas fa-palette" style="color: #5b21b6; margin-right: 6px;"></i>${find.material || '-'}</p>
+                <p><i class="fas fa-calendar" style="color: #5b21b6; margin-right: 6px;"></i>${find.dateFound || find.dating || '-'}</p>
+                <p><i class="fas fa-user" style="color: #5b21b6; margin-right: 6px;"></i>${find.discoverer || '-'}</p>
+                    <div style="margin-top: 8px;">
+                    <span class="badge"><i class="fas fa-map-marker-alt"></i> ${ (find.latitude != null && find.longitude != null) ? (Number(find.latitude).toFixed(4) + ', ' + Number(find.longitude).toFixed(4)) : (find.location || 'Keine Position') }</span>
+                    ${find.period ? `<span class="badge" style="background: #fce7f3; color: #be185d;"><i class="fas fa-layer-group"></i> ${find.period}</span>` : ''}
                 </div>
             </div>
         `;
@@ -369,23 +342,25 @@ async function updateFundorteList(finds = null) {
 }
 
 /**
- * Wähle einen Fundort auf der Karte aus und zeige Details
+ * Wähle einen Marker auf dem Bild aus
  */
-window.selectFundortOnMap = function(index) {
-    // Entferne aktive Klasse von allen Items
+window.selectFundortMarker = function(index) {
+    // Entferne aktive Klasse von allen Items und Markern
     document.querySelectorAll('.fundort-item').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.fundort-marker').forEach(marker => marker.classList.remove('active'));
     
-    // Markiere Item als aktiv
-    document.querySelector(`.fundort-item[data-index="${index}"]`)?.classList.add('active');
+    // Markiere Item und Marker als aktiv
+    const item = document.querySelector(`.fundort-item[data-index="${index}"]`);
+    const marker = document.querySelector(`.fundort-marker[data-index="${index}"]`);
     
-    // Öffne Marker Popup auf der Karte
-    if (mapMarkers[index]) {
-        mapMarkers[index].openPopup();
-        fundorteMap.flyTo(mapMarkers[index].getLatLng(), 16, { duration: 0.5 });
+    if (item) {
+        item.classList.add('active');
+        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
-    // Scrolle zu Item in Liste
-    document.querySelector(`.fundort-item[data-index="${index}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (marker) {
+        marker.classList.add('active');
+    }
 }
 
 function updateMembersList() {
@@ -460,20 +435,51 @@ function setupEventListeners() {
     
     // Add member form
     document.getElementById('addMemberForm').addEventListener('submit', addMember);
+    
+    // Modal close on background click
+    const modals = ['addFindModal', 'addMemberModal', 'editProjectModal'];
+    modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal(modalId);
+                }
+            });
+        }
+    });
+    
+    // Close modals on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal && modal.classList.contains('show')) {
+                    closeModal(modalId);
+                }
+            });
+        }
+    });
 }
 
 function openAddFindModal() {
-    document.getElementById('addFindModal').style.display = 'block';
+    const modal = document.getElementById('addFindModal');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
     document.getElementById('addFindForm').reset();
 }
 
 function openAddMemberModal() {
-    document.getElementById('addMemberModal').style.display = 'block';
+    const modal = document.getElementById('addMemberModal');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
     document.getElementById('addMemberForm').reset();
 }
 
 function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('show');
+    modal.style.display = 'none';
 }
 
 async function addFind(e) {
@@ -584,7 +590,9 @@ async function editProject() {
     document.getElementById('editProjectPeriod').value = currentProject.period || currentProject.startDate || '';
     
     // Öffne Modal
-    document.getElementById('editProjectModal').style.display = 'block';
+    const modal = document.getElementById('editProjectModal');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
 }
 
 function shareProject() {

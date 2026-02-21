@@ -2,6 +2,8 @@
 // Verwaltet die öffentliche Projektseite (GitHub-style)
 
 import { firebaseService } from './firebase-service.js';
+import { getRandomExcavationSiteImage, getRandomFindImage } from './image-utilities.js';
+import { setupImageSystem } from './image-system-init.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js';
 import { auth } from './firebase-config.js';
 
@@ -10,6 +12,13 @@ let projectsListener = null;
 let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize image system
+    try {
+        setupImageSystem();
+    } catch (error) {
+        console.warn('⚠️ Image system initialization warning:', error.message);
+    }
+    
     // Track current user
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
@@ -89,7 +98,7 @@ function displayProjects(projects) {
     projectsList.innerHTML = projects.map(project => `
         <div class="public-project-card" onclick="showProjectDetail('${project.id}')">
             <div class="project-card-image-container">
-                <img src="/partials/images/ausgrabungsstätte.jpg" alt="Ausgrabungsstätte" class="public-project-card-image">
+                <img src="${getRandomExcavationSiteImage()}" alt="Ausgrabungsstätte" class="public-project-card-image">
             </div>
             <div class="project-card-header">
                 <div class="project-owner">
@@ -109,7 +118,6 @@ function displayProjects(projects) {
             <div class="project-tags">
                 ${project.period ? `<span class="tag">${project.period}</span>` : ''}
                 ${project.location ? `<span class="tag">${project.location}</span>` : ''}
-                ${project.demoLabel ? `<span class="tag demo-tag">${project.demoLabel}</span>` : ''}
             </div>
 
             <div class="project-stats-public">
@@ -191,7 +199,6 @@ async function showProjectDetail(projectId) {
                         <h2>${projectTitle}</h2>
                         <p class="owner-name">${ownerName}</p>
                         <p class="project-date">${formatDate(project.createdAt)}</p>
-                        ${project.demoLabel ? `<p class="demo-label">${project.demoLabel}</p>` : ''}
                     </div>
                 </div>
                 <button class="btn btn-primary" onclick="starProject('${projectId}')">
@@ -225,19 +232,25 @@ async function showProjectDetail(projectId) {
             <div class="project-detail-finds">
                 <h3>Funde (${finds.length})</h3>
                 <div class="finds-list">
-                    ${finds.map(find => `
-                        <div class="find-item">
-                            <div class="find-info">
-                                <h5>${find.name || 'Unbenannt'}</h5>
-                                <p class="find-category"><strong>Kategorie:</strong> ${find.category || ''}</p>
-                                <p class="find-material"><strong>Material:</strong> ${find.material || ''}</p>
-                                <p class="find-period"><strong>Periode:</strong> ${find.period || ''}</p>
-                                <p class="find-description">${find.description || ''}</p>
-                                ${find.discoverer ? `<p class="find-discoverer"><i class="fas fa-user"></i> ${find.discoverer}</p>` : ''}
-                                ${find.dateFound ? `<p class="find-date"><i class="fas fa-calendar"></i> ${find.dateFound}</p>` : ''}
+                    ${finds.map(find => {
+                        // Get random find image if no image URL provided
+                        const findImageUrl = find.photoUrl || getRandomFindImage();
+                        return `
+                        <div class="find-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f9f9f9;">
+                            <div class="find-image" style="flex-shrink: 0; width: 80px; height: 80px; border-radius: 6px; overflow: hidden; background: #f0f0f0;">
+                                <img src="${findImageUrl}" alt="${find.name || 'Fund'}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div class="find-info" style="flex: 1;">
+                                <h5 style="margin: 0 0 6px 0; color: #1f2937;">${find.name || 'Unbenannt'}</h5>
+                                <p class="find-category" style="margin: 4px 0; color: #666; font-size: 0.9rem;"><strong>Kategorie:</strong> ${find.category || ''}</p>
+                                <p class="find-material" style="margin: 4px 0; color: #666; font-size: 0.9rem;"><strong>Material:</strong> ${find.material || ''}</p>
+                                <p class="find-period" style="margin: 4px 0; color: #666; font-size: 0.9rem;"><strong>Periode:</strong> ${find.period || ''}</p>
+                                ${find.discoverer ? `<p class="find-discoverer" style="margin: 4px 0; color: #666; font-size: 0.9rem;"><i class="fas fa-user"></i> ${find.discoverer}</p>` : ''}
+                                ${find.dateFound ? `<p class="find-date" style="margin: 4px 0; color: #666; font-size: 0.9rem;"><i class="fas fa-calendar"></i> ${find.dateFound}</p>` : ''}
                             </div>
                         </div>
-                    `).join('')}
+                    `;
+                    }).join('')}
                 </div>
             </div>
 

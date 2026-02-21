@@ -3,15 +3,25 @@
 
 import { auth } from './firebase-config.js';
 import { firebaseService } from './firebase-service.js';
+import { getRandomExcavationSiteImage } from './image-utilities.js';
+import { setupImageSystem } from './image-system-init.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-let currentProjects = [];
+// Global variable declarations
 let currentUserId = null;
-let projectUnsubscriber = null; // Für Listener Management
+let projectUnsubscriber = null;
+let projectsData = [];
+let currentProjects = [];
 
-const DEMO_USER_ID = 'user-demo';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize image system
+    try {
+        setupImageSystem();
+    } catch (error) {
+        console.warn('⚠️ Image system initialization warning:', error.message);
+    }
+    
     initializeProjectsPage();
     setupEventListeners();
     setupAuthStateListener();
@@ -25,9 +35,8 @@ function setupAuthStateListener() {
             console.log('✅ Benutzer angemeldet:', user.email);
             subscribeToProjectUpdates();
         } else {
-            console.log('⚠️ Benutzer abgemeldet');
-            currentUserId = DEMO_USER_ID;
-            localStorage.setItem('currentUserId', currentUserId);
+            console.log('⚠️ Benutzer abgemeldet - bitte melden Sie sich an');
+            currentUserId = null;
             
             // Beende alte Listener
             if (projectUnsubscriber) {
@@ -44,8 +53,10 @@ function initializeProjectsPage() {
         currentUserId = auth.currentUser.uid;
         console.log('✅ Benutzer beim Laden angemeldet:', currentUserId);
     } else {
-        currentUserId = localStorage.getItem('currentUserId') || DEMO_USER_ID;
-        console.log('⚠️ Demo-Modus:', currentUserId);
+        currentUserId = localStorage.getItem('currentUserId');
+        if (!currentUserId) {
+            console.log('ℹ️ User not authenticated - profile data unavailable');
+        }
     }
 
     localStorage.setItem('currentUserId', currentUserId);
@@ -114,8 +125,8 @@ async function loadProjects() {
             projects = await firebaseService.getUserProjects(currentUserId);
             console.log('✅ Projekte von Firebase geladen:', projects.length);
         } else {
-            // Demo-Modus - keine Projekte ohne Auth
-            console.log('⚠️ Demo-Modus: Keine Projekte ohne Authentifizierung');
+            // No projects available without authentication
+            console.log('ℹ️ Projects require authentication');
         }
         
         if (!currentProjects || currentProjects.length === 0) {
@@ -165,7 +176,7 @@ async function displayProjects(projects) {
         return `
         <div class="project-card">
             <div class="project-card-image">
-                <img src="/partials/images/ausgrabungsstätte.jpg" alt="Ausgrabungsstätte" class="project-card-img">
+                <img src="${getRandomExcavationSiteImage()}" alt="Ausgrabungsstätte" class="project-card-img">
             </div>
             <div class="project-card-header">
                 <div class="project-card-title">
@@ -179,7 +190,7 @@ async function displayProjects(projects) {
                 </div>
             </div>
             
-            <p class="project-description">${project.description}</p>
+            <p class="project-description">${project.description || 'Keine Beschreibung vorhanden'}</p>
             
             <div class="project-meta">
                 <span class="meta-item">
@@ -193,7 +204,7 @@ async function displayProjects(projects) {
             <div class="project-stats">
                 <div class="stat">
                     <i class="fas fa-cube"></i>
-                    <span>${project.findCount || 0} Funde</span>
+                    <span>${project.findCount || finds.length || 0} Funde</span>
                 </div>
                 <div class="stat">
                     <i class="fas fa-users"></i>
@@ -205,19 +216,7 @@ async function displayProjects(projects) {
                 </div>
             </div>
 
-            ${finds.length > 0 ? `
-            <div class="finds-preview" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
-                <h4 style="font-size: 12px; color: #999; margin-bottom: 8px; text-transform: uppercase;">Gefundene Artefakte</h4>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    ${finds.slice(0, 5).map(find => `
-                        <span class="find-badge" style="display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; background: linear-gradient(135deg, #5b21b6, #7c3aed); color: white; border-radius: 20px; font-size: 11px; font-weight: 600;">
-                            <i class="fas fa-gem"></i> ${find.titel}
-                        </span>
-                    `).join('')}
-                    ${finds.length > 5 ? `<span style="padding: 6px 10px; color: #999; font-size: 11px;">+${finds.length - 5} mehr</span>` : ''}
-                </div>
-            </div>
-            ` : ''}
+            
 
             <div class="project-card-footer">
                 <a href="/pages/project-detail/index.html?project=${project.id}" class="btn btn-sm btn-primary">
@@ -306,9 +305,166 @@ function showAlert(message, type = 'success') {
 }
 
 // Exportiere globale Funktionen für HTML-Attribute
-window.showProjectMenu = (event, projectId) => {
-    console.log('Projektmenü für:', projectId);
+window.showProjectMenu = async (event, projectId) => {
+    event.stopPropagation();
+
+    // Entferne altes Menü
+    const existing = document.getElementById('project-context-menu');
+    if (existing) existing.remove();
+
+    // Hole Projektdaten (für Prefill beim Edit)
+    let project = null;
+    try {
+        project = await firebaseService.getProject(projectId);
+    } catch (err) {
+        console.warn('Konnte Projektdaten nicht laden für Kontextmenü:', err.message);
+    }
+
+    // Erstelle Menü
+    const menu = document.createElement('div');
+    menu.id = 'project-context-menu';
+    menu.style.position = 'absolute';
+    menu.style.zIndex = 9999;
+    menu.style.background = 'white';
+    menu.style.border = '1px solid #e5e7eb';
+    menu.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+    menu.style.borderRadius = '8px';
+    menu.style.padding = '8px';
+    menu.style.minWidth = '180px';
+
+    const openBtn = document.createElement('button');
+    openBtn.className = 'btn';
+    openBtn.style.display = 'block';
+    openBtn.style.width = '100%';
+    openBtn.style.textAlign = 'left';
+    openBtn.innerHTML = '<i class="fas fa-folder-open" style="margin-right:8px;"></i> Öffnen';
+    openBtn.onclick = () => { window.location.href = `/pages/project-detail/index.html?project=${projectId}`; };
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn';
+    editBtn.style.display = 'block';
+    editBtn.style.width = '100%';
+    editBtn.style.textAlign = 'left';
+    editBtn.innerHTML = '<i class="fas fa-edit" style="margin-right:8px;"></i> Bearbeiten';
+    editBtn.onclick = (e) => {
+        e.stopPropagation();
+        // Öffne kleines Inline-Edit-Modal
+        openInlineEditModal(projectId, project);
+        menu.remove();
+    };
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn btn-danger';
+    deleteBtn.style.display = 'block';
+    deleteBtn.style.width = '100%';
+    deleteBtn.style.textAlign = 'left';
+    deleteBtn.style.marginTop = '6px';
+    deleteBtn.innerHTML = '<i class="fas fa-trash" style="margin-right:8px;"></i> Löschen';
+    deleteBtn.onclick = async (e) => {
+        e.stopPropagation();
+        if (!confirm('Wirklich dieses Projekt löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+        try {
+            await firebaseService.deleteProject(projectId);
+            showAlert('Projekt gelöscht', 'success');
+            // Aktualisiere Liste
+            loadProjects();
+        } catch (error) {
+            console.error('Fehler beim Löschen des Projekts:', error);
+            showAlert('Fehler beim Löschen: ' + (error.message || ''), 'danger');
+        } finally {
+            menu.remove();
+        }
+    };
+
+    menu.appendChild(openBtn);
+    menu.appendChild(editBtn);
+    menu.appendChild(deleteBtn);
+
+    document.body.appendChild(menu);
+
+    // Positioniere Menü nahe am Klick
+    const rect = event.target.getBoundingClientRect ? event.target.getBoundingClientRect() : { left: event.clientX, top: event.clientY };
+    menu.style.left = `${rect.left}px`;
+    menu.style.top = `${rect.bottom + 8}px`;
+
+    // Entferne Menü bei Klick außerhalb
+    const onClickOutside = (ev) => {
+        if (!menu.contains(ev.target)) {
+            menu.remove();
+            window.removeEventListener('click', onClickOutside);
+        }
+    };
+    setTimeout(() => window.addEventListener('click', onClickOutside), 10);
 };
+
+/**
+ * Öffnet ein kleines Inline-Modal zum Bearbeiten des Projektnamens und der Beschreibung
+ */
+function openInlineEditModal(projectId, project = {}) {
+    // Entferne vorhandenes Modal
+    const existing = document.getElementById('inline-edit-project-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'inline-edit-project-modal';
+    modal.style.position = 'fixed';
+    modal.style.left = '0';
+    modal.style.top = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.background = 'rgba(0,0,0,0.4)';
+    modal.style.zIndex = 10000;
+
+    const box = document.createElement('div');
+    box.style.background = 'white';
+    box.style.padding = '18px';
+    box.style.borderRadius = '10px';
+    box.style.width = '420px';
+    box.style.maxWidth = '92%';
+    box.style.boxShadow = '0 12px 36px rgba(0,0,0,0.16)';
+
+    box.innerHTML = `
+        <h3 style="margin:0 0 12px 0;">Projekt bearbeiten</h3>
+        <div style="margin-bottom:10px;"><label style="display:block;font-weight:600;margin-bottom:6px;">Projekttitel</label><input id="inlineEditTitle" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" /></div>
+        <div style="margin-bottom:14px;"><label style="display:block;font-weight:600;margin-bottom:6px;">Beschreibung</label><textarea id="inlineEditDescription" rows="4" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;"></textarea></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;"><button id="inlineEditCancel" class="btn">Abbrechen</button><button id="inlineEditSave" class="btn btn-primary">Speichern</button></div>
+    `;
+
+    modal.appendChild(box);
+    document.body.appendChild(modal);
+
+    // Prefill
+    document.getElementById('inlineEditTitle').value = project.name || project.title || '';
+    document.getElementById('inlineEditDescription').value = project.description || '';
+
+    // Handlers
+    document.getElementById('inlineEditCancel').addEventListener('click', () => modal.remove());
+    document.getElementById('inlineEditSave').addEventListener('click', async () => {
+        const newName = document.getElementById('inlineEditTitle').value.trim();
+        const newDesc = document.getElementById('inlineEditDescription').value.trim();
+        if (!newName) {
+            alert('Bitte einen Projektnamen eingeben');
+            return;
+        }
+
+        try {
+            await firebaseService.updateProject(projectId, { name: newName, title: newName, description: newDesc });
+            showAlert('Projekt aktualisiert', 'success');
+            modal.remove();
+            // Refresh
+            loadProjects();
+        } catch (err) {
+            console.error('Fehler beim Aktualisieren des Projekts:', err);
+            showAlert('Fehler beim Speichern: ' + (err.message || ''), 'danger');
+        }
+    });
+
+    // Close on background click
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+}
 
 window.editProject = (projectId) => {
     window.location.href = `/pages/project-detail/index.html?project=${projectId}`;

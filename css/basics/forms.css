@@ -103,8 +103,38 @@ textarea::placeholder {
   color: rgba(154,164,178,0.55);
 }
 
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: rgba(201, 168, 109, 0.5);
+}
+
 /* Make invalid inputs more prominent in dark theme */
 .form-error {
   box-shadow: 0 6px 18px rgba(239, 68, 68, 0.08);
+}
+
+/* Dark mode form inputs */
+html[data-theme="dark"] input[type="text"],
+html[data-theme="dark"] input[type="email"],
+html[data-theme="dark"] input[type="password"],
+html[data-theme="dark"] input[type="number"],
+html[data-theme="dark"] input[type="date"],
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  background-color: rgba(30, 20, 16, 0.5);
+  border-color: rgba(255, 184, 77, 0.2);
+  color: var(--text);
+}
+
+html[data-theme="dark"] input[type="text"]:focus,
+html[data-theme="dark"] input[type="email"]:focus,
+html[data-theme="dark"] input[type="password"]:focus,
+html[data-theme="dark"] input[type="number"]:focus,
+html[data-theme="dark"] input[type="date"]:focus,
+html[data-theme="dark"] textarea:focus,
+html[data-theme="dark"] select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 184, 77, 0.15);
+  background-color: rgba(30, 20, 16, 0.7);
 }
 

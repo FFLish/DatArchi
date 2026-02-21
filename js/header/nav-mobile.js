@@ -1,80 +1,86 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const navToggle = document.getElementById('navToggle');
+// Run immediately instead of waiting for DOMContentLoaded since this script is loaded dynamically
+function initMobileNav() {
+    // Prevent multiple initializations
+    if (window.__mobileNavInitialized) {
+        return;
+    }
+    window.__mobileNavInitialized = true;
+
+    const navToggleBtn = document.getElementById('navToggle');
     const headerMenu = document.querySelector('.header-menu');
     const navLinks = document.querySelectorAll('.nav-link');
-    const navToggleLabel = document.querySelector('.nav-toggle-label');
 
-    // Direct click handler on the label
-    if (navToggleLabel) {
-        navToggleLabel.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (navToggle) {
-                navToggle.checked = !navToggle.checked;
-                navToggle.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-        });
+    if (!navToggleBtn || !headerMenu) {
+        console.warn('Mobile nav elements not found');
+        return;
     }
 
-    // Mobile menu toggle
-    if (navToggle && headerMenu) {
-        navToggle.addEventListener('change', function() {
-            if (this.checked) {
-                headerMenu.classList.add('is-active');
-                document.body.style.overflow = 'hidden';
-            } else {
-                headerMenu.classList.remove('is-active');
-                document.body.style.overflow = '';
-            }
-        });
-    }
+    console.log('✅ Mobile nav initialized');
+
+    // Toggle menu on button click
+    navToggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Menu button clicked');
+        
+        headerMenu.classList.toggle('active');
+        const isOpen = headerMenu.classList.contains('active');
+        navToggleBtn.classList.toggle('active', isOpen);
+        navToggleBtn.setAttribute('aria-expanded', String(isOpen));
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+        
+        console.log('Menu is now:', isOpen ? 'OPEN' : 'CLOSED');
+    });
 
     // Close menu when clicking on a nav link
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            if (navToggle) {
-                navToggle.checked = false;
-                navToggle.dispatchEvent(new Event('change', { bubbles: true }));
-            }
+            headerMenu.classList.remove('active');
+            navToggleBtn.classList.remove('active');
+            navToggleBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
         });
     });
 
-    // Close menu when clicking outside (on mobile)
+    // Close menu when clicking outside
     document.addEventListener('click', (e) => {
-        if (navToggle && navToggle.checked) {
-            const isClickInside = headerMenu && headerMenu.contains(e.target);
-            const isClickOnToggle = navToggleLabel && navToggleLabel.contains(e.target);
+        if (headerMenu.classList.contains('active')) {
+            const isClickInside = headerMenu.contains(e.target);
+            const isClickOnButton = navToggleBtn.contains(e.target);
             
-            if (!isClickInside && !isClickOnToggle) {
-                navToggle.checked = false;
-                navToggle.dispatchEvent(new Event('change', { bubbles: true }));
+            if (!isClickInside && !isClickOnButton) {
+                headerMenu.classList.remove('active');
+                navToggleBtn.classList.remove('active');
+                navToggleBtn.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
             }
         }
     });
 
     // Handle window resize - close mobile menu on desktop
     window.addEventListener('resize', () => {
-        if (window.innerWidth > 768 && navToggle && navToggle.checked) {
-            navToggle.checked = false;
-            navToggle.dispatchEvent(new Event('change', { bubbles: true }));
+        if (window.innerWidth > 768 && headerMenu.classList.contains('active')) {
+            headerMenu.classList.remove('active');
+            navToggleBtn.classList.remove('active');
+            navToggleBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
         }
     });
 
     // Keyboard support - close menu on Escape
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && navToggle && navToggle.checked) {
-            navToggle.checked = false;
-            navToggle.dispatchEvent(new Event('change', { bubbles: true }));
+        if (e.key === 'Escape' && headerMenu.classList.contains('active')) {
+            headerMenu.classList.remove('active');
+            navToggleBtn.classList.remove('active');
+            navToggleBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
         }
     });
+}
 
-    // Touch feedback for mobile buttons
-    if (navToggleLabel) {
-        navToggleLabel.addEventListener('touchstart', function() {
-            this.style.transform = 'scale(0.95)';
-        });
-        
-        navToggleLabel.addEventListener('touchend', function() {
-            this.style.transform = 'scale(1)';
-        });
-    }
-});
+// Initialize immediately or when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileNav);
+} else {
+    initMobileNav();
+}

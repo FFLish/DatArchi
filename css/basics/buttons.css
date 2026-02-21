@@ -13,6 +13,9 @@
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn:hover {
@@ -25,14 +28,20 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 } 
 
+.btn i {
+  display: flex;
+  align-items: center;
+}
+
 /* Primary Button */
 .btn-primary {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent), #ff9533);
   color: white;
 }
 
 .btn-primary:hover {
-  background: #ff9533;
+  background: linear-gradient(135deg, #ff9533, #ffa94d);
+  transform: translateY(-2px);
 }
 
 /* Secondary Button */
@@ -44,6 +53,17 @@
 .btn-secondary:hover {
   background: #94a3b8;
   color: white;
+}
+
+html[data-theme="dark"] .btn-secondary {
+  background: rgba(255, 184, 77, 0.15);
+  color: var(--text);
+  border: 1px solid rgba(255, 184, 77, 0.3);
+}
+
+html[data-theme="dark"] .btn-secondary:hover {
+  background: rgba(255, 184, 77, 0.25);
+  border-color: rgba(255, 184, 77, 0.5);
 }
 
 /* Success Button */
@@ -80,8 +100,9 @@
 
 /* Small Button */
 .btn-sm {
-  padding: 6px 12px;
-  font-size: 12px;
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: 6px;
 }
 
 /* Large Button */
@@ -92,6 +113,27 @@
 
 /* Full Width Button */
 .btn-block {
-  display: block;
+  display: flex;
   width: 100%;
+  justify-content: center;
 }
+
+/* Default/Ghost Button - used in project detail */
+.btn[style*="background: #"] {
+  /* Allow inline styles for backward compatibility */
+}
+
+/* Subtle button variant */
+.btn-subtle {
+  background: #f3f4f6;
+  color: #374151;
+  box-shadow: none;
+  border: 1px solid #e5e7eb;
+}
+
+.btn-subtle:hover {
+  background: #e5e7eb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+

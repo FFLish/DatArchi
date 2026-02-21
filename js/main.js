@@ -1,6 +1,12 @@
 // main.js - Consolidated version of all DatArchi JavaScript files
 
 // ====================
+// Image System Initialization
+// ====================
+import { setupImageSystem } from './image-system-init.js';
+import { setupImageErrorHandling } from './image-error-handler.js';
+
+// ====================
 // js/firebase-config.js
 // ====================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
@@ -76,7 +82,16 @@ export const SITE_ROOT = getSiteRoot();
 
 // The main image of the excavation site used for map overlays.
 export const getMapImageUrl = () => {
-  return SITE_ROOT + 'partials/images/ausgrabungsstätte.jpg';
+  const excavationImages = [
+    'ausgrabungsstätte1.jpg',
+    'ausgrabungsstätte2.png',
+    'ausgrabungsstätte3.png',
+    'ausgrabungsstätte4.png',
+    'ausgrabungsstätte5.png',
+    'ausgrabungsstätte6.png'
+  ];
+  const randomImage = excavationImages[Math.floor(Math.random() * excavationImages.length)];
+  return SITE_ROOT + 'partials/images/ausgrabungsstätte/' + randomImage;
 };
 
 // ====================
@@ -492,6 +507,16 @@ let authSystemInitialized = false;
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Auth System: DOM ready, initializing...');
+    
+    // Initialize Image System
+    try {
+        setupImageSystem();
+        setupImageErrorHandling();
+        console.log('✅ Image System initialized');
+    } catch (error) {
+        console.warn('⚠️ Image System initialization warning:', error.message);
+    }
+    
     initializeAuthSystem();
 });
 
@@ -1615,12 +1640,12 @@ document.addEventListener('DOMContentLoaded', async () => { // Made async
 
   // Helper function to build the popup content for a find
   function buildPopupContent(find) {
-    const title = escapeHtml(find.titel || 'Unbenannter Fund');
-    const description = escapeHtml(find.beschreibung || 'Keine Beschreibung.');
-    const datierung = escapeHtml(find.datierung || 'N/A');
+    const title = escapeHtml(find.name || find.titel || 'Unbenannter Fund');
+    const description = escapeHtml(find.description || find.beschreibung || 'Keine Beschreibung.');
+    const datierung = escapeHtml(find.dating || find.datierung || 'N/A');
     const zoneLabel = escapeHtml(find.zoneLabel || '');
     const fundId = escapeHtml(find.id || 'N/A'); // Use find.id for fundId
-    const kategorie = escapeHtml(find.kategorie || 'N/A');
+    const kategorie = escapeHtml(find.category || find.kategorie || 'N/A');
     
     let html = `<h3 style="margin: 0 0 5px 0; font-size: 16px;">${title} <small class="text-muted" style="font-size: 0.8em;">(ID: ${fundId})</small></h3>`;
     if (find.photoUrl) { // Use photoUrl from Firebase Storage
@@ -1687,10 +1712,24 @@ document.addEventListener('DOMContentLoaded', async () => { // Made async
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   }
 
+  // Update toggle UI if available
+  function updateToggleUI(theme) {
+    const button = document.getElementById('theme-toggle');
+    if (!button) return;
+    const sun = button.querySelector('.sun');
+    const moon = button.querySelector('.moon');
+    if (sun) sun.hidden = (theme === 'dark');
+    if (moon) moon.hidden = (theme === 'light');
+    button.setAttribute('aria-pressed', String(theme === 'dark'));
+    const next = theme === 'dark' ? 'light' : 'dark';
+    button.setAttribute('aria-label', `Switch to ${next} mode`);
+  }
+
   function toggleTheme() {
     const currentTheme = htmlElement.getAttribute('data-theme') || 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     applyTheme(newTheme);
+    updateToggleUI(newTheme);
   }
 
   function initializeTheme() {
@@ -1702,12 +1741,18 @@ document.addEventListener('DOMContentLoaded', async () => { // Made async
     applyTheme(initialTheme);
   }
 
-  // Need to wait for the header to be injected
-  document.addEventListener('headerFooterReady', () => {
-    const themeToggleButton = document.getElementById('theme-toggle');
-    if (themeToggleButton) {
-      themeToggleButton.addEventListener('click', toggleTheme);
+  // Use delegated listener for theme toggle (works anytime button appears)
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#theme-toggle')) {
+      e.preventDefault();
+      toggleTheme();
     }
+  }, true);
+
+  // Initialize theme and update UI when header loads
+  document.addEventListener('headerFooterReady', () => {
+    const current = htmlElement.getAttribute('data-theme') || 'light';
+    updateToggleUI(current);
   });
 
   // Run initialization
@@ -1774,7 +1819,7 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
     const currentKategorie = kategorieFilter?.value;
 
     const materials = [...new Set(allFinds.map(find => find.material).filter(Boolean))].sort();
-    const kategorien = [...new Set(allFinds.map(find => find.kategorie).filter(Boolean))].sort();
+    const kategorien = [...new Set(allFinds.map(find => find.category || find.kategorie).filter(Boolean))].sort();
 
     // Reset and populate material filter
     if (materialFilter) {
@@ -1809,13 +1854,14 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
 
     const filteredFinds = allFinds.filter(find => {
       const matchesSearch = (
-        find.titel?.toLowerCase().includes(searchTerm) || 
+        find.name?.toLowerCase().includes(searchTerm) || 
+        find.titel?.toLowerCase().includes(searchTerm) ||
+        find.description?.toLowerCase().includes(searchTerm) ||
         find.beschreibung?.toLowerCase().includes(searchTerm) ||
-        find.fundId?.toLowerCase().includes(searchTerm) ||
-        find.berichte?.toLowerCase().includes(searchTerm) // Also search in reports
+        find.material?.toLowerCase().includes(searchTerm)
       );
       const matchesMaterial = !selectedMaterial || find.material === selectedMaterial;
-      const matchesKategorie = !selectedKategorie || find.kategorie === selectedKategorie;
+      const matchesKategorie = !selectedKategorie || find.category === selectedKategorie || find.kategorie === selectedKategorie;
       
       return matchesSearch && matchesMaterial && matchesKategorie;
     });
@@ -1829,14 +1875,14 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
     const activeSite = await db.getActiveSite();
 
     container.innerHTML = filteredFinds.map(find => {
-      const title = escapeHtml(find.titel || 'Unbenannter Fund');
-      const description = escapeHtml(find.beschreibung || 'Keine Beschreibung vorhanden.');
+      const title = escapeHtml(find.name || find.titel || 'Unbenannter Fund');
+      const description = escapeHtml(find.description || find.beschreibung || 'Keine Beschreibung vorhanden.');
       const fundId = escapeHtml(find.id || 'N/A'); // Using find.id for fundId
       const material = escapeHtml(find.material || 'N/A');
-      const kategorie = escapeHtml(find.kategorie || 'N/A');
-      const datierung = escapeHtml(find.datierung || 'N/A');
-      const privacy = escapeHtml(find.privacy || 'private');
-      const berichte = escapeHtml(find.berichte || '');
+      const kategorie = escapeHtml(find.category || find.kategorie || 'N/A');
+      const datierung = escapeHtml(find.dating || find.datierung || 'N/A');
+      const privacy = escapeHtml(find.visibility || find.privacy || 'private');
+      const berichte = escapeHtml(find.reports || find.berichte || '');
       const hasModel = find.modelUrl ? 'Ja' : 'Nein';
 
       let siteInfoHtml = '';
@@ -1849,8 +1895,16 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
           siteInfoHtml = `<span style="font-size: 0.8em; color: var(--muted); margin-left: 8px;">(Stätte: ${escapeHtml(activeSite.name)})</span>`;
       }
 
-      const imageHtml = find.photoUrl
-        ? `<img src="${find.photoUrl}" alt="${title}" class="find-card-image">`
+      // Use random find image if no photo URL provided
+      let imageUrl = find.photoUrl;
+      if (!imageUrl) {
+        // Import random find image utility
+        const { getRandomFindImage } = await import('./image-utilities.js');
+        imageUrl = getRandomFindImage();
+      }
+      
+      const imageHtml = imageUrl && !imageUrl.includes('undefined')
+        ? `<img src="${imageUrl}" alt="${title}" class="find-card-image">`
         : `<div class="find-card-image-placeholder">Kein Bild vorhanden</div>`;
 
       const modelLinkHtml = find.modelUrl 

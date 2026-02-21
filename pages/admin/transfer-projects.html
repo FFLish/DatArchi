@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Transfer Projects</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e5e7eb;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            color: #0369a1;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .success-list {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .success-list ul {
+            margin-left: 20px;
+            color: #065f46;
+        }
+
+        .success-list li {
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Transfer Projects</h1>
+        <p class="subtitle">Create a new user and transfer projects from an existing user</p>
+
+        <div class="info-box">
+            <strong>⚠️ Admin Function</strong>
+            This tool will create a new user account and transfer all projects from an old user to the new account.
+        </div>
+
+        <div id="successMessage" class="message success"></div>
+        <div id="errorMessage" class="message error"></div>
+        <div id="infoMessage" class="message info"></div>
+
+        <form id="transferForm">
+            <div class="form-group">
+                <label for="oldUserId">Old User ID *</label>
+                <input 
+                    type="text" 
+                    id="oldUserId" 
+                    placeholder="e.g., sGsaBu2P3tVlUZOTBtc5H8e2Zc82"
+                    value="sGsaBu2P3tVlUZOTBtc5H8e2Zc82"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="newEmail">New User Email *</label>
+                <input 
+                    type="email" 
+                    id="newEmail" 
+                    placeholder="e.g., demo@datarchi.com"
+                    value="demo@datarchi.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="newPassword">New User Password *</label>
+                <input 
+                    type="password" 
+                    id="newPassword" 
+                    placeholder="Minimum 6 characters"
+                    value="123456"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="displayName">Display Name (optional)</label>
+                <input 
+                    type="text" 
+                    id="displayName" 
+                    placeholder="e.g., Demo User"
+                    value="Demo User"
+                >
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-primary">Transfer Projects</button>
+                <button type="reset" class="btn-secondary">Clear Form</button>
+            </div>
+        </form>
+
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <p>Processing transfer...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { transferProjectsToNewUser } from './js/admin-transfer-projects.js';
+
+        const form = document.getElementById('transferForm');
+        const successMsg = document.getElementById('successMessage');
+        const errorMsg = document.getElementById('errorMessage');
+        const infoMsg = document.getElementById('infoMessage');
+        const loadingState = document.getElementById('loadingState');
+
+        function showMessage(element, message, type = 'info') {
+            element.textContent = message;
+            element.className = `message show ${type}`;
+            if (type !== 'info') {
+                element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function clearMessages() {
+            successMsg.className = 'message success';
+            errorMsg.className = 'message error';
+            infoMsg.className = 'message info';
+        }
+
+        function setLoading(isLoading) {
+            loadingState.style.display = isLoading ? 'block' : 'none';
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = isLoading;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessages();
+            setLoading(true);
+
+            try {
+                const oldUserId = document.getElementById('oldUserId').value.trim();
+                const newEmail = document.getElementById('newEmail').value.trim();
+                const newPassword = document.getElementById('newPassword').value;
+                const displayName = document.getElementById('displayName').value.trim() || 'Demo User';
+
+                if (!oldUserId || !newEmail || !newPassword) {
+                    throw new Error('Please fill in all required fields');
+                }
+
+                if (newPassword.length < 6) {
+                    throw new Error('Password must be at least 6 characters');
+                }
+
+                showMessage(infoMsg, '🔄 Starting transfer process...');
+
+                const result = await transferProjectsToNewUser(
+                    oldUserId,
+                    newEmail,
+                    newPassword,
+                    displayName
+                );
+
+                if (result.success) {
+                    let successHtml = `
+                        <strong>✅ Transfer Completed Successfully!</strong>
+                        <div class="success-list">
+                            <ul>
+                                <li><strong>New User ID:</strong> ${result.newUserId}</li>
+                                <li><strong>Email:</strong> ${result.email}</li>
+                                <li><strong>Display Name:</strong> ${displayName}</li>
+                                <li><strong>Projects Transferred:</strong> ${result.projectsTransferred}</li>
+                            </ul>
+                        </div>
+                        <p style="margin-top: 12px; font-size: 0.9rem;">
+                            The new user can now login with the provided email and password.
+                        </p>
+                    `;
+                    showMessage(successMsg, successHtml, 'success');
+                } else {
+                    showMessage(errorMsg, `❌ Transfer failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Transfer error:', error);
+                showMessage(errorMsg, `❌ Error: ${error.message}`, 'error');
+            } finally {
+                setLoading(false);
+            }
+        });
+    </script>
+</body>
+</html>

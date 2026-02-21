@@ -137,7 +137,7 @@
         <p class="subtitle">DatArchi Demo-Daten erstellen</p>
 
         <div class="info-box">
-            ℹ️ Diese Seite erstellt Demo-Benutzer, öffentliche Projekte und archäologische Funde zur Demonstration der Plattform.
+            ℹ️ Diese Seite erstellt Beispielprojekte und archäologische Funde zur Demonstration der Plattform. Es werden keine Benutzerkonten angelegt.
         </div>
 
         <div class="demo-details">
@@ -151,15 +151,8 @@
         </div>
 
         <div class="demo-details">
-            <h3>👥 Demo-Benutzer-Zugänge:</h3>
-            <ul>
-                <li><strong>demo1@datarchi.de</strong> - Dr. Maria Schmidt (Archäologin)</li>
-                <li><strong>demo2@datarchi.de</strong> - Prof. Hans Müller (Professor)</li>
-                <li><strong>demo3@datarchi.de</strong> - Dr. Anna Weber (Studentin)</li>
-            </ul>
-            <p style="margin-top: 10px; color: #666; font-size: 12px;">
-                Passwort für alle: <code>Demo123456!</code>
-            </p>
+            <h3>ℹ️ Hinweis zu Benutzern</h3>
+            <p style="margin: 0; color: #666; font-size: 13px; line-height: 1.6;">Diese Demo erstellt nur öffentliche Beispielprojekte und Funde. Benutzerkonten werden nicht angelegt. Bitte verwenden Sie Ihre eigenen Testkonten oder legen Sie Benutzer über Ihre Auth-Verwaltung an.</p>
         </div>
 
         <button class="btn-primary" onclick="setupDemo()" id="setupBtn">
@@ -190,11 +183,10 @@
                     status.className = 'success';
                     status.innerHTML = `
                         ✅ <strong>Erfolg!</strong><br>
-                        Demo-Daten wurden erfolgreich erstellt.<br><br>
+                        Beispielprojekte und Funde wurden erfolgreich erstellt.<br><br>
                         <strong>Teste die Demo:</strong><br>
                         1. <a href="/pages/public-projects/index.html" style="color: inherit; text-decoration: underline;">Öffentliche Projekte anschauen</a><br>
-                        2. <a href="/pages/profile/index.html" style="color: inherit; text-decoration: underline;">Mit demo1@datarchi.de einloggen</a><br>
-                        Passwort: Demo123456!
+                        2. Melden Sie sich mit einem Ihrer Testkonten an oder erstellen Sie ein neues Konto unter <a href="/pages/profile/index.html" style="color: inherit; text-decoration: underline;">Profile</a>.
                     `;
                     btn.disabled = false;
                     btn.textContent = '✅ Fertig! Neuerliche Daten werden übersprungen.';

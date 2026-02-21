@@ -12,8 +12,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
-import { autoInitializeDemoData } from "./demo-setup.js";
 import "./test-user-setup.js";
+import "./admin-transfer-projects.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -53,8 +53,7 @@ try {
     setPersistence(auth, browserLocalPersistence)
         .then(() => {
             console.log('✅ Auth persistence set to local');
-            // Auto-initialize demo data on first load
-            autoInitializeDemoData();
+            // Demo data disabled for production use
         })
         .catch((error) => {
             console.error('❌ Auth persistence error:', error);

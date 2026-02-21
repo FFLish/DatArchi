@@ -6,6 +6,7 @@
 import { firebaseService } from './firebase-service.js';
 import { auth, db } from './firebase-config.js';
 import { collection, addDoc, writeBatch, doc, Timestamp, getDocs, query, where, updateDoc } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js';
 
 // Tristancoutant User ID
 const TRISTANCOUTANT_USER_ID = 'sGsaBu2P3tVlUZOTBtc5H8e2Zc82';
@@ -375,7 +376,39 @@ async function autoInitializeTristancoutantProjects() {
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         setTimeout(autoInitializeTristancoutantProjects, 1000);
+        setTimeout(autoInitializeDemoUserProjects, 1200);
     });
+}
+
+/**
+ * Auto-Initialisierung: Erstelle automatisch Test-Projekte für demo@datarchi.com
+ * wenn dieser User angemeldet ist und noch keine Projekte besitzt.
+ */
+async function autoInitializeDemoUserProjects() {
+    try {
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) return;
+            if (user.email && user.email.toLowerCase() === 'demo@datarchi.com') {
+                try {
+                    const projectsRef = collection(db, 'projects');
+                    const q = query(projectsRef, where('userId', '==', user.uid));
+                    const existingProjects = await getDocs(q);
+
+                    if (existingProjects.size === 0) {
+                        console.log('🔄 Erstelle automatisch Test-Projekte für demo@datarchi.com...');
+                        await createTestProjectsForUser(user.uid, user.displayName || 'demo');
+                        console.log('✅ Test-Projekte für demo@datarchi.com erstellt!');
+                    } else {
+                        console.log(`✅ Test-Projekte existieren bereits für demo (${existingProjects.size} Projekte gefunden)`);
+                    }
+                } catch (err) {
+                    console.log('ℹ️ Auto-Initialisierung (demo):', err.message);
+                }
+            }
+        });
+    } catch (error) {
+        console.log('ℹ️ Auto-Initialisierung (demo) Fehler:', error.message);
+    }
 }
 
 console.log('Test User Setup Script geladen. Nutze createTestProjectsForUser(userId, userName)');

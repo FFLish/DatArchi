@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Projects Setup - DatArchi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #333;
+        }
+
+        .info-box code {
+            background: #e8ebf7;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e8ebf7;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 2px 0;
+        }
+
+        .log-success {
+            color: #00ff00;
+        }
+
+        .log-error {
+            color: #ff4444;
+        }
+
+        .log-info {
+            color: #4488ff;
+        }
+
+        .log-warning {
+            color: #ffaa00;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .status.idle {
+            background: #f0f4ff;
+            color: #667eea;
+        }
+
+        .status.loading {
+            background: #fff4e6;
+            color: #ff9800;
+        }
+
+        .status.success {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status.error {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .summary {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .summary.show {
+            display: block;
+        }
+
+        .summary-item {
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            color: #333;
+        }
+
+        .summary-item strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Test Projects Setup</h1>
+            <p>Erstelle Test-Projekte und Funde für einen Benutzer</p>
+        </div>
+
+        <div class="info-box">
+            <strong>Ziel-Benutzer:</strong><br>
+            <code>sGsaBu2P3tVlUZOTBtc5H8e2Zc82</code><br><br>
+            <strong>Was wird erstellt:</strong><br>
+            ✓ 3 archäologische Projekte<br>
+            ✓ 15 Test-Funde insgesamt<br>
+            ✓ Realistische archäologische Daten<br>
+            ✓ Vollständige Dokumentation
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" id="createBtn" onclick="handleCreateProjects()">
+                ✨ Test Projects erstellen
+            </button>
+            <button class="btn-secondary" onclick="clearLog()">
+                🗑️ Log löschen
+            </button>
+        </div>
+
+        <div class="status idle" id="status">
+            Bereit zum Starten
+        </div>
+
+        <div class="log-container" id="logContainer">
+            <div class="log-entry log-info">[INFO] Warte auf Einleitung...</div>
+        </div>
+
+        <div class="summary" id="summary">
+            <strong>📊 Zusammenfassung:</strong>
+            <div class="summary-item">
+                <span>Projekte erstellt:</span>
+                <strong id="projectCount">0</strong>
+            </div>
+            <div class="summary-item">
+                <span>Funde erstellt:</span>
+                <strong id="findCount">0</strong>
+            </div>
+            <div class="summary-item">
+                <span>Gesamtdauer:</span>
+                <strong id="duration">0s</strong>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createTestProjectsWithFinds, TARGET_USER_ID } from '../../js/create-test-projects.js';
+
+        const logContainer = document.getElementById('logContainer');
+        const status = document.getElementById('status');
+        const createBtn = document.getElementById('createBtn');
+        const summary = document.getElementById('summary');
+        let startTime = null;
+
+        // Override console.log to capture output
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        console.log = function(...args) {
+            originalLog(...args);
+            addLogEntry(args.join(' '), 'info');
+        };
+
+        console.error = function(...args) {
+            originalError(...args);
+            addLogEntry(args.join(' '), 'error');
+        };
+
+        function addLogEntry(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${type.toUpperCase()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '';
+            summary.classList.remove('show');
+        }
+
+        function updateStatus(state, message) {
+            status.className = `status ${state}`;
+            status.textContent = message;
+        }
+
+        window.handleCreateProjects = async function() {
+            createBtn.disabled = true;
+            clearLog();
+            startTime = Date.now();
+            
+            updateStatus('loading', '⏳ Erstelle Test-Projekte...');
+            addLogEntry('Starte Erstellung von Test-Projekten', 'info');
+            
+            try {
+                const projectIds = await createTestProjectsWithFinds();
+                
+                const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+                const totalFinds = 15; // 5 + 5 + 5 Funde
+                
+                updateStatus('success', '✅ Alle Test-Projekte erfolgreich erstellt!');
+                
+                // Zeige Zusammenfassung
+                document.getElementById('projectCount').textContent = projectIds.length;
+                document.getElementById('findCount').textContent = totalFinds;
+                document.getElementById('duration').textContent = duration + 's';
+                summary.classList.add('show');
+                
+                addLogEntry(`🎉 Erfolgreich abgeschlossen in ${duration} Sekunden!`, 'success');
+                
+            } catch (error) {
+                updateStatus('error', '❌ Fehler beim Erstellen der Projekte');
+                addLogEntry(`Fehler: ${error.message}`, 'error');
+                console.error('Detaillierter Fehler:', error);
+            } finally {
+                createBtn.disabled = false;
+            }
+        };
+
+        // Initial message
+        addLogEntry('DatArchi Test Projects Setup - Bereit', 'info');
+        addLogEntry(`Ziel-Benutzer: ${TARGET_USER_ID}`, 'info');
+    </script>
+</body>
+</html>

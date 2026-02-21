@@ -2,14 +2,30 @@
 // ====================
 // Inject header and footer from external HTML files
 
-// Determine site root based on current location
+// Determine site root based on current script location with sensible fallbacks
 const getSiteRoot = () => {
+  // 1) Try to derive from the currently executing script (module loader)
+  const currentScript = document.currentScript && document.currentScript.src ? document.currentScript.src : null;
+  if (currentScript) {
+    try {
+      const url = new URL(currentScript);
+      // If script path contains '/js/', assume site root is everything before '/js/'
+      const parts = url.pathname.split('/js/');
+      if (parts.length > 0) {
+        return url.origin + (parts[0].endsWith('/') ? parts[0] : parts[0] + '/') ;
+      }
+    } catch (e) {
+      // ignore and fall through
+    }
+  }
+
+  // 2) Try known hosting pattern with '/DatArchi/' in path
   const pathname = window.location.pathname;
-  // If hosted on GitHub Pages, the repo name is part of the path
   if (pathname.includes('/DatArchi/')) {
     return window.location.origin + '/DatArchi/';
   }
-  // For local development or other hosting, assume root is '/'
+
+  // 3) Default to origin root
   return window.location.origin + '/';
 };
 
@@ -87,37 +103,79 @@ function ensureContainers() {
 
 let loaded = false;
 let lastError = null;
+let headerFooterLoadingPromise = null;
 
 // Function to reload header and footer
 async function reloadHeaderFooter() {
-  ensureContainers();
-
-  const siteRoot = SITE_ROOT;
-  const headerUrl = new URL('partials/header.html', siteRoot).href;
-  const footerUrl = new URL('partials/footer.html', siteRoot).href;
-  
-  try {
-    await Promise.all([
-      injectSection('#header-container', headerUrl),
-      injectSection('#footer-container', footerUrl)
-    ]);
-
-    const headerEl = document.querySelector('#header-container');
-    const footerEl = document.querySelector('#footer-container');
-
-    adjustLinks(headerEl, siteRoot);
-    adjustLinks(footerEl, siteRoot);
-
-    document.dispatchEvent(new Event('headerFooterReady'));
-  } catch (err) {
-    console.warn('reloadHeaderFooter: failed to reload partials:', err);
+  // Prevent multiple simultaneous loads
+  if (headerFooterLoadingPromise) {
+    return headerFooterLoadingPromise;
   }
+
+  headerFooterLoadingPromise = (async () => {
+    ensureContainers();
+
+    const siteRoot = SITE_ROOT;
+    const headerUrl = new URL('partials/header.html', siteRoot).href;
+    const footerUrl = new URL('partials/footer.html', siteRoot).href;
+    
+    try {
+      await Promise.all([
+        injectSection('#header-container', headerUrl),
+        injectSection('#footer-container', footerUrl)
+      ]);
+
+      const headerEl = document.querySelector('#header-container');
+      const footerEl = document.querySelector('#footer-container');
+
+      adjustLinks(headerEl, siteRoot);
+      adjustLinks(footerEl, siteRoot);
+
+      // Check if scripts are already loaded to prevent duplicates
+      if (!document.querySelector('script[src*="nav-mobile.js"]')) {
+        const navScript = document.createElement('script');
+        navScript.type = 'module';
+        navScript.src = new URL('header/nav-mobile.js', SITE_ROOT + 'js/').href;
+        document.head.appendChild(navScript);
+      }
+
+      if (!document.querySelector('script[src*="theme-toggle.js"]')) {
+        const themeScript = document.createElement('script');
+        themeScript.type = 'module';
+        themeScript.src = new URL('theme-toggle.js', SITE_ROOT + 'js/').href;
+        document.head.appendChild(themeScript);
+      }
+
+      // Now notify that header/footer are ready so loaded scripts can attach listeners
+      document.dispatchEvent(new Event('headerFooterReady'));
+    } catch (err) {
+      console.warn('reloadHeaderFooter: failed to reload partials:', err);
+    } finally {
+      headerFooterLoadingPromise = null;
+    }
+  })();
+
+  return headerFooterLoadingPromise;
 }
 
 // Export reload function globally
 window.reloadHeaderFooter = reloadHeaderFooter;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Prevent running this code multiple times
+  if (loaded) {
+    console.log('Header/Footer already loaded, skipping duplicate initialization');
+    return;
+  }
+
+  // Initialize image system
+  try {
+    const { setupImageSystem } = await import('./image-system-init.js');
+    setupImageSystem();
+  } catch (error) {
+    console.warn('⚠️ Image system initialization warning:', error.message);
+  }
+  
   ensureContainers();
 
   const siteRoot = SITE_ROOT; // Use the imported site root
@@ -139,17 +197,67 @@ document.addEventListener('DOMContentLoaded', async () => {
     adjustLinks(footerEl, siteRoot);
 
     loaded = true;
-    document.dispatchEvent(new Event('headerFooterReady'));
 
-    // Load mobile navigation script after header is injected
-    const navScript = document.createElement('script');
-    navScript.type = 'module';
-    navScript.src = new URL('header/nav-mobile.js', SITE_ROOT + 'js/').href;
-    document.head.appendChild(navScript);
+    // Load mobile navigation script and theme toggle before notifying listeners - prevent duplicates
+    if (!document.querySelector('script[src*="nav-mobile.js"]')) {
+      const navScript = document.createElement('script');
+      navScript.type = 'module';
+      navScript.src = new URL('header/nav-mobile.js', SITE_ROOT + 'js/').href;
+      document.head.appendChild(navScript);
+    }
+
+    if (!document.querySelector('script[src*="theme-toggle.js"]')) {
+      const themeScript = document.createElement('script');
+      themeScript.type = 'module';
+      themeScript.src = new URL('theme-toggle.js', SITE_ROOT + 'js/').href;
+      document.head.appendChild(themeScript);
+    }
+
+    console.info('injectHeaderFooter: header/footer injected', headerUrl, footerUrl);
+    document.dispatchEvent(new Event('headerFooterReady'));
 
   } catch (err) {
     lastError = err;
-    console.warn('injectHeaderFooter: failed to load partials:', err);
+    console.warn('injectHeaderFooter: initial load failed:', err);
+
+    // Fallback: try a couple of common alternate site roots
+    const altRoots = [window.location.origin + '/', window.location.origin + '/DatArchi/'];
+    let recovered = false;
+    for (const root of altRoots) {
+      try {
+        const altHeader = new URL('partials/header.html', root).href;
+        const altFooter = new URL('partials/footer.html', root).href;
+        console.info('injectHeaderFooter: attempting fallback to', root, altHeader);
+        await Promise.all([
+          injectSection('#header-container', altHeader),
+          injectSection('#footer-container', altFooter)
+        ]);
+        const headerEl = document.querySelector('#header-container');
+        const footerEl = document.querySelector('#footer-container');
+        adjustLinks(headerEl, root);
+        adjustLinks(footerEl, root);
+
+        // append scripts and dispatch
+        const navScript2 = document.createElement('script');
+        navScript2.type = 'module';
+        navScript2.src = new URL('header/nav-mobile.js', root + 'js/').href;
+        document.head.appendChild(navScript2);
+
+        const themeScript2 = document.createElement('script');
+        themeScript2.type = 'module';
+        themeScript2.src = new URL('theme-toggle.js', root + 'js/').href;
+        document.head.appendChild(themeScript2);
+
+        console.info('injectHeaderFooter: fallback succeeded with root', root);
+        document.dispatchEvent(new Event('headerFooterReady'));
+        recovered = true;
+        break;
+      } catch (innerErr) {
+        console.warn('injectHeaderFooter: fallback attempt failed for', root, innerErr);
+      }
+    }
+
+    if (!recovered) console.warn('injectHeaderFooter: failed to load partials after fallbacks:', lastError);
   }
 
   if (!loaded) {

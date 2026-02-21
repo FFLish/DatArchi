@@ -34,11 +34,11 @@
 
 html[data-theme="dark"] {
   /* Dark professional palette - Warm Archaeological Yellow-Orange */
-  --bg: #1a0f08; /* page background - very dark earth */
-  --card: #2d1810; /* cards, panels - dark amber */
-  --card-darker: #1a0f08; /* Dark mode */
-  --text: #fffaf0; /* main text - warm cream */
-  --muted: #f4a460; /* subdued text - sandy orange */
+  --bg: #0f0a07; /* page background - very dark earth */
+  --card: #1e1410; /* cards, panels - dark amber */
+  --card-darker: #141008; /* Dark mode */
+  --text: #f5f1eb; /* main text - warm cream */
+  --muted: #c9a86d; /* subdued text - sandy orange */
   --accent: #ffb84d; /* primary accent - warm orange */
   --accent-2: #ffd700; /* secondary accent - golden yellow */
   --accent-3: #ff8c00;
@@ -48,13 +48,13 @@ html[data-theme="dark"] {
   --info: #ffb84d;
   --dark: #0d0705; /* extra dark tone */
   --light: #f4a460;
-  --border: rgba(255, 184, 77, 0.25);
-  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 40px 90px rgba(0, 0, 0, 0.6);
-  --shadow-neon: 0 0 40px rgba(255, 184, 77, 0.3);
-  --glass: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 184, 77, 0.3);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 40px 90px rgba(0, 0, 0, 0.7);
+  --shadow-neon: 0 0 40px rgba(255, 184, 77, 0.35);
+  --glass: rgba(30, 20, 16, 0.7);
 }
 
 * {

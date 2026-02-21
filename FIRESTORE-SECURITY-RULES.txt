@@ -24,11 +24,6 @@ service cloud.firestore {
       return resource.data.isPublic == true || resource.data.visibility == 'public';
     }
     
-    // Kann der Benutzer auf das Projekt zugreifen? (Owner oder Public)
-    function canAccessProject(resource) {
-      return isOwner(resource.data.userId) || isPublic(resource);
-    }
-    
     // ===== BENUTZER RULES =====
     match /users/{userId} {
       allow read, write: if isOwner(userId);
@@ -42,33 +37,45 @@ service cloud.firestore {
     // ===== PROJEKTE RULES =====
     match /projects/{projectId} {
       // Lesen: Nur Owner oder wenn öffentlich
-      allow read: if canAccessProject(resource);
+      allow read: if isOwner(resource.data.userId) || isOwner(resource.data.owner) || isPublic(resource);
       
       // Erstellen: Nur authentifizierte Benutzer
       allow create: if isSignedIn();
       
       // Aktualisieren: Nur Owner
-      allow update: if isOwner(resource.data.userId);
+      allow update: if isOwner(resource.data.userId) || isOwner(resource.data.owner);
       
       // Löschen: Nur Owner
-      allow delete: if isOwner(resource.data.userId);
+      allow delete: if isOwner(resource.data.userId) || isOwner(resource.data.owner);
       
       // Finds Subkollektion
       match /finds/{findId} {
         // Allow read if user can access the project (owner or public)
-        allow read: if canAccessProject(get(/databases/$(database)/documents/projects/$(projectId)));
-        allow create: if isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.userId);
-        allow update, delete: if isOwner(resource.data.userId) || isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.userId);
+        allow read: if isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.userId) || isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.owner) || isPublic(get(/databases/$(database)/documents/projects/$(projectId)));
+        allow create: if isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.userId) || isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.owner);
+        allow update, delete: if isOwner(resource.data.creator) || isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.userId) || isOwner(get(/databases/$(database)/documents/projects/$(projectId)).data.owner);
       }
     }
     
     // ===== FUNDE RULES (Toplevel) =====
     match /finds/{findId} {
-      // Allow read if user is owner
-      allow read: if isOwner(resource.data.userId);
+      // Allow read if user is owner (creator) or the associated project is public
+      allow read: if isOwner(resource.data.creator) || (
+        'projectId' in resource.data && 
+        (isOwner(get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data.userId) || 
+         isOwner(get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data.owner) ||
+         isPublic(get(/databases/$(database)/documents/projects/$(resource.data.projectId))))
+      );
       
-      // Erstellen und Bearbeiten: Nur Owner
-      allow create, update, delete: if isOwner(resource.data.userId) || isSignedIn();
+      // Erstellen: Nur authentifizierte Benutzer
+      allow create: if isSignedIn();
+      
+      // Aktualisieren und Löschen: Nur Owner (creator) oder Project Owner
+      allow update, delete: if isOwner(resource.data.creator) || (
+        'projectId' in resource.data && 
+        (isOwner(get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data.userId) ||
+         isOwner(get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data.owner))
+      );
     }
     
     // ===== AUSGRABUNGSSTÄTTEN RULES =====

@@ -291,17 +291,6 @@
     border-color: var(--accent);
 }
 
-.demo-tag {
-    background: rgba(217, 119, 6, 0.15);
-    color: #d97706;
-    border-color: rgba(217, 119, 6, 0.3);
-}
-
-.demo-tag:hover {
-    background: rgba(217, 119, 6, 0.25);
-    border-color: #d97706;
-}
-
 /* Project Stats */
 .project-stats,
 .project-stats-public {
@@ -494,16 +483,6 @@
     color: var(--muted);
     font-size: 0.9rem;
     margin-top: 4px;
-}
-
-.demo-label {
-    color: #d97706;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
 }
 
 .project-detail-description {
