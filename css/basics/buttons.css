@@ -28,6 +28,12 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 } 
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 .btn i {
   display: flex;
   align-items: center;
@@ -35,55 +41,110 @@
 
 /* Primary Button */
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #ff9533);
+  background: var(--btn-primary-bg);
   color: white;
+  box-shadow: 0 2px 8px rgba(244, 164, 96, 0.2);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #ff9533, #ffa94d);
+  background: var(--btn-primary-hover-bg);
   transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(244, 164, 96, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(244, 164, 96, 0.2);
+}
+
+html[data-theme="dark"] .btn-primary {
+  box-shadow: 0 4px 12px rgba(255, 184, 77, 0.25);
+}
+
+html[data-theme="dark"] .btn-primary:hover {
+  box-shadow: 0 8px 24px rgba(255, 184, 77, 0.35);
 }
 
 /* Secondary Button */
 .btn-secondary {
-  background: #cbd5e1;
-  color: var(--text);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-color);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secondary:hover {
-  background: #94a3b8;
-  color: white;
+  background: var(--btn-secondary-hover-bg);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn-secondary:active {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 html[data-theme="dark"] .btn-secondary {
-  background: rgba(255, 184, 77, 0.15);
-  color: var(--text);
-  border: 1px solid rgba(255, 184, 77, 0.3);
+  border-color: rgba(255, 184, 77, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 html[data-theme="dark"] .btn-secondary:hover {
-  background: rgba(255, 184, 77, 0.25);
-  border-color: rgba(255, 184, 77, 0.5);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(255, 184, 77, 0.2);
 }
 
 /* Success Button */
 .btn-success {
-  background: var(--success);
+  background: var(--btn-success-bg);
   color: white;
+  box-shadow: 0 2px 8px rgba(132, 204, 22, 0.2);
 }
 
 .btn-success:hover {
-  background: #7ac800;
+  background: var(--btn-success-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(132, 204, 22, 0.3);
+}
+
+.btn-success:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(132, 204, 22, 0.2);
+}
+
+html[data-theme="dark"] .btn-success {
+  box-shadow: 0 4px 12px rgba(184, 204, 0, 0.25);
+}
+
+html[data-theme="dark"] .btn-success:hover {
+  box-shadow: 0 8px 24px rgba(184, 204, 0, 0.35);
 }
 
 /* Danger Button */
 .btn-danger {
-  background: var(--danger);
+  background: var(--btn-danger-bg);
   color: white;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
 }
 
 .btn-danger:hover {
-  background: #c75c0a;
+  background: var(--btn-danger-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.2);
+}
+
+html[data-theme="dark"] .btn-danger {
+  background: var(--btn-danger-bg);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.25);
+}
+
+html[data-theme="dark"] .btn-danger:hover {
+  background: var(--btn-danger-hover-bg);
+  box-shadow: 0 8px 24px rgba(255, 107, 107, 0.35);
 }
 
 /* Outline Button */
@@ -91,11 +152,24 @@ html[data-theme="dark"] .btn-secondary:hover {
   background: transparent;
   border: 2px solid var(--accent);
   color: var(--accent);
+  box-shadow: none;
 }
 
 .btn-outline:hover {
   background: var(--accent);
   color: white;
+  box-shadow: 0 4px 12px rgba(244, 164, 96, 0.25);
+}
+
+html[data-theme="dark"] .btn-outline {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+html[data-theme="dark"] .btn-outline:hover {
+  background: var(--accent);
+  color: #0f0a07;
+  box-shadow: 0 4px 12px rgba(255, 184, 77, 0.35);
 }
 
 /* Small Button */
@@ -118,22 +192,34 @@ html[data-theme="dark"] .btn-secondary:hover {
   justify-content: center;
 }
 
-/* Default/Ghost Button - used in project detail */
-.btn[style*="background: #"] {
-  /* Allow inline styles for backward compatibility */
-}
-
 /* Subtle button variant */
 .btn-subtle {
-  background: #f3f4f6;
-  color: #374151;
-  box-shadow: none;
-  border: 1px solid #e5e7eb;
+  background: var(--card);
+  color: var(--text-secondary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-light);
 }
 
 .btn-subtle:hover {
-  background: #e5e7eb;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  background: var(--card-darker);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(244, 164, 96, 0.1);
+}
+
+.btn-subtle:active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="dark"] .btn-subtle {
+  background: rgba(255, 184, 77, 0.08);
+  border-color: rgba(255, 184, 77, 0.2);
+  color: var(--text);
+}
+
+html[data-theme="dark"] .btn-subtle:hover {
+  background: rgba(255, 184, 77, 0.15);
+  border-color: rgba(255, 184, 77, 0.4);
+  box-shadow: 0 4px 12px rgba(255, 184, 77, 0.15);
 }
 
 

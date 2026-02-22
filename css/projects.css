@@ -84,8 +84,8 @@
 }
 
 .filter-select option {
-    background: #1a1a2e;
-    color: white;
+    background: var(--card);
+    color: var(--text);
 }
 
 .filter-select:focus {
@@ -317,7 +317,7 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: linear-gradient(135deg, #f97316, #fb923c);
+    background: var(--btn-primary-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -777,12 +777,12 @@
 }
 
 .btn-danger {
-    background-color: #ef4444;
-    border-color: #dc2626;
+    background-color: var(--btn-danger-bg);
+    border-color: var(--btn-danger-hover-bg);
 }
 
 .btn-danger:hover {
-    background-color: #dc2626;
+    background-color: var(--btn-danger-hover-bg);
 }
 
 /* Responsive Design */

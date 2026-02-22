@@ -76,14 +76,22 @@ button {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #f97316, #fb923c);
+  background: var(--btn-primary-bg);
   color: white;
-  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 15px rgba(244, 164, 96, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(249, 115, 22, 0.4);
+  box-shadow: 0 12px 30px rgba(244, 164, 96, 0.4);
+}
+
+html[data-theme="dark"] .btn-primary {
+  box-shadow: 0 4px 15px rgba(255, 184, 77, 0.3);
+}
+
+html[data-theme="dark"] .btn-primary:hover {
+  box-shadow: 0 12px 30px rgba(255, 184, 77, 0.4);
 }
 
 @media (max-width: 768px) {

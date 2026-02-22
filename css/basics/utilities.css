@@ -161,3 +161,56 @@
 .opacity-75 {
   opacity: 0.75;
 }
+
+/* Color Utilities */
+.text-primary {
+  color: var(--accent);
+}
+.text-success {
+  color: var(--success);
+}
+.text-danger {
+  color: var(--danger);
+}
+.text-warning {
+  color: var(--warning);
+}
+.text-info {
+  color: var(--info);
+}
+
+/* Background Color Utilities */
+.bg-success {
+  background-color: var(--success);
+  color: white;
+}
+.bg-danger {
+  background-color: var(--danger);
+  color: white;
+}
+.bg-warning {
+  background-color: var(--warning);
+  color: white;
+}
+.bg-info {
+  background-color: var(--info);
+  color: white;
+}
+
+/* Status Light Backgrounds */
+.bg-success-light {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+.bg-danger-light {
+  background-color: var(--danger-light);
+  color: var(--danger);
+}
+.bg-warning-light {
+  background-color: var(--warning-light);
+  color: var(--warning);
+}
+.bg-info-light {
+  background-color: var(--info-light);
+  color: var(--info);
+}

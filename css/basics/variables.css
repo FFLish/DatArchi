@@ -1,32 +1,66 @@
 /* Variables and Root Styles */
 :root {
   /* Light theme variables (default) - Archaeological Yellow-Orange */
+  /* Primary Colors */
   --bg: #fffaf0;
   --card: #fffef9;
   --card-darker: #fef3e6; /* Light mode - warm gold */
   --text: #3e2723;
+  --text-secondary: #6b5b52;
+  --text-tertiary: #999;
   --muted: #a0826d;
+  
+  /* Accent Colors */
   --accent: #f4a460;
+  --accent-hover: #ff9533;
   --accent-2: #daa520;
   --accent-3: #d97706;
-  --danger: #d97706;
+  
+  /* Status Colors */
+  --danger: #dc2626;
+  --danger-light: rgba(220, 38, 38, 0.1);
   --warning: #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.1);
   --success: #84cc16;
+  --success-light: rgba(132, 204, 22, 0.1);
   --info: #f4a460;
+  --info-light: rgba(244, 164, 96, 0.1);
+  
+  /* Button Colors */
+  --btn-primary-bg: linear-gradient(135deg, #f4a460 0%, #ff9533 100%);
+  --btn-primary-hover-bg: linear-gradient(135deg, #ff9533 0%, #ffa94d 100%);
+  --btn-secondary-bg: #e2e8f0;
+  --btn-secondary-hover-bg: #cbd5e1;
+  --btn-secondary-color: #475569;
+  --btn-success-bg: #84cc16;
+  --btn-success-hover-bg: #7ac800;
+  --btn-danger-bg: #dc2626;
+  --btn-danger-hover-bg: #b91c1c;
+  
+  /* Neutral Colors */
   --dark: #1b0f0a;
   --light: #fef3e6;
   --border: rgba(244, 164, 96, 0.2);
+  --border-light: #e2e8f0;
+  
+  /* Shadows */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.09);
   --shadow-lg: 0 15px 40px rgba(0, 0, 0, 0.12);
   --shadow-xl: 0 30px 60px rgba(0, 0, 0, 0.15);
   --shadow-neon: 0 0 30px rgba(244, 164, 96, 0.3);
+  
+  /* Border Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 14px;
   --radius-xl: 20px;
+  
+  /* Transitions */
   --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Layout */
   --header-height: 72px;
   --glass: rgba(255, 255, 255, 0.8);
   --content-padding: 24px;
@@ -34,21 +68,49 @@
 
 html[data-theme="dark"] {
   /* Dark professional palette - Warm Archaeological Yellow-Orange */
+  /* Primary Colors */
   --bg: #0f0a07; /* page background - very dark earth */
   --card: #1e1410; /* cards, panels - dark amber */
   --card-darker: #141008; /* Dark mode */
   --text: #f5f1eb; /* main text - warm cream */
+  --text-secondary: #d4c5b9;
+  --text-tertiary: #999;
   --muted: #c9a86d; /* subdued text - sandy orange */
+  
+  /* Accent Colors */
   --accent: #ffb84d; /* primary accent - warm orange */
+  --accent-hover: #ffc966;
   --accent-2: #ffd700; /* secondary accent - golden yellow */
   --accent-3: #ff8c00;
-  --danger: #ff8c00;
+  
+  /* Status Colors */
+  --danger: #ff6b6b;
+  --danger-light: rgba(255, 107, 107, 0.15);
   --warning: #ffb347;
+  --warning-light: rgba(255, 179, 71, 0.15);
   --success: #b8cc00;
+  --success-light: rgba(184, 204, 0, 0.15);
   --info: #ffb84d;
+  --info-light: rgba(255, 184, 77, 0.15);
+  
+  /* Button Colors */
+  --btn-primary-bg: linear-gradient(135deg, #ffb84d 0%, #ffc966 100%);
+  --btn-primary-hover-bg: linear-gradient(135deg, #ffc966 0%, #ffd666 100%);
+  --btn-secondary-bg: rgba(255, 184, 77, 0.15);
+  --btn-secondary-hover-bg: rgba(255, 184, 77, 0.25);
+  --btn-secondary-color: #f5f1eb;
+  --btn-success-bg: #b8cc00;
+  --btn-success-hover-bg: #a3b800;
+  --btn-danger-bg: #ff6b6b;
+  --btn-danger-hover-bg: #ff5252;
+  
+  /* Neutral Colors */
   --dark: #0d0705; /* extra dark tone */
   --light: #f4a460;
   --border: rgba(255, 184, 77, 0.3);
+  --border-light: rgba(255, 184, 77, 0.2);
+  
+  /* Shadows */
   --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.55);
   --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.6);

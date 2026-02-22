@@ -146,7 +146,7 @@
 
 /* CTA Banner */
 .cta-banner {
-  background: linear-gradient(135deg, var(--accent) 0%, #ffb84d 100%);
+  background: var(--btn-primary-bg);
   color: white;
   padding: 60px 40px;
   border-radius: 16px;
@@ -232,14 +232,22 @@
 }
 
 .cta-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #ffb84d 100%);
+  background: var(--btn-primary-bg);
   color: white;
+  box-shadow: 0 4px 15px rgba(244, 164, 96, 0.3);
+}
+
+html[data-theme="dark"] .cta-primary {
   box-shadow: 0 4px 15px rgba(255, 184, 77, 0.3);
 }
 
 .cta-primary:hover {
-  box-shadow: 0 12px 30px rgba(255, 184, 77, 0.4);
+  box-shadow: 0 12px 30px rgba(244, 164, 96, 0.4);
   transform: translateY(-3px);
+}
+
+html[data-theme="dark"] .cta-primary:hover {
+  box-shadow: 0 12px 30px rgba(255, 184, 77, 0.4);
 }
 
 .cta-primary:active {
@@ -285,13 +293,13 @@ html[data-theme="dark"] .feature-card:hover {
 }
 
 html[data-theme="dark"] .cta-banner {
-  background: linear-gradient(135deg, var(--accent) 0%, #ffb84d 100%);
-  color: #1a0f08;
+  background: var(--btn-primary-bg);
+  color: var(--dark);
 }
 
 html[data-theme="dark"] .cta-banner .cta-title,
 html[data-theme="dark"] .cta-banner .cta-desc {
-  color: #1a0f08;
+  color: var(--dark);
 }
 
 html[data-theme="dark"] .cta-section {
@@ -469,7 +477,7 @@ html[data-theme="dark"] .cta-secondary:hover {
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .features-intro {
-    background: #1a0f08;
+    background: var(--dark);
     color: #f5f1eb;
   }
 
