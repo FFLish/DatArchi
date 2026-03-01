@@ -56,7 +56,7 @@ async function loadPublicProjects() {
         projectsList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Projekte werden geladen...</div>';
 
         // Lade alle öffentlichen Projekte von Firebase
-        let projects = await firebaseService.getPublicProjects(100);
+        let projects = await firebaseService.getPublicProjects(3);
         console.log('✅ Öffentliche Projekte geladen:', projects.length);
         
         // Dedupliziere Projekte nach ID
@@ -66,7 +66,7 @@ async function loadPublicProjects() {
                 uniqueProjects[project.id] = project;
             }
         });
-        allPublicProjects = Object.values(uniqueProjects);
+        allPublicProjects = Object.values(uniqueProjects).slice(0, 3);
         console.log('✅ Nach Deduplizierung:', allPublicProjects.length, 'eindeutige Projekte');
         
         if (!allPublicProjects || allPublicProjects.length === 0) {
@@ -207,6 +207,24 @@ function formatDate(date) {
     }
 }
 
+function normalizeImagePath(path) {
+    const raw = String(path || '').trim();
+    if (!raw) return '';
+    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('data:')) {
+        return raw;
+    }
+
+    const withAbsoluteRoot = raw.startsWith('partials/') ? `/${raw}` : raw;
+
+    return withAbsoluteRoot
+        .split('/')
+        .map((segment, index) => {
+            if (index === 0 && segment === '') return '';
+            return encodeURIComponent(segment);
+        })
+        .join('/');
+}
+
 async function showProjectDetail(projectId) {
     try {
         const project = allPublicProjects.find(p => p.id === projectId);
@@ -265,12 +283,22 @@ async function showProjectDetail(projectId) {
                 <h3>Funde (${finds.length})</h3>
                 <div class="finds-list">
                     ${finds.map(find => {
-                        // Get random find image if no image URL provided
-                        const findImageUrl = find.photoUrl || getRandomFindImage();
+                        const imageCandidates = Array.isArray(find.images) && find.images.length > 0
+                            ? find.images
+                            : [find.image || find.photoUrl || getRandomFindImage()];
+                        const findImages = imageCandidates
+                            .map(normalizeImagePath)
+                            .filter(Boolean);
+                        const primaryImage = findImages[0] || getRandomFindImage();
+
+                        const galleryHtml = findImages.map((img, idx) => `
+                            <img src="${img}" alt="${find.name || 'Fund'} Bild ${idx + 1}" style="width: 56px; height: 56px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; flex-shrink: 0;">
+                        `).join('');
+
                         return `
                         <div class="find-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f9f9f9;">
                             <div class="find-image" style="flex-shrink: 0; width: 80px; height: 80px; border-radius: 6px; overflow: hidden; background: #f0f0f0;">
-                                <img src="${findImageUrl}" alt="${find.name || 'Fund'}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="${primaryImage}" alt="${find.name || 'Fund'}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
                             <div class="find-info" style="flex: 1;">
                                 <h5 style="margin: 0 0 6px 0; color: #1f2937;">${find.name || 'Unbenannt'}</h5>
@@ -279,6 +307,9 @@ async function showProjectDetail(projectId) {
                                 <p class="find-period" style="margin: 4px 0; color: #666; font-size: 0.9rem;"><strong>Periode:</strong> ${find.period || ''}</p>
                                 ${find.discoverer ? `<p class="find-discoverer" style="margin: 4px 0; color: #666; font-size: 0.9rem;"><i class="fas fa-user"></i> ${find.discoverer}</p>` : ''}
                                 ${find.dateFound ? `<p class="find-date" style="margin: 4px 0; color: #666; font-size: 0.9rem;"><i class="fas fa-calendar"></i> ${find.dateFound}</p>` : ''}
+                                <div style="display: flex; gap: 6px; overflow-x: auto; margin-top: 8px; padding-bottom: 2px;">
+                                    ${galleryHtml}
+                                </div>
                             </div>
                         </div>
                     `;

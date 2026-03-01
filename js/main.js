@@ -1959,8 +1959,28 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
   }
 
   async function fetchAndRenderFinds() { // Made async
-    const activeSite = await db.getActiveSite();
-    if (!activeSite && !(searchAllSitesCheckbox?.checked ?? false)) {
+        const activeSite = await getActiveSite();
+        let selectedProjectId = new URLSearchParams(window.location.search).get('project') || localStorage.getItem('selectedProject');
+
+        if (!selectedProjectId) {
+            try {
+                const uid = await getUserId();
+                const demoProjectQuery = query(
+                    collection(db, 'projects'),
+                    where('userId', '==', uid),
+                    where('datasetKey', '==', 'koumasa-2023-trench-16')
+                );
+                const demoProjectSnapshot = await getDocs(demoProjectQuery);
+                if (!demoProjectSnapshot.empty) {
+                    selectedProjectId = demoProjectSnapshot.docs[0].id;
+                    localStorage.setItem('selectedProject', selectedProjectId);
+                }
+            } catch (demoProjectError) {
+                console.warn('⚠️ Demo-Projekt konnte nicht automatisch aufgelöst werden:', demoProjectError.message);
+            }
+        }
+
+        if (!activeSite && !(searchAllSitesCheckbox?.checked ?? false) && !selectedProjectId) {
         if (container) {
           container.innerHTML = `<p style="grid-column: 1 / -1; text-align: center;">Keine aktive Ausgrabungsstätte ausgewählt. Bitte gehen Sie zur <a href="../sites/index.html">Stättenverwaltung</a>.</p>`;
         }
@@ -1970,7 +1990,49 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
         return;
     }
 
-    allFinds = (searchAllSitesCheckbox?.checked ?? false) ? await db.getFinds('all') : await db.getFinds('active'); // Await db.getFinds
+        allFinds = (searchAllSitesCheckbox?.checked ?? false) ? await getFinds('all') : await getFinds('active');
+
+        if (allFinds.length === 0) {
+            if (selectedProjectId) {
+                try {
+                    const normalizeProjectFind = (rawFind, findId, index) => ({
+                        id: findId,
+                        titel: rawFind.titel || rawFind.title || rawFind.name || `Fund ${index + 1}`,
+                        beschreibung: rawFind.beschreibung || rawFind.description || '',
+                        material: rawFind.material || '',
+                        kategorie: rawFind.kategorie || rawFind.category || '',
+                        datierung: rawFind.datierung || rawFind.period || '',
+                        privacy: rawFind.privacy || 'private',
+                        berichte: rawFind.berichte || '',
+                        modelUrl: rawFind.modelUrl || null,
+                        photoUrl: rawFind.photoUrl || rawFind.image || null,
+                        image: rawFind.image || rawFind.photoUrl || null,
+                        projectId: rawFind.projectId || selectedProjectId,
+                        siteId: rawFind.siteId || null,
+                        ...rawFind
+                    });
+
+                    const topLevelRef = collection(db, 'finds');
+                    const topLevelQuery = query(topLevelRef, where('projectId', '==', selectedProjectId));
+                    const topLevelSnap = await getDocs(topLevelQuery);
+
+                    if (!topLevelSnap.empty) {
+                        allFinds = topLevelSnap.docs.map((findDoc, index) =>
+                            normalizeProjectFind(findDoc.data() || {}, findDoc.id, index)
+                        );
+                    } else {
+                        const subFindsRef = collection(db, 'projects', selectedProjectId, 'finds');
+                        const subSnap = await getDocs(subFindsRef);
+                        allFinds = subSnap.docs.map((findDoc, index) =>
+                            normalizeProjectFind(findDoc.data() || {}, findDoc.id, index)
+                        );
+                    }
+                } catch (fallbackError) {
+                    console.warn('⚠️ Konnte Projekt-Funde nicht als Fallback laden:', fallbackError.message);
+                }
+            }
+        }
+
     allFinds.reverse(); // Show newest first
     
     // Make allFinds available globally for other modules (e.g., funde-map.js)
@@ -2050,8 +2112,8 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
       return;
     }
 
-    const sites = await db.getSites(); // Await getSites for site name display
-    const activeSite = await db.getActiveSite();
+    const sites = await getSites();
+    const activeSite = await getActiveSite();
 
     container.innerHTML = filteredFinds.map(find => {
       const title = escapeHtml(find.titel || 'Unbenannter Fund');
@@ -2074,13 +2136,7 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
           siteInfoHtml = `<span style="font-size: 0.8em; color: var(--muted); margin-left: 8px;">(Stätte: ${escapeHtml(activeSite.name)})</span>`;
       }
 
-      // Use random find image if no photo URL provided
-      let imageUrl = find.photoUrl;
-      if (!imageUrl) {
-        // Import random find image utility
-        const { getRandomFindImage } = await import('./image-utilities.js');
-        imageUrl = getRandomFindImage();
-      }
+            let imageUrl = find.photoUrl || find.image || '/partials/images/bilder/image.png';
       
       const imageHtml = imageUrl && !imageUrl.includes('undefined')
         ? `<img src="${imageUrl}" alt="${title}" class="find-card-image">`

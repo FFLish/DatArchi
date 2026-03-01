@@ -7,6 +7,9 @@
 
 import { setupImageErrorHandling, validateAllImages } from './image-error-handler.js';
 
+let imageSystemInitialized = false;
+let imageValidationScheduled = false;
+
 /**
  * Initialize the image system
  * - Set up error handlers
@@ -14,6 +17,11 @@ import { setupImageErrorHandling, validateAllImages } from './image-error-handle
  * - Log status
  */
 export function setupImageSystem() {
+    if (imageSystemInitialized) {
+        return;
+    }
+
+    imageSystemInitialized = true;
     console.log('🎨 Initializing Image System...');
     
     // Setup automatic error handling
@@ -24,19 +32,22 @@ export function setupImageSystem() {
     console.log('🌍 Origin:', window.location.origin);
     
     // Defer validation to avoid blocking
-    setTimeout(() => {
-        validateAllImages()
-            .then(result => {
-                if (result.broken > 0) {
-                    console.warn(`⚠️ ${result.broken} broken images detected`);
-                } else {
-                    console.log('✅ All images loaded successfully');
-                }
-            })
-            .catch(error => {
-                console.error('❌ Image validation failed:', error);
-            });
-    }, 2000);
+    if (!imageValidationScheduled) {
+        imageValidationScheduled = true;
+        setTimeout(() => {
+            validateAllImages()
+                .then(result => {
+                    if (result.broken > 0) {
+                        console.warn(`⚠️ ${result.broken} broken images detected`);
+                    } else {
+                        console.log('✅ All images loaded successfully');
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Image validation failed:', error);
+                });
+        }, 2000);
+    }
 }
 
 /**

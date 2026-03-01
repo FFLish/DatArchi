@@ -7,6 +7,24 @@ import { getRandomExcavationSiteImage } from './image-utilities.js';
 import { setupImageSystem } from './image-system-init.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
+const DEMO_DATASET_KEY = 'koumasa-2023-trench-16';
+const DEMO_PROJECT_NAME = 'Koumasa 2023 - Trench 16 Excavation';
+const DEMO_CARD_IMAGES = [
+    '../../partials/images/bilder/image.png',
+    '../../partials/images/bilder/image%20copy.png',
+    '../../partials/images/bilder/image%20copy%202.png',
+    '../../partials/images/bilder/image%20copy%203.png',
+    '../../partials/images/bilder/image%20copy%204.png',
+    '../../partials/images/bilder/image%20copy%205.png',
+    '../../partials/images/bilder/image%20copy%206.png',
+    '../../partials/images/bilder/image%20copy%207.png',
+    '../../partials/images/bilder/image%20copy%208.png',
+    '../../partials/images/bilder/image%20copy%209.png',
+    '../../partials/images/bilder/image%20copy%2010.png',
+    '../../partials/images/bilder/image%20copy%2011.png',
+    '../../partials/images/bilder/image%20copy%2012.png'
+];
+
 // Global variable declarations
 let currentUserId = null;
 let projectUnsubscriber = null;
@@ -170,8 +188,22 @@ async function displayProjects(projects) {
 
     // Filter out projects with missing critical data
     const validProjects = projects.filter(p => p.id && p.name && p.name.trim());
+
+    const isDemoUser = auth.currentUser?.email?.toLowerCase() === 'demo@datarchi.com';
+    const visibleProjects = isDemoUser
+        ? validProjects.filter(p => p.datasetKey === DEMO_DATASET_KEY || p.name === DEMO_PROJECT_NAME || p.title === DEMO_PROJECT_NAME).slice(0, 1)
+        : validProjects;
     
-    if (validProjects.length === 0) {
+    if (visibleProjects.length === 0) {
+        if (isDemoUser) {
+            projectsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-hourglass-half"></i>
+                    <p>Demo-Projekt wird vorbereitet …</p>
+                </div>
+            `;
+            return;
+        }
         projectsList.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -181,15 +213,18 @@ async function displayProjects(projects) {
         return;
     }
 
-    const projectsHTML = await Promise.all(validProjects.map(async project => {
+    const projectsHTML = await Promise.all(visibleProjects.map(async (project, index) => {
         const finds = await firebaseService.getProjectFinds(project.id).catch(() => []) || [];
         const findCategories = [...new Set(finds.map(f => f.category))];
         const materials = [...new Set(finds.map(f => f.material))];
+        const cardImage = isDemoUser && project.datasetKey === DEMO_DATASET_KEY
+            ? DEMO_CARD_IMAGES[index % DEMO_CARD_IMAGES.length]
+            : getRandomExcavationSiteImage();
         
         return `
         <div class="project-card">
             <div class="project-card-image">
-                <img src="${getRandomExcavationSiteImage()}" alt="Ausgrabungsstätte" class="project-card-img">
+                <img src="${cardImage}" alt="Ausgrabungsstätte" class="project-card-img">
             </div>
             <div class="project-card-header">
                 <div class="project-card-title">
@@ -232,9 +267,6 @@ async function displayProjects(projects) {
             
 
             <div class="project-card-footer">
-                <a href="../project-detail/index.html?project=${project.id}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-folder-open"></i> Öffnen
-                </a>
                 <button class="btn btn-sm btn-secondary" onclick="editProject('${project.id}')">
                     <i class="fas fa-edit"></i> Bearbeiten
                 </button>
@@ -345,14 +377,6 @@ window.showProjectMenu = async (event, projectId) => {
     menu.style.padding = '8px';
     menu.style.minWidth = '180px';
 
-    const openBtn = document.createElement('button');
-    openBtn.className = 'btn';
-    openBtn.style.display = 'block';
-    openBtn.style.width = '100%';
-    openBtn.style.textAlign = 'left';
-    openBtn.innerHTML = '<i class="fas fa-folder-open" style="margin-right:8px;"></i> Öffnen';
-    openBtn.onclick = () => { window.location.href = `/pages/project-detail/index.html?project=${projectId}`; };
-
     const editBtn = document.createElement('button');
     editBtn.className = 'btn';
     editBtn.style.display = 'block';
@@ -389,7 +413,6 @@ window.showProjectMenu = async (event, projectId) => {
         }
     };
 
-    menu.appendChild(openBtn);
     menu.appendChild(editBtn);
     menu.appendChild(deleteBtn);
 

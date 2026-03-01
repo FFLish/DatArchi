@@ -174,7 +174,7 @@
 <body>
     <div class="demo-container">
         <h1>🎭 Demo-Zugang</h1>
-        <p class="subtitle">Automatische Anmeldung als Demo-Benutzer</p>
+        <p class="subtitle">Automatischer Login in den Demo-Account</p>
 
         <div id="statusContainer"></div>
 
@@ -183,8 +183,6 @@
             <ul>
                 <li><strong>E-Mail:</strong> demo@datarchi.com</li>
                 <li><strong>Passwort:</strong> 123456</li>
-                <li>Vollständiger Zugriff auf alle Funktionen</li>
-                <li>Enthält Beispielprojekte und Funde</li>
             </ul>
         </div>
 
@@ -238,19 +236,11 @@
                 <div class="login-steps">
                     <div class="login-step" id="step1">
                         <i class="fas fa-circle-notch fa-spin"></i>
-                        <span>Verbindung wird hergestellt...</span>
+                        <span>Verbinden...</span>
                     </div>
                     <div class="login-step" id="step2">
                         <i class="fas fa-circle"></i>
-                        <span>Anmeldedaten überprüfen...</span>
-                    </div>
-                    <div class="login-step" id="step3">
-                        <i class="fas fa-circle"></i>
-                        <span>Session wird erstellt...</span>
-                    </div>
-                    <div class="login-step" id="step4">
-                        <i class="fas fa-circle"></i>
-                        <span>Dashboard wird geladen...</span>
+                        <span>Anmelden...</span>
                     </div>
                 </div>
                 <div class="progress-bar">
@@ -278,7 +268,7 @@
             currentStep.querySelector('i').className = 'fas fa-circle-notch fa-spin';
             
             // Update progress bar
-            const progress = (stepNumber / 4) * 100;
+            const progress = (stepNumber / 2) * 100;
             const progressFill = document.getElementById('progressFill');
             if (progressFill) {
                 progressFill.style.width = `${progress}%`;
@@ -295,35 +285,25 @@
             try {
                 showLoginProgress();
                 
-                // Step 1: Verbindung
                 updateLoginStep(1);
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 120));
                 
-                // Step 2: Anmeldedaten prüfen
                 updateLoginStep(2);
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 120));
                 
                 // Sign in with demo credentials
                 const userCredential = await signInWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PASSWORD);
                 const user = userCredential.user;
-                
-                // Step 3: Session erstellen
-                updateLoginStep(3);
-                await new Promise(resolve => setTimeout(resolve, 200));
-                
-                // Step 4: Dashboard laden
-                updateLoginStep(4);
-                await new Promise(resolve => setTimeout(resolve, 300));
 
                 showStatus(`
-                    <strong>✅ Erfolgreich angemeldet!</strong><br>
-                    Willkommen, ${user.displayName || 'Demo-Benutzer'}!<br>
+                    <strong>✅ Angemeldet</strong><br>
+                    ${user.displayName || 'Demo-Benutzer'}
                 `, 'success');
 
                 // Redirect immediately
                 setTimeout(() => {
                     window.location.href = '../projects/index.html';
-                }, 400);
+                }, 250);
 
             } catch (error) {
                 console.error('Demo login error:', error);
@@ -331,20 +311,15 @@
                 let errorMessage = '❌ <strong>Anmeldung fehlgeschlagen</strong><br>';
                 
                 if (error.code === 'auth/user-not-found') {
-                    errorMessage += 'Der Demo-Benutzer existiert noch nicht.<br><br>' +
-                                  '<small>Bitte erstelle zuerst den Demo-Benutzer über die ' +
-                                  '<a href="./index.html" style="color: inherit; text-decoration: underline;">Registrierung</a> ' +
-                                  'mit den oben genannten Zugangsdaten.</small>';
+                    errorMessage += 'Demo-Konto nicht gefunden. Bitte zuerst registrieren.';
                 } else if (error.code === 'auth/wrong-password') {
-                    errorMessage += 'Falsches Passwort für den Demo-Benutzer.';
+                    errorMessage += 'Falsches Passwort.';
                 } else if (error.code === 'auth/invalid-credential') {
-                    errorMessage += 'Ungültige Anmeldedaten. Der Demo-Benutzer wurde möglicherweise noch nicht erstellt.<br><br>' +
-                                  '<small>Bitte registriere dich zuerst mit:<br>' +
-                                  'E-Mail: demo@datarchi.com<br>Passwort: 123456</small>';
+                    errorMessage += 'Ungültige Zugangsdaten.';
                 } else if (error.code === 'auth/too-many-requests') {
-                    errorMessage += 'Zu viele Anmeldeversuche. Bitte warte einen Moment und versuche es erneut.';
+                    errorMessage += 'Zu viele Versuche. Bitte kurz warten.';
                 } else {
-                    errorMessage += `Fehler: ${error.message}`;
+                    errorMessage += 'Bitte später erneut versuchen.';
                 }
 
                 showStatus(errorMessage, 'error');
@@ -368,16 +343,14 @@
                 // Already logged in
                 if (user.email === DEMO_EMAIL) {
                     showStatus(`
-                        <strong>✅ Bereits angemeldet!</strong><br>
-                        Du bist bereits als Demo-Benutzer angemeldet.<br>
-                        Wähle eine Option unten:
+                        <strong>✅ Bereits angemeldet</strong><br>
+                        Demo-Account aktiv.
                     `, 'success');
                     showActionButtons();
                 } else {
                     showStatus(`
-                        <strong>⚠️ Bereits angemeldet</strong><br>
-                        Du bist bereits als <strong>${user.email}</strong> angemeldet.<br>
-                        Bitte melde dich ab, um den Demo-Zugang zu nutzen.
+                        <strong>⚠️ Anderes Konto aktiv</strong><br>
+                        Bitte abmelden und erneut öffnen.
                     `, 'info');
                     
                     document.getElementById('actionButtons').innerHTML = `

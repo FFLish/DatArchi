@@ -1,5 +1,81 @@
 import { auth } from './firebase-config.js';
-import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js';
+import { onAuthStateChanged, signInAnonymously } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js';
+import { setupDemoData, DEMO_TARGET_USER_ID } from './demo-setup.js';
+
+const DEMO_AUTO_SETUP_SESSION_KEY = 'datarchi.demoAutoSetupExecuted';
+const DEMO_AUTO_AUTH_ATTEMPTED_KEY = 'datarchi.demoAutoAuthAttempted';
+const DEMO_SETUP_VERSION_KEY = 'datarchi.demoSetupVersion';
+const DEMO_SETUP_VERSION = '4';
+function showDemoStatus(message, type = 'success') {
+  const existing = document.getElementById('demo-auto-setup-status');
+  if (existing) existing.remove();
+
+  const el = document.createElement('div');
+  el.id = 'demo-auto-setup-status';
+  el.style.cssText = [
+    'position:fixed',
+    'right:16px',
+    'bottom:16px',
+    'z-index:9999',
+    'padding:10px 14px',
+    'border-radius:10px',
+    'font-size:13px',
+    'font-weight:600',
+    'box-shadow:0 8px 24px rgba(0,0,0,0.15)',
+    type === 'success' ? 'background:#ecfdf5;color:#166534;border:1px solid #86efac' : 'background:#fef2f2;color:#991b1b;border:1px solid #fca5a5'
+  ].join(';');
+  el.textContent = message;
+  document.body.appendChild(el);
+
+  setTimeout(() => {
+    el.remove();
+  }, 5000);
+}
+
+async function ensureDemoUser(user) {
+  if (user) return user;
+
+  const alreadyTried = sessionStorage.getItem(DEMO_AUTO_AUTH_ATTEMPTED_KEY) === '1';
+  if (alreadyTried) return null;
+
+  try {
+    sessionStorage.setItem(DEMO_AUTO_AUTH_ATTEMPTED_KEY, '1');
+    await signInAnonymously(auth);
+    console.log('✅ Anonyme Demo-Anmeldung erfolgreich');
+  } catch (error) {
+    console.error('❌ Anonyme Demo-Anmeldung fehlgeschlagen:', error);
+  }
+
+  return auth.currentUser || null;
+}
+
+async function runDemoAutoSetupIfNeeded(user) {
+  if (!user) return;
+
+  const alreadyExecuted = sessionStorage.getItem(DEMO_AUTO_SETUP_SESSION_KEY);
+  const currentVersion = localStorage.getItem(DEMO_SETUP_VERSION_KEY);
+  const versionChanged = currentVersion !== DEMO_SETUP_VERSION;
+
+  if (alreadyExecuted === '1' && !versionChanged) return;
+
+  try {
+    const result = await setupDemoData(DEMO_TARGET_USER_ID);
+
+    if (result?.success) {
+      sessionStorage.setItem(DEMO_AUTO_SETUP_SESSION_KEY, '1');
+      localStorage.setItem(DEMO_SETUP_VERSION_KEY, DEMO_SETUP_VERSION);
+      console.log('✅ Demo Auto-Setup erfolgreich:', result.message || 'Demo-Daten bereit');
+      showDemoStatus('✅ Demo-Projekt für Demo-User ist bereit.');
+    } else {
+      console.warn('⚠️ Demo Auto-Setup übersprungen/fehlgeschlagen:', result?.error || 'Unbekannter Grund');
+      showDemoStatus(`⚠️ Demo-Setup: ${result?.error || 'übersprungen'}`, 'error');
+    }
+  } catch (error) {
+    sessionStorage.removeItem(DEMO_AUTO_SETUP_SESSION_KEY);
+    console.error('❌ Demo Auto-Setup Fehler:', error);
+    showDemoStatus('❌ Demo-Setup fehlgeschlagen.', 'error');
+  }
+}
 
 // Replace main page hero when user is logged in
 function buildLoggedInHero(user) {
@@ -21,15 +97,18 @@ function buildLoggedOutHero() {
   return document.querySelector('.hero-section')?.outerHTML || '';
 }
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   try {
+    const effectiveUser = await ensureDemoUser(user);
+    await runDemoAutoSetupIfNeeded(effectiveUser);
+
     const heroEl = document.querySelector('.hero-section');
     if (!heroEl) return;
 
-    if (user) {
+    if (effectiveUser) {
       // Replace hero with logged-in content
       const container = document.createElement('div');
-      container.innerHTML = buildLoggedInHero(user);
+      container.innerHTML = buildLoggedInHero(effectiveUser);
       heroEl.replaceWith(container.firstElementChild);
 
       // Replace the "Jetzt registrieren" CTA block with a direct "Meine Projekte" button

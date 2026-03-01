@@ -1,9 +1,11 @@
 import { firebaseService } from './firebase-service.js';
 import { auth } from './firebase-config.js';
-import { getRandomFindImage, getRandomExcavationSiteImage } from './image-utilities.js';
 import { setupImageSystem } from './image-system-init.js';
 import { formatDate, getCategoryIcon, getMaterialColor } from './page-enhancements.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js';
+
+const DEFAULT_EXCAVATION_IMAGE = '/partials/images/ausgrabungsstätte/ausgrabungsstätte2.png';
+const DEFAULT_FIND_IMAGE = '/partials/images/bilder/image.png';
 
 // Utility function to escape HTML
 function escapeHtml(text) {
@@ -85,8 +87,8 @@ function initializeMap() {
     // Verwende asymmetrische Bounds um horizontales Format zu erzeugen
     const bounds = L.latLngBounds([[0, 0], [60, 100]]);
     
-    // Verwende zufälliges Ausgrabungsstätte-Bild
-    const imageUrl = getRandomExcavationSiteImage();
+    // Verwende festes Ausgrabungsstätte-Bild
+    const imageUrl = DEFAULT_EXCAVATION_IMAGE;
     L.imageOverlay(imageUrl, bounds).addTo(fundorteMap);
     
     // Setze Kartenausschnitt auf Bild mit Padding
@@ -128,6 +130,206 @@ function formatDateSafe(timestamp) {
     return `${day}.${month}.${year}`;
 }
 
+function normalizeImagePath(path) {
+    const raw = String(path || '').trim();
+    if (!raw) return '';
+    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('data:')) {
+        return raw;
+    }
+
+    const withAbsoluteRoot = raw.startsWith('partials/') ? `/${raw}` : raw;
+
+    return withAbsoluteRoot
+        .split('/')
+        .map((segment, index) => {
+            if (index === 0 && segment === '') return '';
+            return encodeURIComponent(segment);
+        })
+        .join('/');
+}
+
+const DEFAULT_MEDIA_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+const mediaUrlCache = new Map();
+const mediaProbeCache = new Map();
+
+function getProjectMediaBasePath() {
+    return currentProject?.mediaBasePath || '../../partials/images/bilder/';
+}
+
+function getProjectMediaExtensions() {
+    const configured = Array.isArray(currentProject?.mediaExtensions) && currentProject.mediaExtensions.length > 0
+        ? currentProject.mediaExtensions
+        : DEFAULT_MEDIA_EXTENSIONS;
+
+    const unique = [];
+    const seen = new Set();
+    for (const ext of configured) {
+        const normalized = String(ext || '').trim().toLowerCase();
+        if (!normalized || seen.has(normalized)) {
+            continue;
+        }
+        seen.add(normalized);
+        unique.push(normalized);
+    }
+
+    return unique.length > 0 ? unique : DEFAULT_MEDIA_EXTENSIONS;
+}
+
+function buildMediaFileUrl(fileName) {
+    const safePath = String(fileName || '')
+        .split('/')
+        .map(segment => encodeURIComponent(segment))
+        .join('/');
+    return `${getProjectMediaBasePath()}${safePath}`;
+}
+
+function escapeHtmlAttr(value) {
+    return String(value || '').replace(/"/g, '&quot;');
+}
+
+async function probeImageUrl(url) {
+    const normalizedUrl = String(url || '').trim();
+    if (!normalizedUrl) {
+        return false;
+    }
+
+    if (mediaProbeCache.has(normalizedUrl)) {
+        return mediaProbeCache.get(normalizedUrl);
+    }
+
+    const probePromise = (async () => {
+        try {
+            const headResponse = await fetch(normalizedUrl, {
+                method: 'HEAD',
+                cache: 'no-store'
+            });
+            if (headResponse.ok) {
+                return true;
+            }
+        } catch (_) {
+        }
+
+        try {
+            const getResponse = await fetch(normalizedUrl, {
+                method: 'GET',
+                cache: 'no-store'
+            });
+            return getResponse.ok;
+        } catch (_) {
+            return false;
+        }
+    })();
+
+    mediaProbeCache.set(normalizedUrl, probePromise);
+    return probePromise;
+}
+
+async function resolveMediaUrlById(mediaId) {
+    const id = String(mediaId || '').trim();
+    if (!id) return null;
+
+    if (mediaUrlCache.has(id)) {
+        return mediaUrlCache.get(id);
+    }
+
+    const basePath = getProjectMediaBasePath();
+    const extensions = getProjectMediaExtensions();
+
+    for (const ext of extensions) {
+        const candidate = `${basePath}${id}.${ext}`;
+        const ok = await probeImageUrl(candidate);
+        if (ok) {
+            mediaUrlCache.set(id, candidate);
+            return candidate;
+        }
+    }
+
+    mediaUrlCache.set(id, null);
+    return null;
+}
+
+async function renderProjectMediaGallery() {
+    const galleryEl = document.getElementById('mediaGalleryContainer');
+    const sectionEl = document.getElementById('mediaGallerySection');
+    if (!galleryEl || !sectionEl) return;
+
+    const photoIds = Array.isArray(currentProject?.photos) ? currentProject.photos : [];
+    const mediaFiles = Array.isArray(currentProject?.mediaFiles) ? currentProject.mediaFiles : [];
+    const sketches = Array.isArray(currentProject?.sketches) ? currentProject.sketches : [];
+
+    if (photoIds.length === 0 && mediaFiles.length === 0 && sketches.length === 0) {
+        sectionEl.style.display = 'none';
+        return;
+    }
+
+    sectionEl.style.display = 'block';
+    galleryEl.innerHTML = '<div class="no-data"><i class="fas fa-spinner fa-spin"></i><p>Medien werden geladen...</p></div>';
+
+    const photoCards = [];
+    const bilderBasePath = '/partials/images/bilder/';
+    const fallbackBilderFiles = [
+        'image.png',
+        'image copy.png',
+        'image copy 2.png',
+        'image copy 3.png',
+        'image copy 4.png',
+        'image copy 5.png',
+        'image copy 6.png',
+        'image copy 7.png',
+        'image copy 8.png',
+        'image copy 9.png'
+    ];
+
+    const buildBilderUrl = (fileName) => `${bilderBasePath}${String(fileName || '')
+        .split('/')
+        .map(segment => encodeURIComponent(segment))
+        .join('/')}`;
+
+    if (mediaFiles.length > 0) {
+        for (const fileName of mediaFiles) {
+            const fileUrl = buildBilderUrl(fileName);
+            photoCards.push(`
+                <div class="media-card">
+                    <img src="${fileUrl}" alt="Bild ${escapeHtmlAttr(fileName)}" loading="lazy">
+                    <div class="media-card-meta">
+                        <div class="media-pill"><i class="fas fa-image"></i> Bild</div>
+                        <div>${escapeHtml(fileName)}</div>
+                    </div>
+                </div>
+            `);
+        }
+    }
+
+    if (mediaFiles.length === 0 && photoIds.length > 0) {
+        const sourceFiles = fallbackBilderFiles.length > 0 ? fallbackBilderFiles : ['image.png'];
+        for (const photoId of photoIds) {
+            const sourceFile = sourceFiles[photoCards.length % sourceFiles.length];
+            const resolvedUrl = buildBilderUrl(sourceFile);
+            photoCards.push(`
+                <div class="media-card">
+                    <img src="${resolvedUrl}" alt="Foto ${escapeHtmlAttr(photoId)}" loading="lazy">
+                    <div class="media-card-meta">
+                        <div class="media-pill"><i class="fas fa-camera"></i> Foto</div>
+                        <div><strong>ID:</strong> ${escapeHtml(photoId)}</div>
+                    </div>
+                </div>
+            `);
+        }
+    }
+
+    const sketchCards = sketches.map((sketchText, index) => `
+        <div class="media-card">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='260'%3E%3Crect width='100%25' height='100%25' fill='%23eef2ff'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='Arial' font-size='18' fill='%234338ca'%3ESketch ${index + 1}%3C/text%3E%3C/svg%3E" alt="Sketch ${index + 1}" loading="lazy">
+            <div class="media-card-meta">
+                <div class="media-pill"><i class="fas fa-pencil-ruler"></i> Skizze</div>
+                <div>${escapeHtml(sketchText)}</div>
+            </div>
+        </div>
+    `);
+
+    galleryEl.innerHTML = `${photoCards.join('')}${sketchCards.join('')}`;
+}
+
 async function loadProjectDetail() {
     if (!projectId) {
         window.location.href = '/pages/projects/index.html';
@@ -159,6 +361,7 @@ async function loadProjectDetail() {
         subscribeToFinds();
         
         updateMembersList();
+        updateReportsList();
         updateSettingsForm();
     } catch (error) {
         console.error('❌ Fehler beim Laden des Projekts:', error);
@@ -209,7 +412,9 @@ async function updateOverviewTab() {
 
     document.getElementById('createdDate').textContent = formatDateSafe(currentProject.createdAt);
     document.getElementById('updatedDate').textContent = formatDateSafe(currentProject.updatedAt) || 'Noch nicht geändert';
-    document.getElementById('descriptionText').textContent = currentProject.description || '-';
+    const descriptionEl = document.getElementById('descriptionText');
+    descriptionEl.textContent = currentProject.description_long || currentProject.description || '-';
+    descriptionEl.style.whiteSpace = 'pre-line';
 
     // Recent activity
     const activityHtml = finds.slice(-5).reverse().map(find => `
@@ -232,6 +437,8 @@ async function updateOverviewTab() {
             <p>Keine Aktivitäten vorhanden</p>
         </div>
     `;
+
+    await renderProjectMediaGallery();
 }
 
 async function updateFindsList(finds = null) {
@@ -257,7 +464,16 @@ async function updateFindsList(finds = null) {
         const category = find.kategorie || find.category || 'Unbekannt';
         const material = find.material || '-';
         const discovered = find.entdecker || find.discoverer || '-';
-        const findImageUrl = find.image || find.photoUrl || getRandomFindImage();
+        const imageCandidates = Array.isArray(find.images) && find.images.length > 0
+            ? find.images
+            : [find.image || find.photoUrl || DEFAULT_FIND_IMAGE];
+        const findImages = imageCandidates
+            .map(normalizeImagePath)
+            .filter(Boolean);
+        const findImageUrl = findImages[0] || DEFAULT_FIND_IMAGE;
+        const galleryHtml = findImages.map((img, idx) => `
+            <img src="${img}" alt="${find.titel || find.name || find.title || 'Fund'} Bild ${idx + 1}" style="width: 52px; height: 52px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; flex-shrink: 0;">
+        `).join('');
         
         return `
             <div class="find-card" onclick="editFind('${find.id}')">
@@ -270,6 +486,9 @@ async function updateFindsList(finds = null) {
                     <p><i class="fas fa-tag"></i> ${category}</p>
                     <p><i class="fas fa-palette"></i> ${material}</p>
                     <p><i class="fas fa-user"></i> ${discovered}</p>
+                    <div style="display: flex; gap: 6px; overflow-x: auto; margin: 10px 0 2px 0; padding-bottom: 2px;">
+                        ${galleryHtml}
+                    </div>
                     <div class="find-badges" style="margin-top: auto;">
                         ${find.datierung || find.dating ? `<span class="find-badge"><i class="fas fa-calendar"></i> ${find.datierung || find.dating}</span>` : ''}
                         ${find.zustand || find.condition ? `<span class="find-badge"><i class="fas fa-star"></i> ${find.zustand || find.condition}</span>` : ''}
@@ -418,6 +637,353 @@ function updateMembersList() {
     `;
 }
 
+function normalizeReports() {
+    if (!currentProject) {
+        return [];
+    }
+
+    if (Array.isArray(currentProject.reports)) {
+        return currentProject.reports;
+    }
+
+    if (currentProject.reports && typeof currentProject.reports === 'object') {
+        currentProject.reports = Object.values(currentProject.reports);
+        return currentProject.reports;
+    }
+
+    if (Array.isArray(currentProject.dailyReports)) {
+        currentProject.reports = currentProject.dailyReports;
+        return currentProject.reports;
+    }
+
+    if (Array.isArray(currentProject.reportEntries)) {
+        currentProject.reports = currentProject.reportEntries;
+        return currentProject.reports;
+    }
+
+    currentProject.reports = [];
+    return currentProject.reports;
+}
+
+function normalizeReportText(value) {
+    return String(value || '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\t/g, ' ')
+        .replace(/[ ]{2,}/g, ' ')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+}
+
+function truncateReportText(value, maxLength = 280) {
+    const normalized = normalizeReportText(value);
+    if (!normalized) {
+        return '';
+    }
+    if (normalized.length <= maxLength) {
+        return normalized;
+    }
+    return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
+}
+
+function buildImprovedReportSummary(report) {
+    const rawSummary = normalizeReportText(report?.summary);
+    const rawContent = normalizeReportText(report?.content);
+
+    if (rawSummary) {
+        return truncateReportText(rawSummary, 280);
+    }
+
+    if (!rawContent) {
+        return 'Kurzfassung nicht verfügbar.';
+    }
+
+    const firstParagraph = rawContent.split('\n\n')[0] || rawContent;
+    const sentences = firstParagraph
+        .split(/(?<=[.!?])\s+/)
+        .map(sentence => sentence.trim())
+        .filter(Boolean);
+
+    if (sentences.length > 0) {
+        return truncateReportText(sentences.slice(0, 2).join(' '), 280);
+    }
+
+    return truncateReportText(firstParagraph, 280);
+}
+
+function buildImprovedReportContent(report) {
+    const rawContent = normalizeReportText(report?.content);
+    if (!rawContent) {
+        return '';
+    }
+
+    const lines = rawContent
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => line.replace(/^[-•]\s*/, '• '));
+
+    if (lines.length === 0) {
+        return truncateReportText(rawContent, 1500);
+    }
+
+    const maxLines = 14;
+    const limitedLines = lines.slice(0, maxLines);
+    const isTruncated = lines.length > maxLines;
+
+    return `${limitedLines.join('\n')}${isTruncated ? '\n\n…' : ''}`;
+}
+
+function buildAutoReportsFromProject(minCount = 4) {
+    if (!currentProject) {
+        return [];
+    }
+
+    const compactText = (value, maxLength = 260) => {
+        const normalized = String(value || '')
+            .replace(/\s+/g, ' ')
+            .replace(/\s*[-•]\s*/g, ' ')
+            .trim();
+
+        if (!normalized) {
+            return '';
+        }
+
+        if (normalized.length <= maxLength) {
+            return normalized;
+        }
+
+        return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
+    };
+
+    const buildSummaryFromFields = () => {
+        const summaryParts = [];
+
+        if (currentProject.location) {
+            summaryParts.push(`Ort: ${currentProject.location}`);
+        }
+
+        if (currentProject.period) {
+            summaryParts.push(`Periode: ${currentProject.period}`);
+        }
+
+        const units = Array.isArray(currentProject.excavatedUnits)
+            ? currentProject.excavatedUnits.filter(Boolean)
+            : [];
+        if (units.length > 0) {
+            summaryParts.push(`Units: ${units.join(', ')}`);
+        }
+
+        const teamMembers = Array.isArray(currentProject.team)
+            ? currentProject.team.filter(Boolean)
+            : [];
+        if (teamMembers.length > 0) {
+            summaryParts.push(`Team: ${teamMembers.length} Personen`);
+        }
+
+        const baseSummary = compactText(currentProject.description, 220);
+        if (baseSummary) {
+            summaryParts.push(baseSummary);
+        }
+
+        const merged = summaryParts.join(' · ');
+        return compactText(merged, 300);
+    };
+
+    const buildAutoContent = () => {
+        const contentParts = [];
+        const shortDescription = compactText(currentProject.description, 380);
+        const longDescription = compactText(currentProject.description_long, 700);
+
+        if (shortDescription) {
+            contentParts.push(shortDescription);
+        }
+
+        if (longDescription && longDescription !== shortDescription) {
+            contentParts.push(longDescription);
+        }
+
+        if (contentParts.length === 0) {
+            return '';
+        }
+
+        return contentParts.join('\n\n');
+    };
+
+    const units = Array.isArray(currentProject.excavatedUnits)
+        ? currentProject.excavatedUnits.filter(Boolean)
+        : [];
+    const rooms = Array.isArray(currentProject.areaRooms)
+        ? currentProject.areaRooms.filter(Boolean)
+        : [];
+    const team = Array.isArray(currentProject.team)
+        ? currentProject.team.filter(Boolean)
+        : [];
+    const staff = Array.isArray(currentProject.staff)
+        ? currentProject.staff.filter(Boolean)
+        : [];
+    const workers = Array.isArray(currentProject.workers)
+        ? currentProject.workers.filter(Boolean)
+        : [];
+    const stratigraphy = Array.isArray(currentProject.stratigraphy)
+        ? currentProject.stratigraphy.filter(Boolean)
+        : [];
+    const photos = Array.isArray(currentProject.photos)
+        ? currentProject.photos.filter(Boolean)
+        : [];
+    const mediaFiles = Array.isArray(currentProject.mediaFiles)
+        ? currentProject.mediaFiles.filter(Boolean)
+        : [];
+    const sketches = Array.isArray(currentProject.sketches)
+        ? currentProject.sketches.filter(Boolean)
+        : [];
+
+    const reportDate = currentProject.workDate || currentProject.startDate || null;
+    const author = currentProject.writtenBy || currentProject.lead || currentProject.creatorName || 'Projektteam';
+    const summary = buildSummaryFromFields();
+    const content = buildAutoContent();
+
+    if (!summary && !content && units.length === 0 && team.length === 0 && photos.length === 0 && mediaFiles.length === 0) {
+        return [];
+    }
+
+    const baseTitle = currentProject.title || currentProject.name || 'Projekt';
+    const projectKey = currentProject.id || projectId || 'project';
+    const reportTemplates = [
+        {
+            key: 'overview',
+            title: `${baseTitle} — Überblick`,
+            type: 'Zusammenfassung',
+            summary,
+            content: content || 'Grunddaten und Zielsetzung des Projekts wurden zusammengefasst.'
+        },
+        {
+            key: 'context',
+            title: `${baseTitle} — Kontext & Stratigraphie`,
+            type: 'Kontextbericht',
+            summary: truncateReportText(`Units: ${units.join(', ') || 'nicht angegeben'} · Räume: ${rooms.join(', ') || 'nicht angegeben'} · Periode: ${currentProject.period || 'nicht angegeben'}`, 280),
+            content: [
+                units.length > 0 ? `• Bearbeitete Units: ${units.join(', ')}` : '',
+                rooms.length > 0 ? `• Räume/Bereiche: ${rooms.join(', ')}` : '',
+                stratigraphy.length > 0 ? `• Stratigraphie:\n${stratigraphy.map(entry => `• ${entry}`).join('\n')}` : '• Keine spezifische Stratigraphie dokumentiert.'
+            ].filter(Boolean).join('\n\n')
+        },
+        {
+            key: 'team',
+            title: `${baseTitle} — Team & Organisation`,
+            type: 'Teambericht',
+            summary: truncateReportText(`Leitung: ${currentProject.writtenBy || currentProject.lead || currentProject.principalInvestigator || 'nicht angegeben'} · Teamgröße: ${team.length || staff.length || workers.length || 0}`, 280),
+            content: [
+                currentProject.writtenBy || currentProject.lead || currentProject.principalInvestigator
+                    ? `• Projektleitung: ${currentProject.writtenBy || currentProject.lead || currentProject.principalInvestigator}`
+                    : '',
+                team.length > 0 ? `• Team: ${team.join(', ')}` : '',
+                staff.length > 0 ? `• Staff: ${staff.join(', ')}` : '',
+                workers.length > 0 ? `• Workers: ${workers.join(', ')}` : ''
+            ].filter(Boolean).join('\n\n') || '• Teamdaten nicht im Detail hinterlegt.'
+        },
+        {
+            key: 'media',
+            title: `${baseTitle} — Medien & Dokumentation`,
+            type: 'Dokumentation',
+            summary: truncateReportText(`Fotos: ${photos.length} · Medien-Dateien: ${mediaFiles.length} · Skizzen: ${sketches.length}`, 280),
+            content: [
+                photos.length > 0 ? `• Foto-IDs (Auszug): ${photos.slice(0, 12).join(', ')}${photos.length > 12 ? ' …' : ''}` : '• Keine Foto-IDs hinterlegt.',
+                mediaFiles.length > 0 ? `• Medien-Dateien: ${mediaFiles.slice(0, 12).join(', ')}${mediaFiles.length > 12 ? ' …' : ''}` : '• Keine Medien-Dateien hinterlegt.',
+                sketches.length > 0 ? `• Skizzen: ${sketches.slice(0, 8).join(' | ')}${sketches.length > 8 ? ' …' : ''}` : '• Keine Skizzen hinterlegt.'
+            ].join('\n\n')
+        }
+    ];
+
+    const reports = reportTemplates
+        .slice(0, Math.max(4, minCount))
+        .map((template, index) => ({
+            id: `auto-report-${projectKey}-${template.key}-${index + 1}`,
+            title: template.title,
+            type: template.type,
+            date: reportDate,
+            author,
+            summary: template.summary,
+            content: template.content,
+            isAutoGenerated: true
+        }));
+
+    return reports;
+}
+
+function updateReportsList() {
+    const reportsListEl = document.getElementById('reportsList');
+    const addReportBtn = document.getElementById('addReportBtn');
+    if (!reportsListEl) return;
+
+    const isOwner = auth.currentUser?.uid === currentProject?.owner || auth.currentUser?.uid === currentProject?.userId;
+    if (addReportBtn) {
+        addReportBtn.style.display = isOwner ? 'inline-flex' : 'none';
+    }
+
+    let reports = normalizeReports();
+    if (reports.length < 4) {
+        const existingIds = new Set(reports.map(report => String(report?.id || '').trim()).filter(Boolean));
+        const existingTitles = new Set(reports.map(report => String(report?.title || '').trim().toLowerCase()).filter(Boolean));
+        const autoReports = buildAutoReportsFromProject(4).filter((autoReport) => {
+            const autoId = String(autoReport?.id || '').trim();
+            const autoTitle = String(autoReport?.title || '').trim().toLowerCase();
+            if (autoId && existingIds.has(autoId)) {
+                return false;
+            }
+            if (autoTitle && existingTitles.has(autoTitle)) {
+                return false;
+            }
+            return true;
+        });
+
+        if (autoReports.length > 0) {
+            const needed = Math.max(0, 4 - reports.length);
+            reports = [...reports, ...autoReports.slice(0, needed)];
+            currentProject.reports = reports;
+        }
+    }
+
+    if (reports.length === 0) {
+        reportsListEl.innerHTML = `
+            <div class="no-data">
+                <i class="fas fa-file-alt"></i>
+                <p>Noch keine Berichte vorhanden</p>
+            </div>
+        `;
+        return;
+    }
+
+    const sortedReports = [...reports].sort((a, b) => {
+        const da = new Date(a.date || a.createdAt || 0).getTime();
+        const db = new Date(b.date || b.createdAt || 0).getTime();
+        return db - da;
+    });
+
+    reportsListEl.innerHTML = sortedReports.map((report) => {
+        const reportDate = report.date ? new Date(report.date).toLocaleDateString('de-DE') : '-';
+        const canDelete = isOwner;
+        const reportSummary = buildImprovedReportSummary(report);
+        const reportContent = buildImprovedReportContent(report);
+        return `
+            <div style="border:1px solid #e5e7eb; border-radius:10px; padding:16px; margin-bottom:12px; background:#fff;">
+                <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;">
+                    <div>
+                        <h3 style="margin:0 0 6px 0; font-size:1rem;">${escapeHtml(report.title || 'Ohne Titel')}</h3>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:0.82rem; color:#6b7280;">
+                            <span><i class="fas fa-tag"></i> ${escapeHtml(report.type || 'Bericht')}</span>
+                            <span><i class="fas fa-calendar"></i> ${reportDate}</span>
+                            <span><i class="fas fa-user"></i> ${escapeHtml(report.author || 'Unbekannt')}</span>
+                        </div>
+                    </div>
+                    ${canDelete ? `<button class="btn btn-sm btn-danger" onclick="deleteReport('${escapeHtml(report.id)}')"><i class="fas fa-trash"></i> Löschen</button>` : ''}
+                </div>
+                ${reportSummary ? `<p style="margin:10px 0 8px 0; color:#374151; font-weight:500;">${escapeHtml(reportSummary)}</p>` : ''}
+                <div style="white-space:pre-line; color:#4b5563; line-height:1.55;">${escapeHtml(reportContent)}</div>
+            </div>
+        `;
+    }).join('');
+}
+
 async function updateSettingsForm() {
     document.getElementById('settingName').value = currentProject.title || currentProject.name || '';
     document.getElementById('settingPeriod').value = currentProject.period || currentProject.startDate || '';
@@ -454,9 +1020,15 @@ function setupEventListeners() {
     
     // Add member form
     document.getElementById('addMemberForm').addEventListener('submit', addMember);
+
+    // Add report form
+    const addReportForm = document.getElementById('addReportForm');
+    if (addReportForm) {
+        addReportForm.addEventListener('submit', addReport);
+    }
     
     // Modal close on background click
-    const modals = ['addFindModal', 'addMemberModal', 'editProjectModal'];
+    const modals = ['addFindModal', 'addMemberModal', 'addReportModal', 'editProjectModal'];
     modals.forEach(modalId => {
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -495,6 +1067,22 @@ function openAddMemberModal() {
     document.getElementById('addMemberForm').reset();
 }
 
+function openAddReportModal() {
+    const isOwner = auth.currentUser?.uid === currentProject?.owner || auth.currentUser?.uid === currentProject?.userId;
+    if (!isOwner) {
+        showNotification('Du hast keine Berechtigung Berichte hinzuzufügen', 'error');
+        return;
+    }
+
+    const modal = document.getElementById('addReportModal');
+    if (!modal) return;
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+    document.getElementById('addReportForm')?.reset();
+    const dateEl = document.getElementById('reportDate');
+    if (dateEl) dateEl.value = new Date().toISOString().slice(0, 10);
+}
+
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.classList.remove('show');
@@ -530,6 +1118,63 @@ async function addFind(e) {
     } catch (error) {
         console.error('❌ Fehler beim Hinzufügen des Funds:', error);
         showNotification('Fehler beim Hinzufügen des Funds', 'error');
+    }
+}
+
+async function addReport(e) {
+    e.preventDefault();
+
+    const isOwner = auth.currentUser?.uid === currentProject?.owner || auth.currentUser?.uid === currentProject?.userId;
+    if (!isOwner) {
+        showNotification('Du hast keine Berechtigung Berichte hinzuzufügen', 'error');
+        return;
+    }
+
+    try {
+        const reports = normalizeReports();
+        const reportData = {
+            id: `report-${Date.now()}`,
+            title: document.getElementById('reportTitle')?.value?.trim() || 'Ohne Titel',
+            type: document.getElementById('reportType')?.value || 'Bericht',
+            date: document.getElementById('reportDate')?.value || new Date().toISOString().slice(0, 10),
+            summary: document.getElementById('reportSummary')?.value?.trim() || '',
+            content: document.getElementById('reportContent')?.value?.trim() || '',
+            author: auth.currentUser?.displayName || auth.currentUser?.email || 'Unbekannt',
+            createdAt: new Date().toISOString()
+        };
+
+        reports.unshift(reportData);
+        await firebaseService.updateProject(projectId, { reports });
+        currentProject.reports = reports;
+
+        updateReportsList();
+        closeModal('addReportModal');
+        document.getElementById('addReportForm')?.reset();
+        showNotification('✅ Bericht hinzugefügt', 'success');
+    } catch (error) {
+        console.error('❌ Fehler beim Speichern des Berichts:', error);
+        showNotification('Fehler beim Speichern des Berichts', 'error');
+    }
+}
+
+async function deleteReport(reportId) {
+    const isOwner = auth.currentUser?.uid === currentProject?.owner || auth.currentUser?.uid === currentProject?.userId;
+    if (!isOwner) {
+        showNotification('Keine Berechtigung zum Löschen', 'error');
+        return;
+    }
+
+    if (!confirm('Diesen Bericht wirklich löschen?')) return;
+
+    try {
+        const reports = normalizeReports().filter(r => r.id !== reportId);
+        await firebaseService.updateProject(projectId, { reports });
+        currentProject.reports = reports;
+        updateReportsList();
+        showNotification('✅ Bericht gelöscht', 'success');
+    } catch (error) {
+        console.error('❌ Fehler beim Löschen des Berichts:', error);
+        showNotification('Fehler beim Löschen des Berichts', 'error');
     }
 }
 
@@ -869,9 +1514,11 @@ function showError(message) {
 // Global functions for onclick handlers
 window.openAddFindModal = openAddFindModal;
 window.openAddMemberModal = openAddMemberModal;
+window.openAddReportModal = openAddReportModal;
 window.closeModal = closeModal;
 window.editFind = editFind;
 window.deleteFind = deleteFind;
+window.deleteReport = deleteReport;
 window.editProject = editProject;
 window.shareProject = shareProject;
 window.deleteProject = deleteProject;
@@ -891,8 +1538,11 @@ window.editFind = editFind;
 window.deleteFind = deleteFind;
 window.openAddFindModal = openAddFindModal;
 window.openAddMemberModal = openAddMemberModal;
+window.openAddReportModal = openAddReportModal;
 window.addFind = addFind;
 window.addMember = addMember;
+window.addReport = addReport;
+window.deleteReport = deleteReport;
 window.saveSettings = saveSettings;
 window.saveEditProject = saveEditProject;
 window.editProject = editProject;

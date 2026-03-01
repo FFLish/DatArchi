@@ -281,23 +281,44 @@ class FirebaseService {
      * Hole alle Funde eines Projekts
      */
     async getProjectFinds(projectId) {
+        const mapDocs = (querySnapshot) => {
+            const finds = [];
+            querySnapshot.forEach((findDoc) => {
+                finds.push({
+                    id: findDoc.id,
+                    ...findDoc.data()
+                });
+            });
+            return finds;
+        };
+
         try {
             const findsRef = collection(db, 'finds');
-            const q = query(
+            const orderedQuery = query(
                 findsRef,
                 where('projectId', '==', projectId),
                 orderBy('createdAt', 'desc')
             );
 
-            const querySnapshot = await getDocs(q);
-            const finds = [];
+            let topLevelSnapshot;
+            try {
+                topLevelSnapshot = await getDocs(orderedQuery);
+            } catch (orderedError) {
+                console.warn('⚠️ Top-Level-Funde mit Sortierung konnten nicht geladen werden, nutze Fallback ohne Sortierung:', orderedError.message);
+                const fallbackQuery = query(
+                    findsRef,
+                    where('projectId', '==', projectId)
+                );
+                topLevelSnapshot = await getDocs(fallbackQuery);
+            }
 
-            querySnapshot.forEach((doc) => {
-                finds.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
-            });
+            let finds = mapDocs(topLevelSnapshot);
+
+            if (finds.length === 0) {
+                const subcollectionRef = collection(db, 'projects', projectId, 'finds');
+                const subcollectionSnapshot = await getDocs(subcollectionRef);
+                finds = mapDocs(subcollectionSnapshot);
+            }
 
             this.findsCache[projectId] = finds;
             return finds;
@@ -396,6 +417,9 @@ class FirebaseService {
                 callback(finds);
             }, (error) => {
                 console.error('❌ Fehler beim Abonnieren von Funden:', error);
+                this.getProjectFinds(projectId)
+                    .then((fallbackFinds) => callback(fallbackFinds))
+                    .catch((fallbackError) => console.error('❌ Fallback-Laden der Funde fehlgeschlagen:', fallbackError));
             });
 
             this.unsubscribers.push(unsubscribe);

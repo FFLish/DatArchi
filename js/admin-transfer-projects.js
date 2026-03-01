@@ -359,12 +359,10 @@ if (typeof window !== 'undefined') {
     if (!isProfilePage) {
         // Auto-execute is disabled by default for safety. Enable explicitly by setting
         // `window.__allowAdminTransfer = true` in the browser console or only allow on localhost.
-        const hostname = (window.location && window.location.hostname) || '';
-        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '';
-        const allowAuto = Boolean(window.__allowAdminTransfer) || isLocalhost;
+        const allowAuto = Boolean(window.__allowAdminTransfer);
 
         if (!allowAuto) {
-            console.warn('⚠️ Auto project transfer is disabled by default. To enable set `window.__allowAdminTransfer = true` (use with caution).');
+            console.info('ℹ️ Auto project transfer is disabled by default. To enable set `window.__allowAdminTransfer = true` (use with caution).');
         } else {
             // Auto-execute on DOM ready (only the new user transfer, not the existing user transfer)
             if (document.readyState === 'loading') {

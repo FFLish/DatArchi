@@ -33,9 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // --- 1. Create Example Sites ---
             const exampleSites = [
-                { id: `site-${Date.now()}-1`, name: 'Villa Rustica am Weinberg' },
-                { id: `site-${Date.now()}-2`, name: 'Römisches Kastell Saalburg' },
-                { id: `site-${Date.now()}-3`, name: 'Mittelalterliche Burganlage' },
+                { id: `site-${Date.now()}-1`, name: 'Villa Rustica Augusta - Rheinische Ausgrabung' },
+                { id: `site-${Date.now()}-2`, name: 'Kastell Saalburg - UNESCO Limeskastell' },
+                { id: `site-${Date.now()}-3`, name: 'Burg Hohenstein - Hochmittelalterliche Adelsburg' },
             ];
 
             const uploadedMapUrls = {};
@@ -62,10 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- 2. Create Example Finds for each Site ---
             const findTemplates = [
                 {
-                    name: "Keramikscherbe", 
-                    description: "Fragment einer römischen Terra Sigillata Schale.",
-                    material: "Keramik", 
-                    dating: "1. - 2. Jh. n. Chr.", 
+                    name: "TSR-CER-001: Terra Sigillata-Schale Drag. 37 mit Jagddekor", 
+                    description: "Fragment einer reliefverzierten Terra Sigillata Schüssel mit Jagdszene (Hirsch und Hund) im Eierstabrahmen. Südgallische Produktion. H (rekonstruiert): ca. 11 cm, Randdurchmesser: ca. 24 cm. Töpferstempel teilweise erhalten.",
+                    material: "Keramik (Terra Sigillata, roter Ton)", 
+                    dating: "1.-2. Jahrhundert n.Chr. (Flavisch-Trajanisch)", 
                     dateFound: "2024-05-10",
                     category: "gefäße", 
                     visibility: "public",
@@ -73,10 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     longitude: 100
                 },
                 {
-                    name: "Bronzefibel", 
-                    description: "Gut erhaltene Bronzefibel, Typ Aucissa.",
-                    material: "Bronze", 
-                    dating: "1. Jh. v. Chr.", 
+                    name: "AUC-FIB-002: Fibula Aucissa-Typ mit Scharnierkonstruktion", 
+                    description: "Vollständig erhaltene bronzene Gewandfibel mit charakteristischem Aucissa-Scharnieraufbau. Trapezförmiger flacher Bügel mit grüner Patina. Nadelhalter hakenförmig. L: 4,8 cm. Herstellermarke auf der Bügelunterseite erkennbar.",
+                    material: "Bronze (Cu-Sn-Legierung)", 
+                    dating: "Spätaugusteisch bis Tiberisch (20 v.Chr. - 40 n.Chr.)", 
                     dateFound: "2024-05-12",
                     category: "werkzeuge", 
                     visibility: "private",
@@ -84,10 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     longitude: 202
                 },
                 {
-                    name: "Feuersteinabschlag", 
-                    description: "Unretouchierter Feuersteinabschlag.",
-                    material: "Feuerstein", 
-                    dating: "4000 - 3000 v. Chr.", 
+                    name: "FLS-BOH-003: Retouchierter Feuersteinabschlag (Mesolithikum)", 
+                    description: "Sorgfältig bearbeiteter nordischer Feuerstein als Klingenkratzer mit steiler endretuschierter Arbeitskante. Dorsalseite zeigt parallele Negativschläge aus Klingentechnik. L: 4,7 cm. Mikroabnutzungsspuren: Holz-/Lederbearbeitung. Typologisch: Maglemose-Typ.",
+                    material: "Nordischer Feuerstein (Silex)", 
+                    dating: "Mesolithikum, Boreal (8500-7000 v.Chr.)", 
                     dateFound: "2024-05-11",
                     category: "werkzeuge", 
                     visibility: "public",
@@ -115,8 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- 3. Create Example Zones for the first Site ---
             await db.setActiveSite(exampleSites[0].id); // Ensure first site is active for zones
             const exampleZones = [
-                { id: 'zone-1-1', label: 'Zone A1', x: 50, y: 50, width: 50, height: 50 },
-                { id: 'zone-1-2', label: 'Zone A2', x: 100, y: 50, width: 50, height: 50 },
+                { id: 'zone-1-1', label: 'Grabungsfeld A (Haupttrakt/pars urbana)', x: 50, y: 50, width: 50, height: 50 },
+                { id: 'zone-1-2', label: 'Grabungsfeld B (Nebengebäude/pars rustica)', x: 100, y: 50, width: 50, height: 50 },
             ];
             await db.saveZones(exampleZones);
 
