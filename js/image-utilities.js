@@ -32,24 +32,30 @@ function getRelativePath() {
     // Get current document path (e.g., /pages/projects/index.html or /index.html)
     const pathname = window.location.pathname;
     
-    // Count directory depth (how many "/" are in the path)
-    // Examples:
-    // "/" = 1 (root index.html)
-    // "/pages/projects/index.html" = 3
-    // "/admin/index.html" = 2
+    // Split path and filter out empty segments
     const segments = pathname.split('/').filter(s => s);
     
-    // We need to go up: segments.length times
-    // From / (1 segment ""), go up 0 times = "./partials/images/"
-    // From /pages (1 segment), go up 1 time = "../partials/images/"
-    // From /pages/projects (2 segments), go up 2 times = "../../partials/images/"
-    const depth = segments.length;
+    // Remove the filename if present (last segment contains a dot)
+    const pathSegments = segments.filter((seg, idx) => {
+        // Keep all segments except the last one if it's a file
+        if (idx === segments.length - 1 && seg.includes('.')) {
+            return false;
+        }
+        return true;
+    });
     
-    if (depth <= 1) {
+    // Calculate depth: number of directory levels from root
+    // Examples:
+    // [] (root index.html) = 0 directories → "./partials/images/"
+    // ['pages'] = 1 directory → "../partials/images/"
+    // ['pages', 'projects'] = 2 directories → "../../partials/images/"
+    const depth = pathSegments.length;
+    
+    if (depth === 0) {
         return './partials/images/';
     }
     
-    return '../'.repeat(depth - 1) + 'partials/images/';
+    return '../'.repeat(depth) + 'partials/images/';
 }
 
 /**
