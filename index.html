@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#f97316">
-  <meta name="description" content="DatArchi - Virtual Research Environment für Archäologie. Zentrale Datenverwaltung, Zusammenarbeit und Analyse für archäologische Forschung.">
+  <meta name="description"
+    content="DatArchi - Virtual Research Environment für Archäologie. Zentrale Datenverwaltung, Zusammenarbeit und Analyse für archäologische Forschung.">
   <meta name="keywords" content="Archäologie, Forschung, Datenmanagement, Zusammenarbeit, Virtual Research Environment">
   <title>DatArchi - Virtual Research Environment für Archäologie</title>
-  
+
   <!-- Critical resources: preload non-blocking and preconnect to CDN -->
   <link rel="preload" href="css/styles.css" as="style" onload="this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/styles.css"></noscript>
+  <noscript>
+    <link rel="stylesheet" href="css/styles.css">
+  </noscript>
   <link rel="stylesheet" href="css/homepage.css">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print"
+    onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </noscript>
   <style>
     * {
       margin: 0;
@@ -45,8 +52,8 @@
       position: fixed;
       inset: 0;
       background: 
-        radial-gradient(circle at 20% 50%, rgba(244, 164, 96, 0.04) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(218, 165, 32, 0.04) 0%, transparent 50%);
+        radial-gradient(circle at 20% 50%, rgba(244, 164, 96, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(218, 165, 32, 0.1) 0%, transparent 50%);
       pointer-events: none;
       z-index: 0;
     }
@@ -68,11 +75,12 @@
     }
 
     .hero-section h1 {
-      font-size: clamp(40px, 7vw, 64px);
-      margin-bottom: 24px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
+      font-size: clamp(36px, 8vw, 56px);
+      margin-bottom: 20px;
+      font-weight: 900;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      letter-spacing: -1px;
+      animation: slideInFromTop 0.8s ease-out;
     }
 
     .hero-section .lead {
@@ -111,6 +119,7 @@
         opacity: 0;
         transform: translateY(30px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -122,6 +131,7 @@
         opacity: 0;
         transform: translateX(-40px);
       }
+
       to {
         opacity: 1;
         transform: translateX(0);
@@ -133,6 +143,7 @@
         opacity: 0;
         transform: translateX(40px);
       }
+
       to {
         opacity: 1;
         transform: translateX(0);
@@ -144,6 +155,7 @@
         opacity: 0;
         transform: translateY(-30px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -383,6 +395,7 @@
         opacity: 0;
         transform: translateY(-10px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -417,14 +430,16 @@
       display: inline-block;
       width: 14px;
       height: 14px;
-      border: 2px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top-color: white;
       animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .password-strength {
@@ -633,75 +648,87 @@
     }
   </style>
 </head>
+
 <body>
   <div id="header-container"></div>
 
   <div class="hero-section">
     <h1>DatArchi</h1>
-    <p class="lead">Virtual Research Environment für Archäologie<br/>
-    <strong>GitHub für Archäologie</strong> – Die digitale Plattform für moderne archäologische Forschung</p>
+    <p class="lead">Virtual Research Environment für Archäologie<br />
+      <strong>GitHub für Archäologie</strong> – Die digitale Plattform für moderne archäologische Forschung
+    </p>
     <div style="margin-top: 40px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-      <a href="/pages/public-projects/index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: rgba(255, 255, 255, 0.95); color: #f97316; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0,0,0,0.2); text-transform: uppercase; letter-spacing: 0.5px;">
+      <a href="/pages/public-projects/index.html"
+        style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: rgba(255, 255, 255, 0.95); color: #f97316; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0,0,0,0.2); text-transform: uppercase; letter-spacing: 0.5px;">
         <i class="fas fa-eye"></i> Projekte ansehen
       </a>
-      <a href="/pages/profile/index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; color: white; border: 2px solid white; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;">
+      <a href="/pages/profile/index.html"
+        style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: #ff8026; color: white; border: 2px solid white; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;">
         <i class="fas fa-sign-in-alt"></i> Anmelden / Registrieren
       </a>
     </div>
   </div>
 
   <!-- Features Section -->
-  <section class="features-intro" style="background: var(--card); padding: 80px 20px; transition: background-color 0.35s ease;">
+  <section class="features-intro"
+    style="background: var(--card); padding: 80px 20px; transition: background-color 0.35s ease;">
     <div style="max-width: 1200px; margin: 0 auto;">
       <h2 style="text-align: center; font-size: clamp(28px, 6vw, 36px); margin-bottom: 30px; color: var(--text); font-weight: 700;">Was ist DatArchi?</h2>
-      <p style="text-align: center; font-size: 16px; color: var(--text); max-width: 700px; margin: 0 auto 60px; line-height: 1.8;">
+      <p style="text-align: center; font-size: 16px; color: var(--muted); max-width: 700px; margin: 0 auto 60px; line-height: 1.8;">
         DatArchi ist die moderne Virtual Research Environment für Archäologen. Zentralisieren Sie Ihre Forschungsdaten, 
         arbeiten Sie kollaborativ und nutzen Sie intelligente Analyse-Tools – alles an einem Ort.
       </p>
-      
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px;">
+
+      <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px;">
         <div class="feature-card">
           <div class="feature-icon"><i class="fas fa-database"></i></div>
           <h3 class="feature-title">Datenmanagement</h3>
-          <p class="feature-desc">Zentralisiert alle archäologischen Daten an einem Ort – Funde, Ausgrabungsstätten, Zonen und Schichten.</p>
+          <p class="feature-desc">Zentralisiert alle archäologischen Daten an einem Ort – Funde, Ausgrabungsstätten,
+            Zonen und Schichten.</p>
         </div>
-        
+
         <div class="feature-card">
           <div class="feature-icon"><i class="fas fa-users"></i></div>
           <h3 class="feature-title">Kollaboration</h3>
-          <p class="feature-desc">Arbeiten Sie mit Kollegen zusammen – teilen Sie Daten, diskutieren Sie Funde und dokumentieren Sie gemeinsam.</p>
+          <p class="feature-desc">Arbeiten Sie mit Kollegen zusammen – teilen Sie Daten, diskutieren Sie Funde und
+            dokumentieren Sie gemeinsam.</p>
         </div>
-        
+
         <div class="feature-card">
           <div class="feature-icon"><i class="fas fa-map"></i></div>
           <h3 class="feature-title">Räumliche Analyse</h3>
-          <p class="feature-desc">Visualisieren Sie Ausgrabungsstätten auf interaktiven Karten und erstellen Sie Zonen für präzise Dokumentation.</p>
+          <p class="feature-desc">Visualisieren Sie Ausgrabungsstätten auf interaktiven Karten und erstellen Sie Zonen
+            für präzise Dokumentation.</p>
         </div>
-        
+
         <div class="feature-card">
           <div class="feature-icon"><i class="fas fa-lock"></i></div>
           <h3 class="feature-title">Sicherheit & Datenschutz</h3>
-          <p class="feature-desc">Kontrollieren Sie die Sichtbarkeit Ihrer Daten – privat oder öffentlich für die wissenschaftliche Gemeinschaft.</p>
+          <p class="feature-desc">Kontrollieren Sie die Sichtbarkeit Ihrer Daten – privat oder öffentlich für die
+            wissenschaftliche Gemeinschaft.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
           <h3 class="feature-title">Statistiken & Analyse</h3>
-          <p class="feature-desc">Analysieren Sie Ihre Funde mit integrierten Statistiken, Auswertungen und Berichten.</p>
+          <p class="feature-desc">Analysieren Sie Ihre Funde mit integrierten Statistiken, Auswertungen und Berichten.
+          </p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
           <h3 class="feature-title">Überall Zugriff</h3>
-          <p class="feature-desc">Greifen Sie von überall auf Ihre Forschungsdaten zu – Desktop, Tablet oder Smartphone.</p>
+          <p class="feature-desc">Greifen Sie von überall auf Ihre Forschungsdaten zu – Desktop, Tablet oder Smartphone.
+          </p>
         </div>
       </div>
 
       <div class="cta-banner">
         <h3 class="cta-title">GitHub für Archäologie</h3>
         <p class="cta-desc">
-          DatArchi revolutioniert die archäologische Forschung durch digitale Zusammenarbeit, 
-          strukturierte Datenverwaltung und offene Wissenschaft. Ähnlich wie GitHub für Software-Entwickler 
+          DatArchi revolutioniert die archäologische Forschung durch digitale Zusammenarbeit,
+          strukturierte Datenverwaltung und offene Wissenschaft. Ähnlich wie GitHub für Software-Entwickler
           ist DatArchi die Plattform für Archäologen weltweit.
         </p>
       </div>
@@ -711,7 +738,8 @@
           <i class="fas fa-rocket"></i>Bereit zum Start?
         </h3>
         <p class="cta-text">
-          Erstellen Sie kostenlos Ihren Account und beginnen Sie sofort mit der Verwaltung Ihrer archäologischen Projekte.
+          Erstellen Sie kostenlos Ihren Account und beginnen Sie sofort mit der Verwaltung Ihrer archäologischen
+          Projekte.
         </p>
         <div class="cta-buttons">
           <a href="/pages/profile/index.html" class="cta-btn cta-primary">
@@ -723,13 +751,14 @@
         </div>
       </div>
     </div>
-  <div id="footer-container"></div>
+    <div id="footer-container"></div>
 
-<script type="module" src="js/main-auth.js" defer></script>
-<script type="module" src="js/injectHeaderFooter.js" defer></script>
-<script type="module" defer src="js/performance-monitor.js"></script>
-<script type="module" defer src="js/resource-optimizer.js"></script>
-<script type="module" defer src="js/image-lazy-loader.js"></script>
-<script type="module" defer src="js/improvements.js"></script>
+    <script type="module" src="js/main-auth.js" defer></script>
+    <script type="module" src="js/injectHeaderFooter.js" defer></script>
+    <script type="module" defer src="js/performance-monitor.js"></script>
+    <script type="module" defer src="js/resource-optimizer.js"></script>
+    <script type="module" defer src="js/image-lazy-loader.js"></script>
+    <script type="module" defer src="js/improvements.js"></script>
 </body>
+
 </html>
