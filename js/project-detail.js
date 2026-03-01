@@ -1,8 +1,8 @@
-import { firebaseService } from '/js/firebase-service.js';
-import { auth } from '/js/firebase-config.js';
-import { getRandomFindImage, getRandomExcavationSiteImage } from '/js/image-utilities.js';
-import { setupImageSystem } from '/js/image-system-init.js';
-import { formatDate, getCategoryIcon, getMaterialColor } from '/js/page-enhancements.js';
+import { firebaseService } from './firebase-service.js';
+import { auth } from './firebase-config.js';
+import { getRandomFindImage, getRandomExcavationSiteImage } from './image-utilities.js';
+import { setupImageSystem } from './image-system-init.js';
+import { formatDate, getCategoryIcon, getMaterialColor } from './page-enhancements.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js';
 
 // Utility function to escape HTML
@@ -858,7 +858,7 @@ function showError(message) {
             <div style="text-align: center; padding: 60px 20px;">
                 <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 20px;"></i>
                 <h2>${message}</h2>
-                <a href="/pages/projects/index.html" class="btn btn-primary" style="margin-top: 20px;">
+                <a href="../projects/index.html" class="btn btn-primary" style="margin-top: 20px;">
                     <i class="fas fa-arrow-left"></i> Zurück
                 </a>
             </div>

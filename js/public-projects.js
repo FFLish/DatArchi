@@ -288,7 +288,7 @@ async function showProjectDetail(projectId) {
 
             <div class="project-detail-actions">
                 ${isOwner ? `
-                    <a href="/pages/project-detail/index.html?project=${projectId}" class="btn btn-primary">
+                    <a href="../project-detail/index.html?project=${projectId}" class="btn btn-primary">
                         <i class="fas fa-edit"></i> Projekt bearbeiten
                     </a>
                 ` : `

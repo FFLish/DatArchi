@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Login — DatArchi</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .demo-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 35px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f0f0f0;
+            border-top: 5px solid #f97316;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin: 30px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+        .login-steps {
+            text-align: left;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+        .login-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            color: #999;
+            transition: all 0.3s ease;
+            opacity: 0.4;
+        }
+        .login-step.active {
+            color: #f97316;
+            font-weight: 600;
+            opacity: 1;
+            transform: scale(1.05);
+            animation: pulse 1s ease-in-out infinite;
+        }
+        .login-step.completed {
+            color: #22c55e;
+            opacity: 1;
+        }
+        .login-step i {
+            width: 20px;
+            font-size: 16px;
+        }
+        .status-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .status-message.info {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+        }
+        .status-message.success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #22c55e;
+        }
+        .status-message.error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #ef4444;
+        }
+        .demo-info {
+            background: #fef3c7;
+            border: 1px solid #fde047;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+        }
+        .demo-info h3 {
+            margin: 0 0 12px 0;
+            color: #ca8a04;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .demo-info ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #854d0e;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-top: 15px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+        }
+        .btn-secondary {
+            background: #e8eef7;
+            color: #667eea;
+        }
+        .btn-secondary:hover {
+            background: #dde6f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🎭 Demo-Zugang</h1>
+        <p class="subtitle">Automatische Anmeldung als Demo-Benutzer</p>
+
+        <div id="statusContainer"></div>
+
+        <div class="demo-info" id="demoInfo">
+            <h3><i class="fas fa-info-circle"></i> Demo-Konto</h3>
+            <ul>
+                <li><strong>E-Mail:</strong> demo@datarchi.com</li>
+                <li><strong>Passwort:</strong> 123456</li>
+                <li>Vollständiger Zugriff auf alle Funktionen</li>
+                <li>Enthält Beispielprojekte und Funde</li>
+            </ul>
+        </div>
+
+        <div id="actionButtons" style="display: none;">
+            <a href="../dashboard.html" class="btn btn-primary">
+                <i class="fas fa-tachometer-alt"></i> Zum Dashboard
+            </a>
+            <a href="../projects/index.html" class="btn btn-primary">
+                <i class="fas fa-folder-open"></i> Meine Projekte
+            </a>
+            <a href="../../index.html" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Startseite
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from '../../js/firebase-config.js';
+        import { 
+            signInWithEmailAndPassword,
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js';
+
+        const DEMO_EMAIL = 'demo@datarchi.com';
+        const DEMO_PASSWORD = '123456';
+
+        function showStatus(message, type = 'info', showSpinner = false) {
+            const container = document.getElementById('statusContainer');
+            const spinnerHTML = showSpinner ? '<div class="spinner"></div>' : '';
+            container.innerHTML = `
+                ${spinnerHTML}
+                <div class="status-message ${type}">
+                    ${message}
+                </div>
+            `;
+        }
+
+        function showLoginProgress() {
+            const container = document.getElementById('statusContainer');
+            const demoInfo = document.getElementById('demoInfo');
+            
+            // Fade out demo info
+            if (demoInfo) {
+                demoInfo.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                demoInfo.style.opacity = '0';
+                demoInfo.style.transform = 'scale(0.95)';
+                setTimeout(() => { demoInfo.style.display = 'none'; }, 300);
+            }
+            
+            container.innerHTML = `
+                <div class="login-steps">
+                    <div class="login-step" id="step1">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <span>Verbindung wird hergestellt...</span>
+                    </div>
+                    <div class="login-step" id="step2">
+                        <i class="fas fa-circle"></i>
+                        <span>Anmeldedaten überprüfen...</span>
+                    </div>
+                    <div class="login-step" id="step3">
+                        <i class="fas fa-circle"></i>
+                        <span>Session wird erstellt...</span>
+                    </div>
+                    <div class="login-step" id="step4">
+                        <i class="fas fa-circle"></i>
+                        <span>Dashboard wird geladen...</span>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            `;
+        }
+
+        function updateLoginStep(stepNumber) {
+            const currentStep = document.getElementById(`step${stepNumber}`);
+            if (!currentStep) return;
+            
+            // Mark previous steps as completed
+            for (let i = 1; i < stepNumber; i++) {
+                const prevStep = document.getElementById(`step${i}`);
+                if (prevStep) {
+                    prevStep.classList.remove('active');
+                    prevStep.classList.add('completed');
+                    prevStep.querySelector('i').className = 'fas fa-check-circle';
+                }
+            }
+            
+            // Mark current step as active
+            currentStep.classList.add('active');
+            currentStep.querySelector('i').className = 'fas fa-circle-notch fa-spin';
+            
+            // Update progress bar
+            const progress = (stepNumber / 4) * 100;
+            const progressFill = document.getElementById('progressFill');
+            if (progressFill) {
+                progressFill.style.width = `${progress}%`;
+            }
+        }
+
+        function showActionButtons() {
+            document.getElementById('actionButtons').style.display = 'flex';
+            document.getElementById('actionButtons').style.flexDirection = 'column';
+            document.getElementById('actionButtons').style.gap = '10px';
+        }
+
+        async function loginAsDemo() {
+            try {
+                showLoginProgress();
+                
+                // Step 1: Verbindung
+                updateLoginStep(1);
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                // Step 2: Anmeldedaten prüfen
+                updateLoginStep(2);
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                // Sign in with demo credentials
+                const userCredential = await signInWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PASSWORD);
+                const user = userCredential.user;
+                
+                // Step 3: Session erstellen
+                updateLoginStep(3);
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                // Step 4: Dashboard laden
+                updateLoginStep(4);
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                showStatus(`
+                    <strong>✅ Erfolgreich angemeldet!</strong><br>
+                    Willkommen, ${user.displayName || 'Demo-Benutzer'}!<br>
+                `, 'success');
+
+                // Redirect immediately
+                setTimeout(() => {
+                    window.location.href = '../projects/index.html';
+                }, 400);
+
+            } catch (error) {
+                console.error('Demo login error:', error);
+                
+                let errorMessage = '❌ <strong>Anmeldung fehlgeschlagen</strong><br>';
+                
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage += 'Der Demo-Benutzer existiert noch nicht.<br><br>' +
+                                  '<small>Bitte erstelle zuerst den Demo-Benutzer über die ' +
+                                  '<a href="./index.html" style="color: inherit; text-decoration: underline;">Registrierung</a> ' +
+                                  'mit den oben genannten Zugangsdaten.</small>';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage += 'Falsches Passwort für den Demo-Benutzer.';
+                } else if (error.code === 'auth/invalid-credential') {
+                    errorMessage += 'Ungültige Anmeldedaten. Der Demo-Benutzer wurde möglicherweise noch nicht erstellt.<br><br>' +
+                                  '<small>Bitte registriere dich zuerst mit:<br>' +
+                                  'E-Mail: demo@datarchi.com<br>Passwort: 123456</small>';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage += 'Zu viele Anmeldeversuche. Bitte warte einen Moment und versuche es erneut.';
+                } else {
+                    errorMessage += `Fehler: ${error.message}`;
+                }
+
+                showStatus(errorMessage, 'error');
+
+                // Show alternative actions
+                document.getElementById('actionButtons').innerHTML = `
+                    <a href="./index.html" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Zur Registrierung
+                    </a>
+                    <a href="../../index.html" class="btn btn-secondary">
+                        <i class="fas fa-home"></i> Startseite
+                    </a>
+                `;
+                showActionButtons();
+            }
+        }
+
+        // Check if already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Already logged in
+                if (user.email === DEMO_EMAIL) {
+                    showStatus(`
+                        <strong>✅ Bereits angemeldet!</strong><br>
+                        Du bist bereits als Demo-Benutzer angemeldet.<br>
+                        Wähle eine Option unten:
+                    `, 'success');
+                    showActionButtons();
+                } else {
+                    showStatus(`
+                        <strong>⚠️ Bereits angemeldet</strong><br>
+                        Du bist bereits als <strong>${user.email}</strong> angemeldet.<br>
+                        Bitte melde dich ab, um den Demo-Zugang zu nutzen.
+                    `, 'info');
+                    
+                    document.getElementById('actionButtons').innerHTML = `
+                        <button onclick="auth.signOut().then(() => location.reload())" class="btn btn-primary">
+                            <i class="fas fa-sign-out-alt"></i> Abmelden und neu anmelden
+                        </button>
+                        <a href="../projects/index.html" class="btn btn-secondary">
+                            <i class="fas fa-folder-open"></i> Zu meinen Projekten
+                        </a>
+                    `;
+                    showActionButtons();
+                    
+                    // Make auth available for onclick
+                    window.auth = auth;
+                }
+            } else {
+                // Not logged in, proceed with demo login
+                loginAsDemo();
+            }
+        });
+    </script>
+</body>
+</html>

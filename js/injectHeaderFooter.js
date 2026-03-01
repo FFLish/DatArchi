@@ -53,6 +53,13 @@ function adjustLinks(container, siteRoot) {
   const selectors = ['a[href]', '[src]', 'link[href]'];
   const attributes = ['href', 'src', 'href'];
 
+  // Calculate current page depth from site root
+  const currentPath = window.location.pathname;
+  const siteRootPath = new URL(siteRoot).pathname;
+  const relativePath = currentPath.replace(siteRootPath, '');
+  const depth = relativePath.split('/').filter(p => p && p !== 'index.html').length;
+  const basePrefix = depth > 0 ? '../'.repeat(depth) : './';
+
   selectors.forEach((selector, index) => {
     const attribute = attributes[index];
     const elements = container.querySelectorAll(selector);
@@ -63,9 +70,9 @@ function adjustLinks(container, siteRoot) {
 
       // Adjust only root-relative paths, ignore external, mailto, etc.
       if (path.startsWith('/') && !path.startsWith('//')) {
-        // Remove the leading slash and resolve relative to the siteRoot
-        const relativePath = path.substring(1);
-        el[attribute] = new URL(relativePath, siteRoot).href;
+        // Convert to relative path based on current page depth
+        const relativePath = path.substring(1); // Remove leading slash
+        el[attribute] = basePrefix + relativePath;
       }
     });
   });

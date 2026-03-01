@@ -1130,7 +1130,7 @@
                 const allProjects = [...new Set([...ownedProjects, ...participatingProjects])];
                 
                 if (allProjects.length === 0) {
-                    projectsContainer.innerHTML = '<p class="text-muted" style="margin: 0; font-size: 12px;">Keine Projekte - <a href="/pages/sites/index.html">neues Projekt erstellen</a></p>';
+                    projectsContainer.innerHTML = '<p class="text-muted" style="margin: 0; font-size: 12px;">Keine Projekte - <a href="../sites/index.html">neues Projekt erstellen</a></p>';
                 } else {
                     let projectsHTML = '<ul style="list-style: none; padding: 0; margin: 0;">';
                     allProjects.forEach(projectId => {

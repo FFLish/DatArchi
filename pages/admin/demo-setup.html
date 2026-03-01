@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo Setup - DatArchi Admin</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../../css/styles.css">
     <style>
         body {
             background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
@@ -158,7 +158,7 @@
         <button class="btn-primary" onclick="setupDemo()" id="setupBtn">
             ✨ Demo-Daten erstellen
         </button>
-        <button class="btn-secondary" onclick="location.href='/'">
+        <button class="btn-secondary" onclick="location.href='../../index.html'">
             ← Zurück zur Startseite
         </button>
 
@@ -166,7 +166,7 @@
     </div>
 
     <script type="module">
-        import { setupDemoData } from '/js/demo-setup.js';
+        import { setupDemoData } from '../../js/demo-setup.js';
 
         window.setupDemo = async function() {
             const btn = document.getElementById('setupBtn');
@@ -185,8 +185,8 @@
                         ✅ <strong>Erfolg!</strong><br>
                         Beispielprojekte und Funde wurden erfolgreich erstellt.<br><br>
                         <strong>Teste die Demo:</strong><br>
-                        1. <a href="/pages/public-projects/index.html" style="color: inherit; text-decoration: underline;">Öffentliche Projekte anschauen</a><br>
-                        2. Melden Sie sich mit einem Ihrer Testkonten an oder erstellen Sie ein neues Konto unter <a href="/pages/profile/index.html" style="color: inherit; text-decoration: underline;">Profile</a>.
+                        1. <a href="../public-projects/index.html" style="color: inherit; text-decoration: underline;">Öffentliche Projekte anschauen</a><br>
+                        2. Melden Sie sich mit einem Ihrer Testkonten an oder erstellen Sie ein neues Konto unter <a href="../profile/index.html" style="color: inherit; text-decoration: underline;">Profile</a>.
                     `;
                     btn.disabled = false;
                     btn.textContent = '✅ Fertig! Neuerliche Daten werden übersprungen.';

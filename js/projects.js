@@ -232,7 +232,7 @@ async function displayProjects(projects) {
             
 
             <div class="project-card-footer">
-                <a href="/pages/project-detail/index.html?project=${project.id}" class="btn btn-sm btn-primary">
+                <a href="../project-detail/index.html?project=${project.id}" class="btn btn-sm btn-primary">
                     <i class="fas fa-folder-open"></i> Öffnen
                 </a>
                 <button class="btn btn-sm btn-secondary" onclick="editProject('${project.id}')">
