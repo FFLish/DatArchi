@@ -1,17 +1,17 @@
 /* Startseiten-Verbesserungen */
 
 /* Featurekarten Hover-Effekt */
-.features-intro [style*="grid"] > div {
+.features-intro [style*="grid"]>div {
   transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
   will-change: transform, box-shadow;
 }
 
-.features-intro [style*="grid"] > div:hover {
+.features-intro [style*="grid"]>div:hover {
   transform: translateY(-8px);
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12) !important;
 }
 
-.features-intro [style*="grid"] > div:active {
+.features-intro [style*="grid"]>div:active {
   transform: translateY(-4px);
 }
 
@@ -34,6 +34,7 @@
     opacity: 0;
     transform: scale(0.95) translateY(-5px);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -53,6 +54,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -229,8 +231,9 @@
 }
 
 .cta-primary {
-  background: var(--accent);
-  color: white;
+  /*background: var(--accent);*/
+  color: var(--accent);
+  border: 2px solid var(--accent);
   box-shadow: 0 2px 8px rgba(244, 164, 96, 0.25);
 }
 
@@ -270,9 +273,12 @@ html[data-theme="dark"] .cta-primary:hover {
 
 /* Schwebanimation */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-8px);
   }
@@ -452,7 +458,8 @@ html[data-theme="dark"] .cta-secondary:hover {
 
   .form-group input {
     padding: 12px 14px;
-    font-size: 16px; /* Verhindert Zoom beim Fokus auf iOS */
+    font-size: 16px;
+    /* Verhindert Zoom beim Fokus auf iOS */
   }
 
   .submit-btn {
@@ -478,7 +485,7 @@ html[data-theme="dark"] .cta-secondary:hover {
     color: #f5f1eb;
   }
 
-  .features-intro [style*="grid"] > div {
+  .features-intro [style*="grid"]>div {
     background: rgba(30, 20, 16, 0.6) !important;
     border-color: rgba(255, 184, 77, 0.2) !important;
   }
@@ -499,13 +506,13 @@ html[data-theme="dark"] .features-intro {
   color: var(--text);
 }
 
-html[data-theme="dark"] .features-intro [style*="grid"] > div {
+html[data-theme="dark"] .features-intro [style*="grid"]>div {
   background: rgba(30, 20, 16, 0.7) !important;
   border: 1px solid rgba(255, 184, 77, 0.2) !important;
   color: var(--text);
 }
 
-html[data-theme="dark"] .features-intro [style*="grid"] > div:hover {
+html[data-theme="dark"] .features-intro [style*="grid"]>div:hover {
   border-color: rgba(255, 184, 77, 0.4) !important;
   background: rgba(30, 20, 16, 0.9) !important;
   box-shadow: 0 8px 24px rgba(255, 184, 77, 0.1) !important;
@@ -522,6 +529,7 @@ html[data-theme="dark"] .features-intro p {
 
 /* Druckstile */
 @media print {
+
   .auth-wrapper,
   .divider {
     display: none;
