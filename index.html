@@ -45,10 +45,10 @@
       position: fixed;
       inset: 0;
       background: 
-        radial-gradient(circle at 20% 50%, rgba(244, 164, 96, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(218, 165, 32, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 20% 50%, rgba(244, 164, 96, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(218, 165, 32, 0.04) 0%, transparent 50%);
       pointer-events: none;
-      z-index: 1;
+      z-index: 0;
     }
 
     /* Focus visible styles for accessibility */
@@ -58,33 +58,30 @@
     }
 
     .hero-section {
-      background: rgba(0, 0, 0, 0.05);
-      padding: 100px 20px;
+      background: transparent;
+      padding: 120px 24px 80px;
       text-align: center;
       color: var(--text);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
       position: relative;
       z-index: 2;
     }
 
     .hero-section h1 {
-      font-size: clamp(36px, 8vw, 56px);
-      margin-bottom: 20px;
-      font-weight: 900;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      letter-spacing: -1px;
-      animation: slideInFromTop 0.8s ease-out;
+      font-size: clamp(40px, 7vw, 64px);
+      margin-bottom: 24px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
     }
 
     .hero-section .lead {
-      font-size: clamp(16px, 4vw, 20px);
-      max-width: 750px;
-      margin: 0 auto 40px;
-      opacity: 0.95;
-      line-height: 1.8;
-      animation: slideInFromTop 1s ease-out 0.2s backwards;
+      font-size: clamp(17px, 3vw, 21px);
+      max-width: 720px;
+      margin: 0 auto 48px;
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 400;
     }
 
     .auth-wrapper {
@@ -102,16 +99,11 @@
     /* CTA Buttons */
     .hero-section a {
       font-family: inherit;
-      animation: slideInFromBottom 0.8s ease-out 0.3s backwards;
     }
 
     .hero-section a:hover {
-      box-shadow: 0 12px 35px rgba(249, 115, 22, 0.4);
-      transform: translateY(-4px);
-    }
-
-    .hero-section a:nth-child(2) {
-      animation: slideInFromBottom 0.8s ease-out 0.4s backwards;
+      box-shadow: 0 8px 24px rgba(244, 164, 96, 0.3);
+      transform: translateY(-2px);
     }
 
     @keyframes slideInFromBottom {
@@ -171,7 +163,7 @@
     }
 
     .auth-form-wrapper .form-subtitle {
-      color: var(--muted);
+      color: var(--text);
       font-size: 14px;
       margin-bottom: 30px;
       position: relative;
@@ -205,7 +197,7 @@
     }
 
     .form-group input::placeholder {
-      color: var(--muted);
+      color: var(--text);
     }
 
     .form-group input:focus {
@@ -242,7 +234,7 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: var(--muted);
+      color: var(--text);
       font-size: 16px;
       transition: color 0.2s;
     }
@@ -349,7 +341,7 @@
       text-align: center;
       margin: 24px 0;
       position: relative;
-      color: var(--muted);
+      color: var(--text);
       font-weight: 500;
     }
 
@@ -438,7 +430,7 @@
     .password-strength {
       margin-top: 8px;
       font-size: 12px;
-      color: var(--muted);
+      color: var(--text);
     }
 
     .strength-bar {
@@ -662,7 +654,7 @@
   <section class="features-intro" style="background: var(--card); padding: 80px 20px; transition: background-color 0.35s ease;">
     <div style="max-width: 1200px; margin: 0 auto;">
       <h2 style="text-align: center; font-size: clamp(28px, 6vw, 36px); margin-bottom: 30px; color: var(--text); font-weight: 700;">Was ist DatArchi?</h2>
-      <p style="text-align: center; font-size: 16px; color: var(--muted); max-width: 700px; margin: 0 auto 60px; line-height: 1.8;">
+      <p style="text-align: center; font-size: 16px; color: var(--text); max-width: 700px; margin: 0 auto 60px; line-height: 1.8;">
         DatArchi ist die moderne Virtual Research Environment für Archäologen. Zentralisieren Sie Ihre Forschungsdaten, 
         arbeiten Sie kollaborativ und nutzen Sie intelligente Analyse-Tools – alles an einem Ort.
       </p>

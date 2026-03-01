@@ -17,7 +17,7 @@
             --success-color: #10b981;
             --danger-color: #ef4444;
             --text-dark: #1a1a2e;
-            --text-light: #999;
+            --text-light: #6b5b52;
             --bg-light: #f9fafb;
             --border-color: #e5e7eb;
         }
@@ -590,7 +590,7 @@
             background: none;
             cursor: pointer;
             font-weight: 500;
-            color: #999;
+            color: #6b5b52;
             border-bottom: 3px solid transparent;
             transition: all 0.3s ease;
             white-space: nowrap;
@@ -707,7 +707,7 @@
         .find-info p {
             margin: 0;
             font-size: 0.8rem;
-            color: #999;
+            color: #6b5b52;
         }
 
         .stats-grid {
@@ -739,7 +739,7 @@
         .no-data {
             text-align: center;
             padding: 40px 20px;
-            color: #999;
+            color: #6b5b52;
         }
 
         .no-data i {
@@ -853,7 +853,7 @@
         .member-info p {
             margin: 0;
             font-size: 0.8rem;
-            color: #999;
+            color: #6b5b52;
         }
 
         .btn-back {
@@ -1522,7 +1522,7 @@
             right: 20px;
             font-size: 28px;
             font-weight: 300;
-            color: #999;
+            color: #6b5b52;
             cursor: pointer;
             border: none;
             background: none;
@@ -1726,9 +1726,6 @@
                         <button class="btn btn-primary" onclick="openAddFindModal()">
                             <i class="fas fa-plus"></i> Neuen Fund hinzufügen
                         </button>
-                        <button class="btn" onclick="addTestFinds()" style="background: #10b981; border-color: #10b981; color: white;">
-                            <i class="fas fa-flask"></i> Test-Funde laden
-                        </button>
                     </div>
                 </div>
 
@@ -1894,6 +1891,11 @@
                 <div class="form-group">
                     <label for="findDescription">Beschreibung</label>
                     <textarea id="findDescription" rows="4" placeholder="Detaillierte Beschreibung..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="findLocation">Fundort</label>
+                    <input type="text" id="findLocation" placeholder="z.B. Grabungsbereich A, Schnitt 5">
                 </div>
 
                 <div class="form-row">

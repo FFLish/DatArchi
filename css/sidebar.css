@@ -131,7 +131,7 @@ html[data-theme="dark"] .sidebar {
   width: 18px;
   height: 18px;
   transition: transform 0.2s ease;
-  color: var(--muted); /* This won't work for img, but keep for consistency */
+  color: var(--text);
 }
 
 .sidebar details[open] > summary {
@@ -156,7 +156,7 @@ html[data-theme="dark"] .sidebar {
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--text);
 }
 .zone-tools input[type="number"] {
   width: 60px;
@@ -178,7 +178,7 @@ html[data-theme="dark"] .sidebar {
 
 .hint-message {
   margin-top: 8px;
-  color: var(--muted);
+  color: var(--text);
   font-size: 0.9em;
   padding: 8px 0;
   border-top: 1px solid var(--border);

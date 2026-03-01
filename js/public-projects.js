@@ -56,8 +56,18 @@ async function loadPublicProjects() {
         projectsList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Projekte werden geladen...</div>';
 
         // Lade alle öffentlichen Projekte von Firebase
-        allPublicProjects = await firebaseService.getPublicProjects(100);
-        console.log('✅ Öffentliche Projekte geladen:', allPublicProjects.length);
+        let projects = await firebaseService.getPublicProjects(100);
+        console.log('✅ Öffentliche Projekte geladen:', projects.length);
+        
+        // Dedupliziere Projekte nach ID
+        const uniqueProjects = {};
+        projects.forEach(project => {
+            if (project.id && !uniqueProjects[project.id]) {
+                uniqueProjects[project.id] = project;
+            }
+        });
+        allPublicProjects = Object.values(uniqueProjects);
+        console.log('✅ Nach Deduplizierung:', allPublicProjects.length, 'eindeutige Projekte');
         
         if (!allPublicProjects || allPublicProjects.length === 0) {
             projectsList.innerHTML = `
@@ -95,7 +105,20 @@ function displayProjects(projects) {
         return;
     }
 
-    projectsList.innerHTML = projects.map(project => `
+    // Filter out projects with missing critical data
+    const validProjects = projects.filter(p => p.id && p.title);
+    
+    if (validProjects.length === 0) {
+        projectsList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Keine gültigen Projekte gefunden</p>
+            </div>
+        `;
+        return;
+    }
+
+    projectsList.innerHTML = validProjects.map(project => `
         <div class="public-project-card" onclick="showProjectDetail('${project.id}')">
             <div class="project-card-image-container">
                 <img src="${getRandomExcavationSiteImage()}" alt="Ausgrabungsstätte" class="public-project-card-image">
@@ -170,9 +193,18 @@ function filterAndDisplayProjects() {
 }
 
 function formatDate(date) {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toLocaleDateString('de-DE', { year: 'numeric', month: 'short', day: 'numeric' });
+    if (!date) return 'Datum unbekannt';
+    
+    try {
+        const d = new Date(date);
+        // Check if date is valid
+        if (isNaN(d.getTime())) {
+            return 'Datum unbekannt';
+        }
+        return d.toLocaleDateString('de-DE', { year: 'numeric', month: 'short', day: 'numeric' });
+    } catch (error) {
+        return 'Datum unbekannt';
+    }
 }
 
 async function showProjectDetail(projectId) {

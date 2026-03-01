@@ -157,7 +157,7 @@ html[data-theme="dark"] {
 }
 
 .close {
-  color: var(--text-secondary);
+  color: var(--text);
   float: right;
   font-size: 28px;
   font-weight: 300;
@@ -197,7 +197,7 @@ h3 {
 }
 
 p {
-  color: var(--text-secondary);
+  color: var(--text);
   line-height: 1.6;
   margin-bottom: 12px;
 }
@@ -474,7 +474,7 @@ p {
 }
 
 .text-muted {
-  color: var(--text-tertiary);
+  color: var(--text);
 }
 
 .text-error {
@@ -615,7 +615,7 @@ body {
   }
 
   .project-name { font-size: 18px; }
-  .project-tagline { font-size: 12px; color: var(--text-tertiary); }
+  .project-tagline { font-size: 12px; color: var(--text); }
 
   .header-right-container { display: flex; align-items: center; gap: 8px; }
 

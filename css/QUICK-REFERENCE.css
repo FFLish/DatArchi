@@ -97,7 +97,7 @@ html[data-theme="dark"] body .btn-primary {
 
 /* Text Example */
 body p {
-  color: var(--text-secondary);  /* Automatic theme-aware color */
+  color: var(--text);  /* Automatic theme-aware color */
   font-weight: 400;
 }
 

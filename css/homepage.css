@@ -83,15 +83,14 @@
 /* Feature Cards */
 .feature-card {
   text-align: center;
-  padding: 40px;
-  background: linear-gradient(135deg, var(--card) 0%, var(--card) 100%);
-  border-radius: 16px;
+  padding: 48px 32px;
+  background: var(--card);
+  border-radius: 12px;
   border: 1px solid var(--border);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   position: relative;
-  overflow: hidden;
 }
 
 .feature-card::before {
@@ -100,7 +99,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px;
   background: var(--accent);
   transform: scaleX(0);
   transform-origin: left;
@@ -112,21 +111,21 @@
 }
 
 .feature-card:hover {
-  box-shadow: 0 16px 32px var(--shadow-color);
-  transform: translateY(-8px);
-  border-color: var(--accent);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+  border-color: var(--border);
 }
 
 .feature-icon {
-  font-size: 56px;
-  margin-bottom: 20px;
+  font-size: 48px;
+  margin-bottom: 24px;
   color: var(--accent);
   line-height: 1;
-  transition: transform 0.3s ease;
+  transition: transform 0.25s ease;
 }
 
 .feature-card:hover .feature-icon {
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.05);
 }
 
 .feature-title {
@@ -134,61 +133,61 @@
   margin-bottom: 12px;
   color: var(--text);
   font-weight: 700;
-  transition: color 0.3s ease;
+  transition: color 0.25s ease;
 }
 
 .feature-desc {
-  color: var(--muted);
+  color: var(--text);
   line-height: 1.7;
   font-size: 15px;
-  transition: color 0.3s ease;
+  transition: color 0.25s ease;
 }
 
 /* CTA Banner */
 .cta-banner {
-  background: var(--btn-primary-bg);
+  background: var(--accent);
   color: white;
-  padding: 60px 40px;
-  border-radius: 16px;
+  padding: 64px 48px;
+  border-radius: 12px;
   text-align: center;
-  box-shadow: 0 12px 40px rgba(255, 184, 77, 0.2);
+  box-shadow: 0 4px 16px rgba(244, 164, 96, 0.25);
   margin-bottom: 40px;
 }
 
 .cta-title {
-  font-size: clamp(20px, 4vw, 24px);
-  margin-bottom: 20px;
+  font-size: clamp(22px, 4vw, 28px);
+  margin-bottom: 16px;
   font-weight: 700;
-  margin: 0 0 20px 0;
+  margin: 0 0 16px 0;
 }
 
 .cta-desc {
-  font-size: 16px;
-  line-height: 1.8;
-  max-width: 700px;
+  font-size: 17px;
+  line-height: 1.7;
+  max-width: 680px;
   margin: 0 auto;
   opacity: 0.95;
 }
 
 /* CTA Section */
 .cta-section {
-  background: rgba(255, 184, 77, 0.05);
-  padding: 50px 40px;
-  border-radius: 16px;
-  border: 2px dashed var(--accent);
+  background: rgba(244, 164, 96, 0.04);
+  padding: 56px 48px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .cta-section:hover {
   border-color: var(--accent);
-  background: rgba(255, 184, 77, 0.08);
-  box-shadow: 0 8px 24px rgba(255, 184, 77, 0.1);
+  background: rgba(244, 164, 96, 0.06);
+  box-shadow: 0 4px 16px rgba(244, 164, 96, 0.1);
 }
 
 .cta-heading {
-  font-size: 22px;
-  margin: 0 0 20px 0;
+  font-size: 24px;
+  margin: 0 0 16px 0;
   color: var(--text);
   font-weight: 700;
 }
@@ -196,20 +195,19 @@
 .cta-heading i {
   color: var(--accent);
   margin-right: 10px;
-  animation: float 3s ease-in-out infinite;
 }
 
 .cta-text {
-  font-size: 16px;
-  color: var(--muted);
-  margin-bottom: 30px;
+  font-size: 17px;
+  color: var(--text);
+  margin-bottom: 32px;
   line-height: 1.7;
 }
 
 /* CTA Buttons */
 .cta-buttons {
   display: flex;
-  gap: 15px;
+  gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -220,21 +218,20 @@
   gap: 8px;
   padding: 14px 32px;
   border: none;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 700;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
   border: 2px solid transparent;
 }
 
 .cta-primary {
-  background: var(--btn-primary-bg);
+  background: var(--accent);
   color: white;
-  box-shadow: 0 4px 15px rgba(244, 164, 96, 0.3);
+  box-shadow: 0 2px 8px rgba(244, 164, 96, 0.25);
 }
 
 html[data-theme="dark"] .cta-primary {
@@ -242,33 +239,33 @@ html[data-theme="dark"] .cta-primary {
 }
 
 .cta-primary:hover {
-  box-shadow: 0 12px 30px rgba(244, 164, 96, 0.4);
-  transform: translateY(-3px);
+  box-shadow: 0 4px 16px rgba(244, 164, 96, 0.35);
+  transform: translateY(-2px);
 }
 
 html[data-theme="dark"] .cta-primary:hover {
-  box-shadow: 0 12px 30px rgba(255, 184, 77, 0.4);
+  box-shadow: 0 4px 16px rgba(255, 184, 77, 0.35);
 }
 
 .cta-primary:active {
-  transform: translateY(-1px);
+  transform: translateY(0);
 }
 
 .cta-secondary {
-  background: white;
+  background: transparent;
   color: var(--accent);
   border: 2px solid var(--accent);
-  box-shadow: 0 2px 8px rgba(255, 184, 77, 0.15);
+  box-shadow: none;
 }
 
 .cta-secondary:hover {
-  background: rgba(255, 184, 77, 0.05);
-  box-shadow: 0 8px 20px rgba(255, 184, 77, 0.15);
-  transform: translateY(-3px);
+  background: rgba(244, 164, 96, 0.05);
+  box-shadow: 0 2px 8px rgba(244, 164, 96, 0.15);
+  transform: translateY(-2px);
 }
 
 .cta-secondary:active {
-  transform: translateY(-1px);
+  transform: translateY(0);
 }
 
 /* Float Animation */
@@ -308,12 +305,12 @@ html[data-theme="dark"] .cta-section {
 }
 
 html[data-theme="dark"] .cta-section:hover {
-  background: rgba(255, 184, 77, 0.12);
-  box-shadow: 0 8px 24px rgba(255, 184, 77, 0.15);
+  background: rgba(255, 184, 77, 0.08);
+  box-shadow: 0 4px 16px rgba(255, 184, 77, 0.15);
 }
 
 html[data-theme="dark"] .cta-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #ffb84d 100%);
+  background: var(--accent);
   color: #1a0f08;
   font-weight: 700;
 }

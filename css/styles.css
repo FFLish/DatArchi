@@ -57,7 +57,7 @@
 .leaflet-control-attribution,
 .leaflet-bar a {
   background: rgba(255,255,255,0.02);
-  color: var(--muted);
+  color: var(--text);
 }
 .leaflet-popup-content img { max-width: 200px; border-radius: 6px; }
 

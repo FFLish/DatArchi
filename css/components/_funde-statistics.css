@@ -43,7 +43,7 @@
   padding: 8px 0; /* Increased padding */
   border-bottom: 1px solid var(--border); /* Solid border */
   font-size: 15px;
-  color: var(--muted);
+  color: var(--text);
 }
 .statistic-card li:last-child {
   border-bottom: none;

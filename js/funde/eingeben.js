@@ -2,6 +2,7 @@ import { firebaseService } from '../firebase-service.js';
 import { auth, storage } from '../firebase-config.js';
 import { setupImageSystem } from '../image-system-init.js';
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+import * as db from '../database.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize image system
@@ -235,14 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   // #endregion
 
-  // #region Example & Delete Logic
-    const addExampleFindsBtn = document.getElementById('addExampleFindsBtn');
-    if (addExampleFindsBtn) {
-        addExampleFindsBtn.addEventListener('click', () => {
-            alert('Die Funktion zum Hinzufügen von Beispielen wird überarbeitet.');
-        });
-    }
-
+  // #region Delete Logic
     const deleteAllFindsBtn = document.getElementById('deleteAllFindsBtn');
     if (deleteAllFindsBtn) {
         deleteAllFindsBtn.addEventListener('click', async () => {

@@ -43,7 +43,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--muted);
+  color: var(--text);
   font-size: 14px;
   text-align: center;
   border-bottom: 1px solid var(--border);
@@ -66,14 +66,14 @@
 
 .find-card-description {
   font-size: 14px;
-  color: var(--muted);
+  color: var(--text);
   flex-grow: 1;
   margin-bottom: 12px;
 }
 
 .find-card-details {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text);
   border-top: 1px solid var(--border);
   padding-top: 8px;
   display: flex;

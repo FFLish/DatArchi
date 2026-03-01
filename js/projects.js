@@ -168,7 +168,20 @@ async function displayProjects(projects) {
         return;
     }
 
-    const projectsHTML = await Promise.all(projects.map(async project => {
+    // Filter out projects with missing critical data
+    const validProjects = projects.filter(p => p.id && p.name && p.name.trim());
+    
+    if (validProjects.length === 0) {
+        projectsList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Keine gültigen Projekte gefunden</p>
+            </div>
+        `;
+        return;
+    }
+
+    const projectsHTML = await Promise.all(validProjects.map(async project => {
         const finds = await firebaseService.getProjectFinds(project.id).catch(() => []) || [];
         const findCategories = [...new Set(finds.map(f => f.category))];
         const materials = [...new Set(finds.map(f => f.material))];

@@ -259,6 +259,187 @@ export async function saveZones(zonesArray) {
     });
 }
 
+export async function updateFind(findId, updates) {
+    const uid = await getUserId();
+    const activeSiteId = localStorage.getItem(ACTIVE_SITE_ID_KEY);
+    if (!activeSiteId) throw new Error("No active site selected.");
+
+    const findRef = doc(getFindsCollection(uid, activeSiteId), findId);
+    await updateDoc(findRef, {
+        ...updates,
+        updatedAt: new Date().toISOString()
+    });
+}
+
+export async function deleteFind(findId) {
+    const uid = await getUserId();
+    const activeSiteId = localStorage.getItem(ACTIVE_SITE_ID_KEY);
+    if (!activeSiteId) throw new Error("No active site selected.");
+
+    const findRef = doc(getFindsCollection(uid, activeSiteId), findId);
+    await deleteDoc(findRef);
+}
+
+// Make these functions globally available
+window.__dbFunctions = {
+    getFinds,
+    updateFind,
+    deleteFind
+};
+
+// ====== Global Find Edit/Delete Functions (Available on all pages) ======
+window.editFind = async function(findId) {
+    try {
+        const finds = await window.__dbFunctions.getFinds('active');
+        const find = finds.find(f => f.id === findId);
+        
+        if (!find) {
+            alert('Fund nicht gefunden');
+            return;
+        }
+
+        // Create and show edit modal
+        const modal = document.createElement('div');
+        modal.id = 'editFindModal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        `;
+
+        modal.innerHTML = `
+            <div style="background: white; border-radius: 8px; padding: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                <h2 style="margin-top: 0; margin-bottom: 20px;">Fund bearbeiten</h2>
+                <form id="editFindForm" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div>
+                        <label for="editTitel" style="display: block; margin-bottom: 6px; font-weight: 500;">Titel</label>
+                        <input type="text" id="editTitel" value="${find.titel || ''}" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box;" />
+                    </div>
+                    <div>
+                        <label for="editBeschreibung" style="display: block; margin-bottom: 6px; font-weight: 500;">Beschreibung</label>
+                        <textarea id="editBeschreibung" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; resize: vertical; min-height: 100px;">${find.beschreibung || ''}</textarea>
+                    </div>
+                    <div>
+                        <label for="editBerichte" style="display: block; margin-bottom: 6px; font-weight: 500;">Berichte / Anmerkungen</label>
+                        <textarea id="editBerichte" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; resize: vertical; min-height: 80px;">${find.berichte || ''}</textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label for="editMaterial" style="display: block; margin-bottom: 6px; font-weight: 500;">Material</label>
+                            <input type="text" id="editMaterial" value="${find.material || ''}" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box;" />
+                        </div>
+                        <div>
+                            <label for="editKategorie" style="display: block; margin-bottom: 6px; font-weight: 500;">Kategorie</label>
+                            <select id="editKategorie" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box;">
+                                <option value="">Bitte wählen...</option>
+                                <option value="organisch" ${find.kategorie === 'organisch' ? 'selected' : ''}>Organisch</option>
+                                <option value="werkzeuge" ${find.kategorie === 'werkzeuge' ? 'selected' : ''}>Werkzeuge</option>
+                                <option value="gefaesse" ${find.kategorie === 'gefaesse' ? 'selected' : ''}>Gefäße</option>
+                                <option value="ruinen" ${find.kategorie === 'ruinen' ? 'selected' : ''}>Ruinen / Architektur</option>
+                                <option value="sonstiges" ${find.kategorie === 'sonstiges' ? 'selected' : ''}>Sonstiges</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label for="editDatierung" style="display: block; margin-bottom: 6px; font-weight: 500;">Datierung</label>
+                            <input type="text" id="editDatierung" value="${find.datierung || ''}" placeholder="z.B. 2. Jh. v. Chr." style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box;" />
+                        </div>
+                        <div>
+                            <label for="editFunddatum" style="display: block; margin-bottom: 6px; font-weight: 500;">Funddatum</label>
+                            <input type="date" id="editFunddatum" value="${find.funddatum || ''}" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box;" />
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">Sichtbarkeit</label>
+                        <div style="display: flex; gap: 16px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="radio" name="editPrivacy" value="private" ${find.privacy !== 'public' ? 'checked' : ''} />
+                                Privat (nur für Teammitglieder sichtbar)
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="radio" name="editPrivacy" value="public" ${find.privacy === 'public' ? 'checked' : ''} />
+                                Öffentlich (für alle sichtbar)
+                            </label>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                        <button type="button" onclick="document.getElementById('editFindModal').remove();" style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 4px; background: white; cursor: pointer; font-weight: 500;">Abbrechen</button>
+                        <button type="submit" style="flex: 1; padding: 10px; border: none; border-radius: 4px; background: #5b21b6; color: white; cursor: pointer; font-weight: 500;">Speichern</button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        
+        // Handle form submission
+        document.getElementById('editFindForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const updates = {
+                    titel: document.getElementById('editTitel').value,
+                    beschreibung: document.getElementById('editBeschreibung').value,
+                    berichte: document.getElementById('editBerichte').value,
+                    material: document.getElementById('editMaterial').value,
+                    kategorie: document.getElementById('editKategorie').value,
+                    datierung: document.getElementById('editDatierung').value,
+                    funddatum: document.getElementById('editFunddatum').value,
+                    privacy: document.querySelector('input[name="editPrivacy"]:checked').value
+                };
+
+                await window.__dbFunctions.updateFind(findId, updates);
+                modal.remove();
+                
+                // Trigger refresh on the page
+                window.dispatchEvent(new CustomEvent('fundUpdated', { detail: { findId } }));
+                
+                alert('Fund erfolgreich aktualisiert!');
+            } catch (error) {
+                console.error('Fehler beim Aktualisieren des Funds:', error);
+                alert('Fehler beim Aktualisieren des Funds: ' + error.message);
+            }
+        });
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+
+    } catch (error) {
+        console.error('Fehler beim Bearbeiten des Funds:', error);
+        alert('Fehler beim Bearbeiten des Funds: ' + error.message);
+    }
+};
+
+window.deleteFind = async function(findId) {
+    if (!confirm('Möchten Sie diesen Fund wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+        return;
+    }
+
+    try {
+        await window.__dbFunctions.deleteFind(findId);
+        
+        // Trigger refresh on the page
+        window.dispatchEvent(new CustomEvent('fundDeleted', { detail: { findId } }));
+        
+        alert('Fund gelöscht');
+    } catch (error) {
+        console.error('Fehler beim Löschen des Funds:', error);
+        alert('Fehler beim Löschen des Funds: ' + error.message);
+    }
+};
+
 export async function updateSite(siteId, key, value) {
     const uid = await getUserId();
     await updateDoc(doc(getSitesCollection(uid), siteId), { 
@@ -1819,7 +2000,7 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
     const currentKategorie = kategorieFilter?.value;
 
     const materials = [...new Set(allFinds.map(find => find.material).filter(Boolean))].sort();
-    const kategorien = [...new Set(allFinds.map(find => find.category || find.kategorie).filter(Boolean))].sort();
+    const kategorien = [...new Set(allFinds.map(find => find.kategorie).filter(Boolean))].sort();
 
     // Reset and populate material filter
     if (materialFilter) {
@@ -1854,14 +2035,12 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
 
     const filteredFinds = allFinds.filter(find => {
       const matchesSearch = (
-        find.name?.toLowerCase().includes(searchTerm) || 
         find.titel?.toLowerCase().includes(searchTerm) ||
-        find.description?.toLowerCase().includes(searchTerm) ||
         find.beschreibung?.toLowerCase().includes(searchTerm) ||
         find.material?.toLowerCase().includes(searchTerm)
       );
       const matchesMaterial = !selectedMaterial || find.material === selectedMaterial;
-      const matchesKategorie = !selectedKategorie || find.category === selectedKategorie || find.kategorie === selectedKategorie;
+      const matchesKategorie = !selectedKategorie || find.kategorie === selectedKategorie;
       
       return matchesSearch && matchesMaterial && matchesKategorie;
     });
@@ -1875,14 +2054,14 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
     const activeSite = await db.getActiveSite();
 
     container.innerHTML = filteredFinds.map(find => {
-      const title = escapeHtml(find.name || find.titel || 'Unbenannter Fund');
-      const description = escapeHtml(find.description || find.beschreibung || 'Keine Beschreibung vorhanden.');
+      const title = escapeHtml(find.titel || 'Unbenannter Fund');
+      const description = escapeHtml(find.beschreibung || 'Keine Beschreibung vorhanden.');
       const fundId = escapeHtml(find.id || 'N/A'); // Using find.id for fundId
       const material = escapeHtml(find.material || 'N/A');
-      const kategorie = escapeHtml(find.category || find.kategorie || 'N/A');
-      const datierung = escapeHtml(find.dating || find.datierung || 'N/A');
-      const privacy = escapeHtml(find.visibility || find.privacy || 'private');
-      const berichte = escapeHtml(find.reports || find.berichte || '');
+      const kategorie = escapeHtml(find.kategorie || 'N/A');
+      const datierung = escapeHtml(find.datierung || 'N/A');
+      const privacy = escapeHtml(find.privacy || 'private');
+      const berichte = escapeHtml(find.berichte || '');
       const hasModel = find.modelUrl ? 'Ja' : 'Nein';
 
       let siteInfoHtml = '';
@@ -1925,6 +2104,14 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
               <span><strong>Sichtbarkeit:</strong> ${privacy}</span>
               ${modelLinkHtml}
             </div>
+            <div class="find-card-actions" style="display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+              <button class="btn btn-sm" style="flex: 1; font-size: 0.85rem;" onclick="editFind('${find.id}'); event.stopPropagation();">
+                <i class="fas fa-edit"></i> Bearbeiten
+              </button>
+              <button class="btn btn-danger btn-sm" style="flex: 1; font-size: 0.85rem;" onclick="deleteFind('${find.id}'); event.stopPropagation();">
+                <i class="fas fa-trash"></i> Löschen
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -1941,6 +2128,16 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
     if (materialFilter) materialFilter.addEventListener('change', renderFinds);
     if (kategorieFilter) kategorieFilter.addEventListener('change', renderFinds);
     if (searchAllSitesCheckbox) searchAllSitesCheckbox.addEventListener('change', fetchAndRenderFinds);
+
+    // Listen for fund updates from modal
+    window.addEventListener('fundUpdated', () => {
+      fetchAndRenderFinds();
+    });
+
+    // Listen for fund deletions from modal
+    window.addEventListener('fundDeleted', () => {
+      fetchAndRenderFinds();
+    });
 
     fetchAndRenderFinds();
   }

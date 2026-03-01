@@ -1,31 +1,31 @@
 /* Button Styles */
 .btn {
   display: inline-block;
-  padding: 11px 24px;
+  padding: 12px 28px;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: var(--transition-fast);
-  font-size: 14px;
+  transition: all 0.2s ease;
+  font-size: 15px;
   position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  letter-spacing: 0.3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.01em;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-family: inherit;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn:active {
   transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 } 
 
 .btn:disabled {
@@ -41,28 +41,32 @@
 
 /* Primary Button */
 .btn-primary {
-  background: var(--btn-primary-bg);
+  background: var(--accent);
   color: white;
-  box-shadow: 0 2px 8px rgba(244, 164, 96, 0.2);
+  box-shadow: 0 2px 8px rgba(244, 164, 96, 0.25);
 }
 
 .btn-primary:hover {
-  background: var(--btn-primary-hover-bg);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(244, 164, 96, 0.3);
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(244, 164, 96, 0.35);
 }
 
 .btn-primary:active {
   transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(244, 164, 96, 0.2);
+  box-shadow: 0 2px 8px rgba(244, 164, 96, 0.25);
 }
 
 html[data-theme="dark"] .btn-primary {
-  box-shadow: 0 4px 12px rgba(255, 184, 77, 0.25);
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(255, 184, 77, 0.3);
+  color: #0f0a07;
+  font-weight: 700;
 }
 
 html[data-theme="dark"] .btn-primary:hover {
-  box-shadow: 0 8px 24px rgba(255, 184, 77, 0.35);
+  background: var(--accent-hover);
+  box-shadow: 0 4px 16px rgba(255, 184, 77, 0.4);
 }
 
 /* Secondary Button */
@@ -195,7 +199,7 @@ html[data-theme="dark"] .btn-outline:hover {
 /* Subtle button variant */
 .btn-subtle {
   background: var(--card);
-  color: var(--text-secondary);
+  color: var(--text);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border-light);
 }

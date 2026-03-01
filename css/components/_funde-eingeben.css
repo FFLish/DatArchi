@@ -92,7 +92,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--muted);
+  color: var(--text);
   font-size: 13px;
   text-align: center;
   border-bottom: 1px solid var(--border);
@@ -115,14 +115,14 @@
 
 .saved-find-card-description {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--text);
   flex-grow: 1;
   margin-bottom: 10px;
 }
 
 .saved-find-card-details {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--text);
   border-top: 1px solid var(--border);
   padding-top: 8px;
   display: flex;

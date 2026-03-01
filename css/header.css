@@ -4,11 +4,11 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -16,9 +16,9 @@
 }
 
 html[data-theme="dark"] .site-header {
-  background: rgba(30, 41, 59, 0.8);
+  background: rgba(15, 10, 7, 0.95);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .header-inner {
@@ -52,9 +52,9 @@ html[data-theme="dark"] .site-header {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--accent);
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(244, 164, 96, 0.2);
+  box-shadow: 0 2px 8px rgba(244, 164, 96, 0.25);
 }
 
 .logo-icon {
@@ -91,7 +91,7 @@ html[data-theme="dark"] .logo-icon {
 .project-tagline {
   font-size: 11px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--text);
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin: 0;
@@ -143,14 +143,16 @@ html[data-theme="dark"] .logo-icon {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
     transition: var(--transition);
     white-space: nowrap;
+    font-size: 15px;
+    font-weight: 500;
   }
 
   .nav-link:hover {
-    background: rgba(244, 164, 96, 0.1);
+    background: rgba(244, 164, 96, 0.08);
     color: var(--accent);
   }
 
@@ -201,11 +203,13 @@ html[data-theme="dark"] .logo-icon {
     box-shadow: var(--shadow-lg);
     transform: translateX(100%);
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 99;
+    z-index: 102;
     display: flex;
     overflow-y: auto;
     visibility: hidden;
     padding-top: 20px;
+    backface-visibility: hidden;
+    will-change: transform;
   }
 
   .header-menu.active {
@@ -324,11 +328,13 @@ html[data-theme="dark"] .logo-icon {
     box-shadow: var(--shadow-lg);
     transform: translateX(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s ease;
-    z-index: 98;
+    z-index: 102;
     display: flex;
     overflow-y: auto;
     visibility: hidden;
-    padding-top: 20px;
+    padding-top: 12px;
+    backface-visibility: hidden;
+    will-change: transform;
   }
 
   .header-menu.active {
@@ -384,10 +390,20 @@ html[data-theme="dark"] .logo-icon {
     text-decoration: none;
     color: var(--text);
     font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
+  .nav-link:hover,
   .nav-link:active {
     background: rgba(244, 164, 96, 0.15);
+    color: var(--accent);
+  }
+
+  .nav-link:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
   }
 
   .nav-link i {
@@ -395,6 +411,7 @@ html[data-theme="dark"] .logo-icon {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
 
   .header-static-controls {
@@ -449,6 +466,8 @@ html[data-theme="dark"] .logo-icon {
     width: 90% !important;
     max-width: 260px !important;
     padding: 12px !important;
+    padding-top: 12px !important;
+    z-index: 102 !important;
   }
 
   .nav-link {
@@ -470,7 +489,7 @@ html[data-theme="dark"] .logo-icon {
 .btn-icon {
   background: transparent;
   border: none;
-  color: var(--muted);
+  color: var(--text);
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
@@ -502,6 +521,48 @@ html[data-theme="light"] .btn-icon:hover {
 html[data-theme="dark"] #theme-toggle .sun { display: block; }
 html[data-theme="dark"] #theme-toggle .moon { display: none; }
 
+/* Mobile menu enhanced styling */
+@media (max-width: 768px) {
+  /* Prevent body scroll when menu is open */
+  body.no-scroll,
+  body[style*="overflow: hidden"] {
+    overflow: hidden !important;
+    position: fixed;
+    width: 100%;
+  }
+
+  /* Smooth scrolling for menu items */
+  .header-menu {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Ensure navbar button is always accessible */
+  .header-right-container {
+    position: relative;
+    z-index: 101;
+  }
+
+  /* Improve touch targets for nav links */
+  .nav-link {
+    min-height: 48px;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Add active state visual feedback */
+  .nav-link:active::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--accent);
+    border-radius: 2px 0 0 2px;
+  }
+}
+
 /* Dark mode icon colors */
 html[data-theme="dark"] .header-icon {
   filter: invert(1) brightness(1.1);
@@ -518,4 +579,19 @@ html[data-theme="dark"] .btn-icon {
 
 html[data-theme="dark"] .header-nav i {
   color: rgba(255, 255, 255, 0.9);
+}
+
+/* Mobile menu dark mode improvements */
+html[data-theme="dark"] .header-menu {
+  background: rgba(30, 41, 59, 0.95);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="dark"] .nav-link {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+html[data-theme="dark"] .nav-link:hover,
+html[data-theme="dark"] .nav-link:active {
+  background: rgba(244, 164, 96, 0.2);
 }

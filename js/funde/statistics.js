@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => { // Make DOMContentLo
 
   function renderDatingCard(finds) {
     const datingCounts = finds.reduce((acc, find) => {
-      const dating = escapeHtml(find.dating || find.datierung || 'Unbekannt');
+      const dating = escapeHtml(find.datierung || 'Unbekannt');
       acc[dating] = (acc[dating] || 0) + 1;
       return acc;
     }, {});

@@ -1,18 +1,18 @@
 /* Footer Styles */
 .site-footer {
-  background: linear-gradient(180deg, rgba(12,18,30,0.8) 0%, rgba(6,12,20,0.9) 100%);
+  background: var(--card);
   color: var(--text);
-  padding: 28px 12px 18px;
+  padding: 32px 16px 20px;
   margin-top: auto;
   border-top: 1px solid var(--border);
 } 
 
 .footer-inner {
   display: flex;
-  gap: 24px;
+  gap: 28px;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 18px 0 20px;
+  padding: 20px 0 24px;
 }
 
 .footer-brand {
@@ -31,7 +31,7 @@
 }
 
 .footer-brand .muted {
-  color: rgba(230,238,248,0.75);
+  color: var(--text);
   font-size: 14px;
 }
 
@@ -42,18 +42,18 @@
 }
 
 .footer-nav a {
-  color: rgba(230,238,248,0.85);
+  color: var(--text);
   text-decoration: none;
-  font-size: 14px;
-  padding: 6px 8px;
+  font-size: 15px;
+  padding: 6px 10px;
   border-radius: 6px;
   transition: var(--transition);
 }
 
 .footer-nav a:hover {
-  background: rgba(255,255,255,0.03);
+  background: rgba(244, 164, 96, 0.08);
   color: var(--accent);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .footer-contact {
@@ -64,23 +64,22 @@
 }
 
 .footer-contact .email {
-  color: rgba(230,238,248,0.95);
+  color: var(--text);
   text-decoration: none;
   font-weight: 600;
 }
 
 .footer-contact .social a {
-  color: rgba(230,238,248,0.8);
+  color: var(--text);
   margin-left: 8px;
   text-decoration: none;
 }
 
 .footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.03);
-  padding-top: 12px;
-  color: rgba(230,238,248,0.7);
-  font-size: 13px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  color: var(--text);
+  font-size: 14px;
 }
 
 @media (max-width: 900px) {
