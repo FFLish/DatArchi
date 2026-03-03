@@ -226,8 +226,9 @@ document.addEventListener('DOMContentLoaded', async () => {
               <span><strong>Datierung:</strong> ${datierung}</span>
               <span><strong>Sichtbarkeit:</strong> ${privacy}</span>
               <span><strong>3D-Modell:</strong> ${hasModel}</span>
-            </div>
-          </div>
+            </div>            <div style=\"margin-top: 12px; display: flex; gap: 8px;\">
+              <button type=\"button\" onclick=\"openEditFundModal('${f.id}')\" class=\"btn btn-primary\" style=\"flex: 1; padding: 8px 12px; font-size: 0.9em;\"><i class=\"fas fa-edit\"></i> Bearbeiten</button>
+            </div>          </div>
         </div>
       `;
       findsGrid.innerHTML += cardHtml;
@@ -253,6 +254,239 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         });
     }
+  // #endregion
+
+  // #region Edit Modal Logic
+  let editMap = null;
+  let editMarker = null;
+  const editFundModal = document.getElementById('editFundModal');
+  const closeEditModalBtn = document.getElementById('closeEditModal');
+  const editFundForm = document.getElementById('editFundForm');
+  const deleteFundBtn = document.getElementById('deleteFundBtn');
+
+  function closeEditModal() {
+    editFundModal.style.display = 'none';
+    // Clean up edit map
+    if (editMap) {
+      editMap.remove();
+      editMap = null;
+      editMarker = null;
+    }
+  }
+
+  closeEditModalBtn.addEventListener('click', closeEditModal);
+  
+  // Close modal when clicking outside
+  window.addEventListener('click', (e) => {
+    if (e.target === editFundModal) {
+      closeEditModal();
+    }
+  });
+
+  function initializeEditMap(find) {
+    // Remove old map if exists
+    if (editMap) {
+      editMap.remove();
+    }
+
+    editMap = L.map('editFundMap', {
+      crs: L.CRS.Simple
+    });
+
+    // Get map image with smart fallback logic
+    let mapImageUrl = activeSite.mapImageUrl;
+    
+    // If no URL, generate deterministically from site name
+    if (!mapImageUrl && activeSite?.title) {
+      const availableImages = [
+        'ausgrabungsstätte1.jpg',
+        'ausgrabungsstätte2.png',
+        'ausgrabungsstätte3.png',
+        'ausgrabungsstätte4.png',
+        'ausgrabungsstätte5.png',
+        'ausgrabungsstätte6.png'
+      ];
+      
+      let hash = 0;
+      for (let i = 0; i < activeSite.title.length; i++) {
+        const char = activeSite.title.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      const selectedImage = availableImages[Math.abs(hash) % availableImages.length];
+      mapImageUrl = `/partials/images/ausgrabungsstätte/${selectedImage}`;
+    }
+    
+    // Final fallback
+    if (!mapImageUrl) {
+      mapImageUrl = '/partials/images/ausgrabungsstätte/ausgrabungsstätte1.jpg';
+    }
+
+    if (mapImageUrl) {
+      const img = new Image();
+      img.onload = () => {
+        const imageBounds = [[0, 0], [img.naturalHeight, img.naturalWidth]];
+        L.imageOverlay(mapImageUrl, imageBounds).addTo(editMap);
+        editMap.fitBounds(imageBounds);
+        
+        // Set existing marker if find has coordinates
+        if (isFinite(find.latitude) && isFinite(find.longitude)) {
+          setEditMarker(find.latitude, find.longitude);
+        }
+      };
+      img.onerror = () => {
+        console.warn('Kartenbild konnte nicht geladen werden:', mapImageUrl);
+        document.getElementById('editFundMap').innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">Kartenbild konnte nicht geladen werden. Geben Sie die Koordinaten manuell ein.</p>';
+      };
+      img.src = mapImageUrl;
+    } else {
+      document.getElementById('editFundMap').innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">Kein Kartenbild verfügbar. Geben Sie die Koordinaten manuell ein.</p>';
+    }
+
+    // Handle map clicks
+    if (editMap) {
+      editMap.on('click', (e) => {
+        setEditMarker(e.latlng.lat, e.latlng.lng);
+      });
+    }
+  }
+
+  function setEditMarker(lat, lng) {
+    if (!isFinite(lat) || !isFinite(lng)) return;
+    const popupMessage = `Position: <br>Lat: ${lat.toFixed(4)} <br>Lon: ${lng.toFixed(4)}`;
+    
+    if (editMarker) {
+      editMarker.setLatLng([lat, lng]);
+      editMarker.getPopup().setContent(popupMessage);
+    } else {
+      editMarker = L.marker([lat, lng], { draggable: true }).addTo(editMap);
+      editMarker.bindPopup(popupMessage).openPopup();
+      editMarker.on('moveend', e => {
+        const p = e.target.getLatLng();
+        document.getElementById('editLatitude').value = p.lat.toFixed(6);
+        document.getElementById('editLongitude').value = p.lng.toFixed(6);
+        editMarker.getPopup().setContent(`Position: <br>Lat: ${p.lat.toFixed(4)} <br>Lon: ${p.lng.toFixed(4)}`);
+      });
+    }
+    
+    document.getElementById('editLatitude').value = Number(lat).toFixed(6);
+    document.getElementById('editLongitude').value = Number(lng).toFixed(6);
+    editMarker.openPopup();
+  }
+
+  window.openEditFundModal = async function(fundId) {
+    const finds = await db.getFinds();
+    const find = finds.find(f => f.id === fundId);
+    
+    if (!find) {
+      console.error('Fund nicht gefunden');
+      return;
+    }
+
+    // Füllen Sie das Formular mit den Funddaten
+    document.getElementById('editFundId').value = fundId;
+    document.getElementById('editTitel').value = find.titel || '';
+    document.getElementById('editFundIdInput').value = find.id || '';
+    document.getElementById('editBeschreibung').value = find.beschreibung || '';
+    document.getElementById('editBerichte').value = find.berichte || '';
+    document.getElementById('editMaterial').value = find.material || '';
+    document.getElementById('editKategorie').value = find.kategorie || '';
+    document.getElementById('editDatierung').value = find.datierung || '';
+    document.getElementById('editFunddatum').value = find.funddatum || '';
+    
+    const privacyValue = find.privacy || 'private';
+    document.getElementById('editPrivacy-private').checked = privacyValue === 'private';
+    document.getElementById('editPrivacy-public').checked = privacyValue === 'public';
+
+    document.getElementById('editLatitude').value = find.latitude || '';
+    document.getElementById('editLongitude').value = find.longitude || '';
+
+    // Modal anzeigen
+    editFundModal.style.display = 'block';
+    
+    // Initialize map after modal is visible
+    setTimeout(() => {
+      initializeEditMap(find);
+    }, 100);
+  };
+
+  // Edit form submission
+  editFundForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const fundId = document.getElementById('editFundId').value;
+    
+    const updatedData = {
+      id: fundId,
+      titel: document.getElementById('editTitel').value,
+      beschreibung: document.getElementById('editBeschreibung').value,
+      berichte: document.getElementById('editBerichte').value,
+      material: document.getElementById('editMaterial').value,
+      kategorie: document.getElementById('editKategorie').value,
+      datierung: document.getElementById('editDatierung').value,
+      funddatum: document.getElementById('editFunddatum').value,
+      privacy: document.querySelector('input[name="editPrivacy"]:checked').value,
+      latitude: parseFloat(document.getElementById('editLatitude').value),
+      longitude: parseFloat(document.getElementById('editLongitude').value)
+    };
+
+    if (isFinite(updatedData.latitude) && isFinite(updatedData.longitude)) {
+      updatedData.zoneLabel = await findZoneForCoordinates(updatedData.latitude, updatedData.longitude);
+    }
+
+    try {
+      await db.updateFind(fundId, updatedData);
+      showEditAlert('Fund erfolgreich aktualisiert!', 'success');
+      
+      // Clear map markers and re-render
+      map.eachLayer(function(layer) {
+        if (layer instanceof L.Marker) {
+          map.removeLayer(layer);
+        }
+      });
+      
+      await initializePage();
+      closeEditModal();
+    } catch (error) {
+      console.error("Fehler beim Speichern des Fundes:", error);
+      showEditAlert('Fehler beim Speichern des Fundes.', 'danger');
+    }
+  });
+
+  // Delete fund button
+  deleteFundBtn.addEventListener('click', async () => {
+    const fundId = document.getElementById('editFundId').value;
+    if (confirm('Möchten Sie diesen Fund wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+      try {
+        await db.deleteFind(fundId);
+        showEditAlert('Fund erfolgreich gelöscht!', 'success');
+        
+        // Clear map and re-render
+        map.eachLayer(function(layer) {
+          if (layer instanceof L.Marker) {
+            map.removeLayer(layer);
+          }
+        });
+        
+        await initializePage();
+        closeEditModal();
+      } catch (error) {
+        console.error("Fehler beim Löschen des Fundes:", error);
+        showEditAlert('Fehler beim Löschen des Fundes.', 'danger');
+      }
+    }
+  });
+
+  function showEditAlert(message, type = 'success') {
+    const alertEl = document.getElementById('editAlert');
+    if (alertEl) {
+      alertEl.innerHTML = `
+        <svg class="alert-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <span>${message}</span>`;
+      alertEl.className = `alert alert-${type}`;
+      alertEl.hidden = false;
+      setTimeout(() => { alertEl.hidden = true; }, 4000);
+    }
+  }
   // #endregion
 
   // #region Initialisation

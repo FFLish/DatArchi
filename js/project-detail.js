@@ -345,6 +345,34 @@ async function loadProjectDetail() {
             return;
         }
 
+        // Auto-generate mapImageUrl if not set
+        if (!currentProject.mapImageUrl && currentProject.title) {
+            const availableImages = [
+                'ausgrabungsstätte1.jpg',
+                'ausgrabungsstätte2.png',
+                'ausgrabungsstätte3.png',
+                'ausgrabungsstätte4.png',
+                'ausgrabungsstätte5.png',
+                'ausgrabungsstätte6.png'
+            ];
+            
+            // Create deterministic hash from project name
+            let hash = 0;
+            for (let i = 0; i < currentProject.title.length; i++) {
+                const char = currentProject.title.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            
+            const selectedImage = availableImages[Math.abs(hash) % availableImages.length];
+            currentProject.mapImageUrl = `/partials/images/ausgrabungsstätte/${selectedImage}`;
+        }
+        
+        // Fallback to default map image
+        if (!currentProject.mapImageUrl) {
+            currentProject.mapImageUrl = '/partials/images/ausgrabungsstätte/ausgrabungsstätte1.jpg';
+        }
+
         // Überprüfe Zugriff
         const isPublic = currentProject.visibility === 'public' || currentProject.isPublic;
         const isOwner = currentProject.userId === auth.currentUser?.uid || currentProject.owner === auth.currentUser?.uid;
@@ -1202,10 +1230,12 @@ async function editFind(findId) {
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            overflow-y: auto;
         `;
 
         modal.innerHTML = `
-            <div style="background: white; border-radius: 8px; padding: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <div style="background: white; border-radius: 8px; padding: 24px; max-width: 700px; width: 90%; max-height: 95vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3); margin: 20px auto;">
+                <button type="button" onclick="document.getElementById('editFindModalProject').remove();" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 28px; cursor: pointer; color: #6b7280;">&times;</button>
                 <h2 style="margin-top: 0; margin-bottom: 20px;">Fund bearbeiten</h2>
                 <form id="editFindFormProject" style="display: flex; flex-direction: column; gap: 16px;">
                     <div>
@@ -1248,8 +1278,19 @@ async function editFind(findId) {
                         </div>
                     </div>
                     <div>
-                        <label for="editFindLocation" style="display: block; margin-bottom: 6px; font-weight: 500;">Fundort</label>
-                        <input type="text" id="editFindLocation" value="${escapeHtml(find.fundort || find.location || '')}" style="width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; box-sizing: border-box;" />
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">Fundort (Kartenklick)</label>
+                        <div id="editFundMapModal" style="width: 100%; height: 300px; border: 1px solid #e5e7eb; border-radius: 4px; background: #f3f4f6; margin-bottom: 8px;"></div>
+                        <p style="margin: 0; font-size: 0.9rem; color: #666;">Klicken Sie auf die Karte, um die Position zu ändern.</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                            <div>
+                                <label for="editFindLatitude" style="display: block; margin-bottom: 4px; font-size: 0.9rem; font-weight: 500;">Breitengrad</label>
+                                <input type="text" id="editFindLatitude" value="${find.latitude || ''}" style="width: 100%; padding: 6px; border: 1px solid #e5e7eb; border-radius: 4px; box-sizing: border-box;" />
+                            </div>
+                            <div>
+                                <label for="editFindLongitude" style="display: block; margin-bottom: 4px; font-size: 0.9rem; font-weight: 500;">Längengrad</label>
+                                <input type="text" id="editFindLongitude" value="${find.longitude || ''}" style="width: 100%; padding: 6px; border: 1px solid #e5e7eb; border-radius: 4px; box-sizing: border-box;" />
+                            </div>
+                        </div>
                     </div>
                     <div style="display: flex; gap: 12px; margin-top: 20px;">
                         <button type="button" onclick="document.getElementById('editFindModalProject').remove();" style="flex: 1; padding: 10px; border: 1px solid #e5e7eb; border-radius: 4px; background: white; cursor: pointer; font-weight: 500;">Abbrechen</button>
@@ -1260,6 +1301,110 @@ async function editFind(findId) {
         `;
 
         document.body.appendChild(modal);
+        
+        // Initialize the map
+        let editModalMap = null;
+        let editModalMarker = null;
+        
+        setTimeout(() => {
+            const mapContainer = document.getElementById('editFundMapModal');
+            if (!mapContainer) return;
+            
+            editModalMap = L.map('editFundMapModal', {
+                crs: L.CRS.Simple
+            });
+            
+            // Get map image with smart fallback logic
+            const availableImages = [
+                'ausgrabungsstätte1.jpg',
+                'ausgrabungsstätte2.png',
+                'ausgrabungsstätte3.png',
+                'ausgrabungsstätte4.png',
+                'ausgrabungsstätte5.png',
+                'ausgrabungsstätte6.png'
+            ];
+            
+            let mapImageUrl = currentProject?.mapImageUrl;
+            
+            // If no URL, generate deterministically from project title
+            if (!mapImageUrl && currentProject?.title) {
+                let hash = 0;
+                for (let i = 0; i < currentProject.title.length; i++) {
+                    const char = currentProject.title.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                const selectedImage = availableImages[Math.abs(hash) % availableImages.length];
+                mapImageUrl = `/partials/images/ausgrabungsstätte/${selectedImage}`;
+            }
+            
+            // Final fallback
+            if (!mapImageUrl) {
+                mapImageUrl = '/partials/images/ausgrabungsstätte/ausgrabungsstätte1.jpg';
+            }
+            
+            if (mapImageUrl) {
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const imageBounds = [[0, 0], [img.naturalHeight, img.naturalWidth]];
+                        L.imageOverlay(mapImageUrl, imageBounds).addTo(editModalMap);
+                        editModalMap.fitBounds(imageBounds);
+                        
+                        // Set existing marker if find has coordinates
+                        if (isFinite(find.latitude) && isFinite(find.longitude)) {
+                            setEditModalMarker(find.latitude, find.longitude);
+                        }
+                    } catch (error) {
+                        console.error('Fehler bei der Kartengenerierung:', error);
+                    }
+                };
+                img.onerror = () => {
+                    console.warn('Kartenbild konnte nicht geladen werden:', mapImageUrl);
+                    if (editModalMap && mapContainer) {
+                        editModalMap.remove();
+                        mapContainer.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">Kartenbild konnte nicht geladen werden. Geben Sie die Koordinaten manuell ein.</p>';
+                    }
+                };
+                img.src = mapImageUrl;
+            } else {
+                if (mapContainer) {
+                    editModalMap.remove();
+                    mapContainer.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">Kein Kartenbild verfügbar. Geben Sie die Koordinaten manuell ein.</p>';
+                }
+            }
+            
+            // Handle map clicks
+            if (editModalMap) {
+                editModalMap.on('click', (e) => {
+                    setEditModalMarker(e.latlng.lat, e.latlng.lng);
+                });
+            }
+        }, 50);
+        
+        function setEditModalMarker(lat, lng) {
+            if (!isFinite(lat) || !isFinite(lng) || !editModalMap) return;
+            
+            const popupMessage = `Lat: ${lat.toFixed(4)} | Lon: ${lng.toFixed(4)}`;
+            
+            if (editModalMarker) {
+                editModalMarker.setLatLng([lat, lng]);
+                editModalMarker.getPopup().setContent(popupMessage);
+            } else {
+                editModalMarker = L.marker([lat, lng], { draggable: true }).addTo(editModalMap);
+                editModalMarker.bindPopup(popupMessage).openPopup();
+                editModalMarker.on('moveend', e => {
+                    const p = e.target.getLatLng();
+                    document.getElementById('editFindLatitude').value = p.lat.toFixed(6);
+                    document.getElementById('editFindLongitude').value = p.lng.toFixed(6);
+                    editModalMarker.getPopup().setContent(`Lat: ${p.lat.toFixed(4)} | Lon: ${p.lng.toFixed(4)}`);
+                });
+            }
+            
+            document.getElementById('editFindLatitude').value = Number(lat).toFixed(6);
+            document.getElementById('editFindLongitude').value = Number(lng).toFixed(6);
+            editModalMarker.openPopup();
+        }
         
         // Handle form submission
         document.getElementById('editFindFormProject').addEventListener('submit', async (e) => {
@@ -1274,12 +1419,18 @@ async function editFind(findId) {
                     kategorie: document.getElementById('editFindCategory').value,
                     datierung: document.getElementById('editFindDating').value,
                     funddatum: document.getElementById('editFindDate').value,
-                    fundort: document.getElementById('editFindLocation').value
+                    latitude: parseFloat(document.getElementById('editFindLatitude').value) || null,
+                    longitude: parseFloat(document.getElementById('editFindLongitude').value) || null
                 };
 
                 await firebaseService.updateFind(findId, updates);
-                modal.remove();
                 
+                // Clean up map
+                if (editModalMap) {
+                    editModalMap.remove();
+                }
+                
+                modal.remove();
                 showNotification('✅ Fund erfolgreich aktualisiert!', 'success');
                 // Listener wird automatisch aktualisieren
             } catch (error) {
@@ -1291,6 +1442,9 @@ async function editFind(findId) {
         // Close modal when clicking outside
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
+                if (editModalMap) {
+                    editModalMap.remove();
+                }
                 modal.remove();
             }
         });

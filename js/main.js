@@ -94,6 +94,34 @@ export const getMapImageUrl = () => {
   return SITE_ROOT + 'partials/images/ausgrabungsstätte/' + randomImage;
 };
 
+// Generate map image URL from site name - deterministic selection from available images
+export const generateMapImageUrlFromSiteName = (siteName) => {
+  const availableImages = [
+    'ausgrabungsstätte1.jpg',
+    'ausgrabungsstätte2.png',
+    'ausgrabungsstätte3.png',
+    'ausgrabungsstätte4.png',
+    'ausgrabungsstätte5.png',
+    'ausgrabungsstätte6.png'
+  ];
+  
+  if (!siteName) {
+    return SITE_ROOT + `partials/images/ausgrabungsstätte/${availableImages[0]}`;
+  }
+  
+  // Create deterministic hash from site name to select same image each time
+  let hash = 0;
+  for (let i = 0; i < siteName.length; i++) {
+    const char = siteName.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  
+  // Use modulo to select an image
+  const selectedImage = availableImages[Math.abs(hash) % availableImages.length];
+  return SITE_ROOT + `partials/images/ausgrabungsstätte/${selectedImage}`;
+};
+
 // ====================
 // js/database.js
 // ====================
@@ -150,7 +178,14 @@ async function getUserId() {
 export async function getSites() {
     const uid = await getUserId();
     const sitesSnap = await getDocs(getSitesCollection(uid));
-    return sitesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return sitesSnap.docs.map(doc => {
+        const siteData = { id: doc.id, ...doc.data() };
+        // Auto-generate mapImageUrl from site name if not already set
+        if (!siteData.mapImageUrl && siteData.name) {
+            siteData.mapImageUrl = generateMapImageUrlFromSiteName(siteData.name);
+        }
+        return siteData;
+    });
 }
 
 export async function getActiveSite() {
@@ -159,7 +194,16 @@ export async function getActiveSite() {
     if (!activeSiteId) return null;
 
     const siteDoc = await getDoc(doc(getSitesCollection(uid), activeSiteId));
-    return siteDoc.exists() ? { id: siteDoc.id, ...siteDoc.data() } : null;
+    if (!siteDoc.exists()) return null;
+    
+    const siteData = { id: siteDoc.id, ...siteDoc.data() };
+    
+    // Auto-generate mapImageUrl from site name if not already set
+    if (!siteData.mapImageUrl && siteData.name) {
+        siteData.mapImageUrl = generateMapImageUrlFromSiteName(siteData.name);
+    }
+    
+    return siteData;
 }
 
 export async function setActiveSite(siteId) {
@@ -218,8 +262,13 @@ export async function getFinds(scope = 'active') {
 
 export async function addSite(siteData) {
     const uid = await getUserId();
+    
+    // Auto-generate mapImageUrl from site name if not provided
+    const mapImageUrl = siteData.mapImageUrl || generateMapImageUrlFromSiteName(siteData.name);
+    
     const siteWithTimestamp = {
         ...siteData,
+        mapImageUrl,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         findsCount: 0
@@ -454,10 +503,11 @@ export async function initializeUserData() {
     if (sites.length === 0) {
         console.log("Initializing default site for new user.");
         const defaultSiteId = `site-${Date.now()}`;
+        const defaultSiteName = 'Meine erste Ausgrabung';
         const defaultSite = {
             id: defaultSiteId,
-            name: 'Meine erste Ausgrabung',
-            mapImageUrl: null,
+            name: defaultSiteName,
+            mapImageUrl: generateMapImageUrlFromSiteName(defaultSiteName),
             findsCount: 0,
             zones: [],
             createdAt: new Date().toISOString(),
@@ -524,7 +574,7 @@ export function runMigration() {
                 const defaultSite = {
                     id: newSiteId,
                     name: 'Meine erste Ausgrabung (Migriert)',
-                    mapImageUrl: null,
+                    mapImageUrl: generateMapImageUrlFromSiteName(newSite.name),
                 };
                 await setDoc(newSiteRef, defaultSite);
 
@@ -596,10 +646,11 @@ export function runMigration() {
         if (!hasFirestoreData && !oldFindsData && !oldStructuredData) {
             console.log("No existing data found, creating default site for new user.");
             const defaultSiteId = `site-${Date.now()}`;
+            const defaultSiteName = 'Meine erste Ausgrabung';
             const defaultSite = {
                 id: defaultSiteId,
-                name: 'Meine erste Ausgrabung',
-                mapImageUrl: null,
+                name: defaultSiteName,
+                mapImageUrl: generateMapImageUrlFromSiteName(defaultSiteName),
             };
             await setDoc(doc(sitesCollectionRef, defaultSiteId), defaultSite);
             localStorage.setItem(ACTIVE_SITE_ID_KEY, defaultSiteId);
@@ -2016,16 +2067,21 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
                     const topLevelQuery = query(topLevelRef, where('projectId', '==', selectedProjectId));
                     const topLevelSnap = await getDocs(topLevelQuery);
 
+                    console.log(`🔍 Query top-level finds mit projectId=${selectedProjectId}: ${topLevelSnap.size} Funde gefunden`);
+
                     if (!topLevelSnap.empty) {
                         allFinds = topLevelSnap.docs.map((findDoc, index) =>
                             normalizeProjectFind(findDoc.data() || {}, findDoc.id, index)
                         );
+                        console.log(`✅ ${allFinds.length} Finds von top-level finds Collection geladen`);
+                        allFinds.slice(0, 2).forEach(f => console.log(`   - ${f.titel}: lat=${f.latitude}, lon=${f.longitude}`));
                     } else {
                         const subFindsRef = collection(db, 'projects', selectedProjectId, 'finds');
                         const subSnap = await getDocs(subFindsRef);
                         allFinds = subSnap.docs.map((findDoc, index) =>
                             normalizeProjectFind(findDoc.data() || {}, findDoc.id, index)
                         );
+                        console.log(`✅ ${allFinds.length} Finds von subcollection geladen`);
                     }
                 } catch (fallbackError) {
                     console.warn('⚠️ Konnte Projekt-Funde nicht als Fallback laden:', fallbackError.message);
@@ -2310,11 +2366,9 @@ document.addEventListener('DOMContentLoaded', async () => { // Made DOMContentLo
             
             const uid = auth.currentUser ? auth.currentUser.uid : 'anonymous';
             const siteId = `site-${Date.now()}`;
-            let mapImageUrl = null;
-            if (siteMapImageFile) {
-                const imagePath = `users/${uid}/sites/${siteId}/map-${siteMapImageFile.name}`;
-                mapImageUrl = await uploadFileToFirebase(siteMapImageFile, imagePath);
-            }
+            let mapImageUrl = siteMapImageFile 
+                ? await uploadFileToFirebase(siteMapImageFile, `users/${uid}/sites/${siteId}/map-${siteMapImageFile.name}`)
+                : generateMapImageUrlFromSiteName(siteName); // Auto-generate if no custom image provided
 
             const newSite = {
                 id: siteId,

@@ -147,6 +147,8 @@ async function loadProjects() {
             console.log('ℹ️ Projects require authentication');
         }
         
+        currentProjects = Array.isArray(projects) ? projects : [];
+
         if (!currentProjects || currentProjects.length === 0) {
             projectsList.innerHTML = `
                 <div class="empty-state">
@@ -189,21 +191,7 @@ async function displayProjects(projects) {
     // Filter out projects with missing critical data
     const validProjects = projects.filter(p => p.id && p.name && p.name.trim());
 
-    const isDemoUser = auth.currentUser?.email?.toLowerCase() === 'demo@datarchi.com';
-    const visibleProjects = isDemoUser
-        ? validProjects.filter(p => p.datasetKey === DEMO_DATASET_KEY || p.name === DEMO_PROJECT_NAME || p.title === DEMO_PROJECT_NAME).slice(0, 1)
-        : validProjects;
-    
-    if (visibleProjects.length === 0) {
-        if (isDemoUser) {
-            projectsList.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-hourglass-half"></i>
-                    <p>Demo-Projekt wird vorbereitet …</p>
-                </div>
-            `;
-            return;
-        }
+    if (validProjects.length === 0) {
         projectsList.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -213,11 +201,12 @@ async function displayProjects(projects) {
         return;
     }
 
-    const projectsHTML = await Promise.all(visibleProjects.map(async (project, index) => {
+    const isDemoUser = auth.currentUser?.email?.toLowerCase() === 'demo@datarchi.com';
+    const projectsHTML = await Promise.all(validProjects.map(async (project, index) => {
         const finds = await firebaseService.getProjectFinds(project.id).catch(() => []) || [];
         const findCategories = [...new Set(finds.map(f => f.category))];
         const materials = [...new Set(finds.map(f => f.material))];
-        const cardImage = isDemoUser && project.datasetKey === DEMO_DATASET_KEY
+        const cardImage = isDemoUser && (project.datasetKey === DEMO_DATASET_KEY || project.name === DEMO_PROJECT_NAME)
             ? DEMO_CARD_IMAGES[index % DEMO_CARD_IMAGES.length]
             : getRandomExcavationSiteImage();
         
